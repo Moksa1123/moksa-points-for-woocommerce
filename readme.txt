@@ -34,6 +34,7 @@ Points is modular — enable only what you need from the plugin's own "Moksa Poi
 * **Points packs** — sell points for money, exactly like a gift card sells store credit. Purchased points are spendable but do not raise a member's tier unless you opt in.
 * **Per-payment-method bonus** — extra points for paying with the method that costs your store less.
 * **WooCommerce Subscriptions** — renewals can be excluded from earning or given their own multiplier, and a renewal never counts as a first purchase.
+* **Multi-currency** — per-currency earn and redeem rates for stores selling in more than one currency, falling back to your currency plugin's own exchange rate. Earning uses the order's own currency, so historical orders keep the rate they were placed under.
 
 = Display, engagement and admin =
 
@@ -97,9 +98,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Initial release.
 * Ledger: idempotent points and store-credit entries, per-user locks on every debit, proportional reversal on refund and cancellation, an admin browser with CSV export, and a liability / breakage forecast computed from the rows.
 * Earning: per-amount rules with a daily cap and per-product / per-category overrides, sign-up, first-order, check-in, review, birthday and anniversary bonuses, referral rewards, per-payment-method multipliers, and WooCommerce Subscriptions awareness.
-* Spending: redemption catalogue with stock and per-customer limits, checkout wallet (classic and block), buy-with-points, redeem codes, gift cards, points packs and member-to-member transfer.
+* Spending: redemption catalogue with stock and per-customer limits, checkout wallet (classic and block), buy-with-points, redeem codes, cashback, gift cards, points packs and member-to-member transfer.
 * Members: My Points page, tier ladder, quests, leaderboard, badges, a how-to-earn guide, a shareable achievement card and six editor blocks.
-* Operations: FIFO expiry with reminder e-mails, recurring campaign schedules, CSV balance import, ledger compaction, outbound webhooks, LINE Messaging API notifications and a customer-scoped REST API.
+* Operations: FIFO expiry with reminder e-mails, recurring campaign schedules, per-currency rates for multi-currency stores, CSV balance import, ledger compaction, outbound webhooks, LINE Messaging API notifications and a customer-scoped REST API.
 * Optional Abilities / AI / MCP exposure, off by default, with an hourly rate limit and an audit log on external tool calls.
 * Ships a complete Traditional Chinese (Taiwan) translation.
 
