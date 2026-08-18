@@ -1,0 +1,17 @@
+{
+    "name": "moksaweb/moksafopoi",
+    "description": "Points / store-credit value engine for the Moksa platform — the single source of truth for customer balance, with an idempotent ledger, earn rules, redeem, a checkout wallet and Abilities/MCP.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moksafopoi\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

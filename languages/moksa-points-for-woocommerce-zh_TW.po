@@ -1,0 +1,5108 @@
+# Copyright (C) 2026 MoksaWeb
+# This file is distributed under the GPLv3 or later.
+# Traditional Chinese (Taiwan) translation. English is the source language;
+# every msgid below is the original English string, every msgstr its zh_TW rendering.
+msgid ""
+msgstr ""
+"Project-Id-Version: Moksa Points for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/moksa-points-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-09T21:50:44+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: moksa-points-for-woocommerce\n"
+"Language: zh_TW\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Plugin Name of the plugin
+#: moksa-points-for-woocommerce.php
+msgid "Moksa Points for WooCommerce"
+msgstr "Moksa Points for WooCommerce"
+
+#. Plugin URI of the plugin
+#: moksa-points-for-woocommerce.php
+msgid "https://github.com/Moksa1123/moksa-points-for-woocommerce"
+msgstr "https://github.com/Moksa1123/moksa-points-for-woocommerce"
+
+#. Description of the plugin
+#: moksa-points-for-woocommerce.php
+msgid "The value engine for the Moksa platform: an idempotent points / store-credit ledger, earn rules, redeem, a checkout wallet, and Abilities/MCP. The single source of truth for customer balance — companion plugins read it, never store their own."
+msgstr "Moksa 平台的價值引擎:具冪等性的點數 / 儲值金帳本、賺點規則、兌換、結帳錢包,以及 Abilities/MCP。顧客餘額的唯一真實來源 —— 其他外掛一律讀取它,絕不自行儲存。"
+
+#. Author of the plugin
+#: moksa-points-for-woocommerce.php
+msgid "MoksaWeb"
+msgstr "MoksaWeb"
+
+#. Author URI of the plugin
+#: moksa-points-for-woocommerce.php
+msgid "https://moksaweb.com/"
+msgstr "https://moksaweb.com/"
+
+#: moksa-points-for-woocommerce.php:71
+#: src/Modules/MyAccount/Endpoint.php:435
+#: src/Modules/MyAccount/Endpoint.php:451
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Modules/PointsAdmin/Module.php:256
+#: src/Modules/ProductPoints/Module.php:48
+#: src/Settings/SettingsScreen.php:248
+#: src/Support/Label.php:39
+msgid "Points"
+msgstr "點數"
+
+#: src/Api.php:73
+msgid "The redeem feature is not enabled."
+msgstr "兌換功能未啟用。"
+
+#. translators: 1: PHP version, 2: WP version, 3: WC version.
+#: src/Compatibility/Requirements.php:43
+#, php-format
+msgid "Moksa Points requires PHP %1$s+, WordPress %2$s+ and WooCommerce %3$s+ to run."
+msgstr "Moksa Points 需要 PHP %1$s+、WordPress %2$s+ 與 WooCommerce %3$s+ 才能運作。"
+
+#: src/Compatibility/Subscriptions.php:120
+#: src/Settings/SettingsScreen.php:579
+msgid "Subscription sign-up bonus"
+msgstr "訂閱首次啟用獎勵"
+
+#: src/Mcp/Server.php:283
+#: src/Modules/Abilities/Ability.php:963
+#: src/Modules/Abilities/Ability.php:996
+#: src/Modules/Abilities/Ability.php:1033
+#: src/Modules/Abilities/Ability.php:1068
+#: src/Modules/Abilities/Ability.php:1105
+#: src/Modules/Abilities/Ability.php:1111
+#: src/Modules/Abilities/Ability.php:1147
+#: src/Modules/Abilities/Ability.php:1169
+#: src/Modules/Abilities/Ability.php:1196
+#: src/Modules/Abilities/Ability.php:1663
+#: src/Modules/Abilities/Ability.php:1696
+#: src/Modules/Abilities/Ability.php:1727
+#: src/Modules/Abilities/Ability.php:1743
+#: src/Modules/Abilities/Ability.php:1777
+#: src/Modules/Abilities/Ability.php:1800
+#: src/Modules/Abilities/Ability.php:1823
+#: src/Modules/Abilities/Ability.php:1854
+#: src/Modules/Campaign/Screen.php:297
+#: src/Modules/PointsAdmin/LedgerBrowser.php:347
+#: src/Modules/PointsAdmin/LedgerBrowser.php:407
+#: src/Modules/PointsAdmin/Module.php:184
+#: src/Modules/PointsAdmin/Module.php:220
+#: src/Modules/RewardAdmin/Screen.php:291
+#: src/Settings/SettingsScreen.php:936
+#: src/Settings/SettingsScreen.php:1605
+msgid "You do not have permission to do this."
+msgstr "權限不足。"
+
+#. translators: %s: the hourly limit on change-making tool calls.
+#: src/Mcp/Server.php:294
+#, php-format
+msgid "Rate limit reached: at most %s change-making calls per hour. Try again later."
+msgstr "已達流量限制:每小時最多 %s 次會變更資料的呼叫。請稍後再試。"
+
+#: src/Mcp/Server.php:309
+msgid "The tool failed to run. Please try again later."
+msgstr "工具執行失敗,請稍後再試。"
+
+#: src/Modules/Abilities/Ability.php:45
+#: src/Modules/AdminMenu/Menu.php:27
+#: src/Modules/AdminMenu/Menu.php:28
+msgid "Moksa Points"
+msgstr "Moksa 點數"
+
+#: src/Modules/Abilities/Ability.php:46
+msgid "WooCommerce points / store credit balance lookup, reporting, and management capabilities"
+msgstr "WooCommerce 點數 / 儲值金餘額查詢、報表與管理能力"
+
+#: src/Modules/Abilities/Ability.php:59
+msgid "Find a customer"
+msgstr "尋找顧客"
+
+#: src/Modules/Abilities/Ability.php:60
+msgid "Search customers by name / email / username and return matching user_ids (so points lookups work from a name). Read-only."
+msgstr "以姓名 / 電子郵件 / 使用者名稱搜尋顧客,回傳相符的 user_id(因此可用姓名查詢點數)。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:65
+msgid "Name, email or username fragment to search"
+msgstr "要搜尋的姓名、電子郵件或使用者名稱片段"
+
+#: src/Modules/Abilities/Ability.php:66
+msgid "Max results (default 10)"
+msgstr "最多回傳筆數 (預設 10)"
+
+#: src/Modules/Abilities/Ability.php:81
+msgid "Get the active points campaign"
+msgstr "取得進行中的點數活動"
+
+#: src/Modules/Abilities/Ability.php:82
+msgid "Return the currently active points campaign (limited-time multiplier / discount), or none. Read-only."
+msgstr "回傳目前進行中的點數活動 (限時倍率 / 折扣),若無則回傳無。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:100
+msgid "Get the points leaderboard"
+msgstr "取得點數排行榜"
+
+#: src/Modules/Abilities/Ability.php:101
+msgid "Return the top customers ranked by total points earned. Read-only."
+msgstr "依累計賺得點數回傳排名最前的顧客。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:106
+msgid "How many top customers (default 10, max 100)"
+msgstr "取前幾名顧客 (預設 10,最多 100)"
+
+#: src/Modules/Abilities/Ability.php:107
+msgid "all / month (default all)"
+msgstr "all / month (預設 all)"
+
+#: src/Modules/Abilities/Ability.php:122
+msgid "Forecast points liability and breakage"
+msgstr "預測點數負債與耗損"
+
+#: src/Modules/Abilities/Ability.php:123
+msgid "Return outstanding points, what they are worth, how much expires within 30/60/90 days, the historical breakage and redemption rates, recent issue/redeem velocity, and the balance distribution. Read-only."
+msgstr "回傳未兌換點數、其價值、30/60/90 天內到期的數量、歷史耗損率與兌換率、近期發出 / 兌換流速,以及餘額分布。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:158
+msgid "Suggest reward prices"
+msgstr "建議獎勵定價"
+
+#: src/Modules/Abilities/Ability.php:159
+msgid "Suggest entry / core / aspirational reward prices from what members actually hold, with the reasoning and the share of members each price is within reach of. Read-only; nothing is created."
+msgstr "依會員實際持有的點數,建議入門 / 主力 / 進階三種獎勵價位,並附上理由與各價位「多少比例的會員換得起」。唯讀,不會建立任何項目。"
+
+#: src/Modules/Abilities/Ability.php:194
+msgid "Get a customer badges"
+msgstr "取得顧客徽章"
+
+#: src/Modules/Abilities/Ability.php:195
+msgid "Return a customer earned achievement badges, their next badge and total points earned. Read-only."
+msgstr "回傳顧客已獲得的成就徽章、下一個徽章,以及累計賺得點數。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:200
+#: src/Modules/Abilities/Ability.php:265
+#: src/Modules/Abilities/Ability.php:486
+#: src/Modules/Abilities/Ability.php:522
+#: src/Modules/Abilities/Ability.php:581
+msgid "Customer user_id"
+msgstr "顧客 user_id"
+
+#: src/Modules/Abilities/Ability.php:201
+msgid "Customer email (used when user_id is omitted)"
+msgstr "顧客電子郵件 (未提供 user_id 時使用)"
+
+#: src/Modules/Abilities/Ability.php:222
+msgid "Get points balance"
+msgstr "查點數餘額"
+
+#: src/Modules/Abilities/Ability.php:223
+msgid "Get a customer's current points and store credit balance (provide user_id or email). Read-only."
+msgstr "查某位顧客目前的點數與儲值金餘額(可給 user_id 或 email)。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:230
+msgid "Customer user_id (or email)"
+msgstr "顧客 user_id(與 email 二擇一)"
+
+#: src/Modules/Abilities/Ability.php:234
+msgid "Customer email (used when user_id is unavailable)"
+msgstr "顧客 email(找不到 user_id 時用)"
+
+#: src/Modules/Abilities/Ability.php:257
+msgid "Get points history"
+msgstr "查點數異動紀錄"
+
+#: src/Modules/Abilities/Ability.php:258
+msgid "Get a customer's points / store credit ledger history (paginated, default 20, max 200). Read-only."
+msgstr "取某位顧客的點數 / 儲值金帳本異動紀錄(分頁,預設 20 筆、上限 200)。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:269
+msgid "Customer email (or user_id)"
+msgstr "顧客 email(與 user_id 二擇一)"
+
+#: src/Modules/Abilities/Ability.php:273
+msgid "Maximum number of records (default 20, max 200)"
+msgstr "最多幾筆(預設 20,上限 200)"
+
+#: src/Modules/Abilities/Ability.php:277
+msgid "Offset (for pagination, default 0)"
+msgstr "位移(分頁用,預設 0)"
+
+#: src/Modules/Abilities/Ability.php:293
+msgid "Signed points change (+earned / -spent)."
+msgstr "帶正負號的點數異動 (+賺得 / -花費)。"
+
+#: src/Modules/Abilities/Ability.php:294
+msgid "Signed store-credit change."
+msgstr "帶正負號的儲值金異動。"
+
+#: src/Modules/Abilities/Ability.php:296
+msgid "earn / redeem / expire / adjust / debit."
+msgstr "earn / redeem / expire / adjust / debit。"
+
+#: src/Modules/Abilities/Ability.php:299
+msgid "UTC time, Y-m-d H:i:s."
+msgstr "UTC 時間,格式 Y-m-d H:i:s。"
+
+#: src/Modules/Abilities/Ability.php:314
+msgid "List earning rules"
+msgstr "列出集點規則"
+
+#: src/Modules/Abilities/Ability.php:315
+msgid "List configured earning rules (spend N → Y points, multiplier, campaign period). Read-only."
+msgstr "列出已設定的賺點規則(消費 N → Y 點、倍率、活動期間)。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:322
+msgid "List only enabled rules (default false = all)"
+msgstr "只列啟用中的規則(預設 false = 全部)"
+
+#: src/Modules/Abilities/Ability.php:340
+msgid "Points per 1 currency unit for this rule."
+msgstr "此規則每 1 元可得的點數。"
+
+#: src/Modules/Abilities/Ability.php:344
+msgid "1 = enabled, 0 = disabled."
+msgstr "1 = 啟用,0 = 停用。"
+
+#: src/Modules/Abilities/Ability.php:361
+msgid "List redemption items"
+msgstr "列出兌換項目"
+
+#: src/Modules/Abilities/Ability.php:362
+msgid "List items customers can redeem with points (coupon / cart discount / product) and the points required. Read-only."
+msgstr "列出顧客可用點數兌換的項目(優惠券 / 購物車折抵 / 商品)及所需點數。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:369
+msgid "List only enabled redemption items (default false = all)"
+msgstr "只列啟用中的兌換項目(預設 false = 全部)"
+
+#: src/Modules/Abilities/Ability.php:386
+msgid "coupon / cart_discount / product."
+msgstr "coupon / cart_discount / product。"
+
+#: src/Modules/Abilities/Ability.php:388
+msgid "1 = listed, 0 = delisted."
+msgstr "1 = 已上架,0 = 已下架。"
+
+#: src/Modules/Abilities/Ability.php:389
+msgid "Remaining stock (-1 = unlimited)."
+msgstr "剩餘庫存 (-1 = 無限)。"
+
+#: src/Modules/Abilities/Ability.php:404
+msgid "Points operations report"
+msgstr "點數營運報表"
+
+#: src/Modules/Abilities/Ability.php:405
+msgid "Summarize total points and store credit issued / redeemed / expired, plus points currently in circulation. Read-only."
+msgstr "彙總已發放 / 已兌換 / 已到期的總點數與儲值金,以及目前流通中的點數。唯讀。"
+
+#: src/Modules/Abilities/Ability.php:412
+msgid "Cover the last N days (omit = all time)"
+msgstr "統計近 N 天(不給 = 全部期間)"
+
+#: src/Modules/Abilities/Ability.php:437
+msgid "Get points settings"
+msgstr "讀取點數設定"
+
+#: src/Modules/Abilities/Ability.php:438
+msgid "Return the current values of the store's whitelisted points settings (points per dollar, redemption ratio, points unit name, email appearance, front-end message templates, etc.), including type and description. Read-only; excludes any security / MCP / cap settings."
+msgstr "回傳一份白名單內的店家點數設定目前值(每元給幾點、折抵比例、點數單位名、信件外觀、各前台訊息範本等),含型別與說明。唯讀;不含任何安全 / MCP / cap 設定。"
+
+#: src/Modules/Abilities/Ability.php:452
+msgid "Each entry is a whitelisted setting of {key, label, type, value}."
+msgstr "每筆為 {key, label, type, value} 的白名單設定。"
+
+#: src/Modules/Abilities/Ability.php:456
+msgid "Option key (pass to update-setting)."
+msgstr "選項鍵值 (可傳給 update-setting)。"
+
+#: src/Modules/Abilities/Ability.php:458
+msgid "Value type hint: string / number / boolean."
+msgstr "值的型別提示:string / number / boolean。"
+
+#: src/Modules/Abilities/Ability.php:459
+msgid "Current value (type per the \"type\" field)."
+msgstr "目前的值 (型別依「type」欄位)。"
+
+#: src/Modules/Abilities/Ability.php:478
+msgid "Manually adjust points"
+msgstr "人工調整點數"
+
+#: src/Modules/Abilities/Ability.php:479
+msgid "Manually add / deduct points for a customer (positive adds, negative deducts). Destructive, idempotent (the same bucket is not posted twice)."
+msgstr "為某位顧客手動加 / 扣點數(正數加、負數扣)。破壞性、冪等(同一 bucket 不重複入帳)。"
+
+#: src/Modules/Abilities/Ability.php:490
+msgid "Points to add / deduct (positive adds, negative deducts)"
+msgstr "加 / 扣的點數(正數加、負數扣)"
+
+#: src/Modules/Abilities/Ability.php:494
+msgid "Reason for the adjustment (shown in the customer's history)"
+msgstr "調整原因(顯示於顧客的異動紀錄)"
+
+#: src/Modules/Abilities/Ability.php:498
+msgid "Idempotency key (the same key is not posted twice; defaults to the current time if omitted)"
+msgstr "冪等鍵(同一鍵不重複入帳;不給則用當下時間)"
+
+#: src/Modules/Abilities/Ability.php:514
+#: src/Modules/MyAccount/RedeemCode.php:47
+msgid "Redeem points"
+msgstr "兌換點數"
+
+#: src/Modules/Abilities/Ability.php:515
+msgid "Redeem a reward with a customer's points (coupon / cart discount / product). Destructive — requires the \"Redeem\" module to be enabled; mints a real coupon when moforcoupon is present, otherwise skips gracefully."
+msgstr "用顧客的點數兌換一項獎勵(優惠券 / 購物車折抵 / 商品)。破壞性 —— 需啟用「兌換」模組;moforcoupon 在場時會鑄出真實優惠券,否則優雅略過。"
+
+#: src/Modules/Abilities/Ability.php:527
+msgid "Redemption type: coupon / cart_discount / product"
+msgstr "兌換類型:coupon(優惠券)/ cart_discount(購物車折抵)/ product(商品)"
+
+#: src/Modules/Abilities/Ability.php:531
+msgid "Redemption catalog item id (optional)"
+msgstr "兌換目錄項目 id(選填)"
+
+#: src/Modules/Abilities/Ability.php:535
+msgid "Points to deduct for this redemption (optional; defaults to the catalog setting)"
+msgstr "本次兌換扣除的點數(選填,未給則取目錄設定)"
+
+#: src/Modules/Abilities/Ability.php:551
+msgid "Transfer points between customers"
+msgstr "在顧客之間轉移點數"
+
+#: src/Modules/Abilities/Ability.php:552
+msgid "Move points from one customer to another (amount-conserving, per-user locked). Destructive."
+msgstr "把點數從一位顧客轉給另一位 (總量守恆,逐人上鎖)。具破壞性。"
+
+#: src/Modules/Abilities/Ability.php:557
+msgid "Sender user_id"
+msgstr "轉出者 user_id"
+
+#: src/Modules/Abilities/Ability.php:558
+msgid "Recipient user_id"
+msgstr "接收者 user_id"
+
+#: src/Modules/Abilities/Ability.php:559
+msgid "Points to transfer (positive)"
+msgstr "要轉移的點數 (正數)"
+
+#: src/Modules/Abilities/Ability.php:560
+msgid "Optional note shown in both histories"
+msgstr "選填備註,會顯示在雙方的紀錄中"
+
+#: src/Modules/Abilities/Ability.php:575
+msgid "Manually adjust store credit"
+msgstr "手動調整儲值金"
+
+#: src/Modules/Abilities/Ability.php:576
+msgid "Manually add or deduct a customer store-credit balance (currency; positive adds, negative deducts). Destructive, idempotent on the bucket."
+msgstr "手動增加或扣除顧客的儲值金餘額 (以貨幣計;正數增加、負數扣除)。具破壞性,以 bucket 為冪等鍵。"
+
+#: src/Modules/Abilities/Ability.php:582
+msgid "Store-credit change (positive adds, negative deducts)"
+msgstr "儲值金異動 (正數增加、負數扣除)"
+
+#: src/Modules/Abilities/Ability.php:583
+msgid "Reason (shown in history)"
+msgstr "原因 (會顯示在紀錄中)"
+
+#: src/Modules/Abilities/Ability.php:584
+msgid "Idempotency key (defaults to current time)"
+msgstr "冪等鍵 (預設為目前時間)"
+
+#: src/Modules/Abilities/Ability.php:599
+msgid "Create a redemption reward"
+msgstr "建立兌換獎勵"
+
+#: src/Modules/Abilities/Ability.php:600
+msgid "Add a new item to the points redemption catalog (label, kind, cost). Destructive."
+msgstr "在點數兌換型錄中新增項目 (名稱、種類、所需點數)。具破壞性。"
+
+#: src/Modules/Abilities/Ability.php:605
+#: src/Modules/Abilities/Ability.php:631
+msgid "Reward catalog id (required for update)"
+msgstr "兌換型錄 id (更新時必填)"
+
+#: src/Modules/Abilities/Ability.php:606
+#: src/Modules/Abilities/Ability.php:632
+msgid "Reward name shown to customers"
+msgstr "顯示給顧客的獎勵名稱"
+
+#: src/Modules/Abilities/Ability.php:607
+#: src/Modules/Abilities/Ability.php:633
+msgid "coupon / cart_discount / product"
+msgstr "coupon / cart_discount / product"
+
+#: src/Modules/Abilities/Ability.php:608
+#: src/Modules/Abilities/Ability.php:634
+msgid "Points required to redeem"
+msgstr "兌換所需點數"
+
+#: src/Modules/Abilities/Ability.php:609
+#: src/Modules/Abilities/Ability.php:635
+msgid "Remaining stock (-1 = unlimited)"
+msgstr "剩餘庫存 (-1 = 無限)"
+
+#: src/Modules/Abilities/Ability.php:610
+#: src/Modules/Abilities/Ability.php:636
+msgid "1 = listed, 0 = delisted"
+msgstr "1 = 已上架,0 = 已下架"
+
+#: src/Modules/Abilities/Ability.php:625
+msgid "Update a redemption reward"
+msgstr "更新兌換獎勵"
+
+#: src/Modules/Abilities/Ability.php:626
+msgid "Update an existing redemption catalog item by id (only provided fields change). Destructive."
+msgstr "依 id 更新既有的兌換型錄項目 (只有提供的欄位會變動)。具破壞性。"
+
+#: src/Modules/Abilities/Ability.php:651
+msgid "Reverse points earned on an order"
+msgstr "回收訂單已賺得的點數"
+
+#: src/Modules/Abilities/Ability.php:652
+msgid "Claw back the points a customer earned for a specific order (as on a refund). Balance never goes below zero. Destructive, idempotent."
+msgstr "把顧客在特定訂單賺得的點數收回 (等同退款時的處理)。餘額絕不會低於零。具破壞性且冪等。"
+
+#: src/Modules/Abilities/Ability.php:657
+msgid "Order id whose earned points should be reversed"
+msgstr "要回收賺得點數的訂單 id"
+
+#: src/Modules/Abilities/Ability.php:672
+msgid "Run points expiry scan"
+msgstr "執行點數到期掃描"
+
+#: src/Modules/Abilities/Ability.php:673
+msgid "Run a one-off expiry sweep now (deduct and record points past expires_at). Destructive, irreversible."
+msgstr "立即執行一次到期點數清掃(把已過 expires_at 的點數扣除並記帳)。破壞性、不可逆。"
+
+#: src/Modules/Abilities/Ability.php:680
+msgid "Scan only one customer (omit = all customers)"
+msgstr "只掃某位顧客(不給 = 全部顧客)"
+
+#: src/Modules/Abilities/Ability.php:696
+msgid "Update points settings"
+msgstr "修改點數設定"
+
+#: src/Modules/Abilities/Ability.php:697
+msgid "Update one whitelisted store points setting (key + value). The value is sanitized / validated according to the setting's type (numeric clamped to range, yes/no, hex color, string) before saving. Destructive — non-whitelisted keys are always rejected; never accepts any security / MCP / cap settings."
+msgstr "修改一項白名單內的店家點數設定(key + value)。value 會依該設定型別 sanitize / validate(數值夾範圍、yes/no、hex 色碼、字串)後寫入。破壞性 —— 非白名單 key 一律拒絕;絕不接受任何安全 / MCP / cap 設定。"
+
+#: src/Modules/Abilities/Ability.php:704
+msgid "The setting key to update (must be whitelisted; use points/get-settings first to look up available keys)"
+msgstr "要修改的設定 key(必須在白名單內,可先用 points/get-settings 查可用 key)"
+
+#: src/Modules/Abilities/Ability.php:707
+msgid "New value (per the setting's type: number / yes|no / #rrggbb / string)"
+msgstr "新值(依該設定型別:數字 / yes|no / #rrggbb / 字串)"
+
+#: src/Modules/Abilities/Ability.php:968
+#: src/Modules/Abilities/Ability.php:1670
+#: src/Modules/MyAccount/Endpoint.php:570
+msgid "Manual adjustment"
+msgstr "人工調整"
+
+#: src/Modules/Abilities/Ability.php:972
+msgid "A valid user_id and a non-zero points value are required."
+msgstr "需提供有效的 user_id 與非零的點數。"
+
+#: src/Modules/Abilities/Ability.php:977
+msgid "This adjustment was already recorded (idempotent); it was not posted again."
+msgstr "此調整已記錄過(冪等),未重複入帳。"
+
+#. translators: 1: signed points, 2: user id, 3: new balance.
+#: src/Modules/Abilities/Ability.php:982
+#, php-format
+msgid "Adjusted %1$s point(s) for customer #%2$d; current balance is %3$s point(s)."
+msgstr "已為顧客 #%2$d 調整 %1$s 點,目前餘額 %3$s 點。"
+
+#: src/Modules/Abilities/Ability.php:1002
+msgid "user_id and redemption type are required."
+msgstr "需提供 user_id 與兌換類型。"
+
+#. translators: 1: reward kind, 2: remaining points.
+#: src/Modules/Abilities/Ability.php:1020
+#, php-format
+msgid "Redeemed \"%1$s\" for the customer; %2$s point(s) remaining."
+msgstr "已為顧客兌換「%1$s」,剩餘點數 %2$s 點。"
+
+#: src/Modules/Abilities/Ability.php:1041
+#: src/Modules/Abilities/Ability.php:1781
+msgid "A valid sender, a different recipient, and a positive points value are required."
+msgstr "必須提供有效的轉出者、不同的接收者,以及正數的點數。"
+
+#: src/Modules/Abilities/Ability.php:1045
+msgid "The points transfer module is not enabled."
+msgstr "點數轉移模組尚未啟用。"
+
+#. translators: 1: points, 2: sender id, 3: recipient id.
+#: src/Modules/Abilities/Ability.php:1054
+#, php-format
+msgid "Transferred %1$s point(s) from customer #%2$d to customer #%3$d."
+msgstr "已將 %1$s 點從顧客 #%2$d 轉給顧客 #%3$d。"
+
+#: src/Modules/Abilities/Ability.php:1073
+#: src/Modules/Abilities/Ability.php:1804
+msgid "Manual store-credit adjustment"
+msgstr "手動調整儲值金"
+
+#: src/Modules/Abilities/Ability.php:1076
+msgid "A valid user_id and a non-zero amount are required."
+msgstr "必須提供有效的 user_id 與不為零的金額。"
+
+#: src/Modules/Abilities/Ability.php:1087
+msgid "This store-credit adjustment was already recorded (idempotent)."
+msgstr "此儲值金調整已記錄過 (冪等),未重複入帳。"
+
+#. translators: 1: signed amount, 2: user id, 3: new store-credit balance.
+#: src/Modules/Abilities/Ability.php:1092
+#, php-format
+msgid "Adjusted store credit by %1$s for customer #%2$d; balance is now %3$s."
+msgstr "已為顧客 #%2$d 調整儲值金 %1$s,目前餘額 %3$s。"
+
+#: src/Modules/Abilities/Ability.php:1114
+msgid "A valid reward id is required."
+msgstr "必須提供有效的獎勵 id。"
+
+#: src/Modules/Abilities/Ability.php:1121
+msgid "The redemption catalog module is not available."
+msgstr "兌換型錄模組無法使用。"
+
+#: src/Modules/Abilities/Ability.php:1125
+msgid "Invalid reward kind (use coupon / cart_discount / product)."
+msgstr "獎勵種類無效 (請用 coupon / cart_discount / product)。"
+
+#: src/Modules/Abilities/Ability.php:1134
+msgid "A reward label is required."
+msgstr "必須提供獎勵名稱。"
+
+#. translators: 1: reward id, 2: label, 3: cost points.
+#: src/Modules/Abilities/Ability.php:1139
+#, php-format
+msgid "Saved reward #%1$d \"%2$s\" (cost %3$s point(s))."
+msgstr "已儲存獎勵 #%1$d「%2$s」(所需 %3$s 點)。"
+
+#: src/Modules/Abilities/Ability.php:1150
+#: src/Modules/Abilities/Ability.php:1856
+msgid "A valid order_id is required."
+msgstr "必須提供有效的 order_id。"
+
+#: src/Modules/Abilities/Ability.php:1152
+msgid "The refund / reversal module is not available."
+msgstr "退款 / 回收模組無法使用。"
+
+#. translators: %d: order id.
+#: src/Modules/Abilities/Ability.php:1157
+#, php-format
+msgid "Reversed the points earned on order #%d (idempotent; balance never goes below zero)."
+msgstr "已回收訂單 #%d 賺得的點數 (冪等;餘額絕不會低於零)。"
+
+#: src/Modules/Abilities/Ability.php:1177
+msgid "Ran a points expiry scan (expired, unused points were deducted and recorded)."
+msgstr "已執行一次點數到期掃描(已過期且未使用的點數已扣除並記帳)。"
+
+#: src/Modules/Abilities/Ability.php:1179
+msgid "The expiry scan component is not enabled (enable the points ledger module first)."
+msgstr "到期掃描元件未啟用(請先啟用點數帳本模組)。"
+
+#: src/Modules/Abilities/Ability.php:1205
+#: src/Modules/Abilities/Ability.php:1748
+msgid "This setting key cannot be modified (not whitelisted). Use points/get-settings to look up modifiable keys."
+msgstr "不允許修改這個設定 key(不在白名單內)。請用 points/get-settings 查可修改的 key。"
+
+#. translators: 1: setting label, 2: new value.
+#: src/Modules/Abilities/Ability.php:1224
+#, php-format
+msgid "Updated setting \"%1$s\" to: %2$s."
+msgstr "已更新設定「%1$s」為:%2$s。"
+
+#: src/Modules/Abilities/Ability.php:1253
+#: src/Settings/SettingsScreen.php:399
+msgid "Points per NT$1"
+msgstr "每 NT$1 給幾點"
+
+#: src/Modules/Abilities/Ability.php:1259
+#: src/Settings/SettingsScreen.php:402
+msgid "Points rounding method"
+msgstr "賺點進位方式"
+
+#: src/Modules/Abilities/Ability.php:1265
+#: src/Settings/SettingsScreen.php:411
+msgid "No points on sale items"
+msgstr "特價品不賺點"
+
+#: src/Modules/Abilities/Ability.php:1270
+#: src/Settings/SettingsScreen.php:412
+msgid "Earning base includes shipping"
+msgstr "賺點基底含運費"
+
+#: src/Modules/Abilities/Ability.php:1275
+#: src/Settings/SettingsScreen.php:413
+msgid "Earning base includes tax"
+msgstr "賺點基底含稅額"
+
+#: src/Modules/Abilities/Ability.php:1280
+#: src/Settings/SettingsScreen.php:414
+msgid "Per-order earning cap"
+msgstr "單筆賺點上限"
+
+#: src/Modules/Abilities/Ability.php:1286
+#: src/Settings/SettingsScreen.php:192
+msgid "Points validity (months)"
+msgstr "點數有效月數"
+
+#: src/Modules/Abilities/Ability.php:1292
+#: src/Settings/SettingsScreen.php:194
+msgid "Reminder days before expiry"
+msgstr "到期前提醒天數"
+
+#: src/Modules/Abilities/Ability.php:1299
+#: src/Settings/SettingsScreen.php:450
+msgid "Points per NT$1 redeemed"
+msgstr "幾點折 NT$1"
+
+#: src/Modules/Abilities/Ability.php:1305
+#: src/Settings/SettingsScreen.php:451
+msgid "Minimum redeemable points"
+msgstr "最低可用點數"
+
+#: src/Modules/Abilities/Ability.php:1311
+#: src/Settings/SettingsScreen.php:452
+msgid "Redemption increment (points)"
+msgstr "折抵級距(點)"
+
+#: src/Modules/Abilities/Ability.php:1317
+#: src/Settings/SettingsScreen.php:453
+msgid "Maximum cart discount %"
+msgstr "最多折購物車 %"
+
+#: src/Modules/Abilities/Ability.php:1324
+#: src/Settings/SettingsScreen.php:454
+msgid "Per-order redemption cap (NT$)"
+msgstr "單筆折抵上限(NT$)"
+
+#: src/Modules/Abilities/Ability.php:1331
+#: src/Settings/SettingsScreen.php:248
+msgid "Points unit name"
+msgstr "點數單位名稱"
+
+#: src/Modules/Abilities/Ability.php:1333
+#: src/Modules/PointsAdmin/Module.php:127
+#: src/Modules/PointsAdmin/Module.php:146
+msgid "point"
+msgstr "點"
+
+#: src/Modules/Abilities/Ability.php:1337
+#: src/Settings/SettingsScreen.php:183
+msgid "Email header background color"
+msgstr "信件標頭底色"
+
+#: src/Modules/Abilities/Ability.php:1343
+#: src/Settings/SettingsScreen.php:184
+msgid "Email header text"
+msgstr "信件標頭文字"
+
+#: src/Modules/Abilities/Ability.php:1349
+msgid "Product page message text color"
+msgstr "商品頁訊息文字色"
+
+#: src/Modules/Abilities/Ability.php:1355
+msgid "Product page message background color"
+msgstr "商品頁訊息底色"
+
+#: src/Modules/Abilities/Ability.php:1361
+msgid "Listing message text color"
+msgstr "列表訊息文字色"
+
+#: src/Modules/Abilities/Ability.php:1367
+msgid "Listing message background color"
+msgstr "列表訊息底色"
+
+#: src/Modules/Abilities/Ability.php:1373
+msgid "Cart message text color"
+msgstr "購物車訊息文字色"
+
+#: src/Modules/Abilities/Ability.php:1379
+msgid "Cart message background color"
+msgstr "購物車訊息底色"
+
+#: src/Modules/Abilities/Ability.php:1385
+msgid "My Account message text color"
+msgstr "會員中心訊息文字色"
+
+#: src/Modules/Abilities/Ability.php:1391
+msgid "My Account message background color"
+msgstr "會員中心訊息底色"
+
+#: src/Modules/Abilities/Ability.php:1413
+msgid "This setting requires a numeric value."
+msgstr "此設定需要一個數值。"
+
+#: src/Modules/Abilities/Ability.php:1437
+msgid "This setting requires a valid #rrggbb color code."
+msgstr "此設定需要一個有效的 #rrggbb 色碼。"
+
+#: src/Modules/Abilities/Ability.php:1441
+msgid "Invalid color format (must be #rgb or #rrggbb)."
+msgstr "色碼格式無效(需 #rgb 或 #rrggbb)。"
+
+#. translators: %s: comma-separated allowed values.
+#: src/Modules/Abilities/Ability.php:1453
+#, php-format
+msgid "This setting only accepts the following values: %s."
+msgstr "此設定只接受下列值:%s。"
+
+#: src/Modules/Abilities/Ability.php:1654
+msgid "You also manage a WooCommerce points & store-credit program. Read tools: get-balance and get-history (a customer's points / store-credit), list-rules and list-rewards (earn rules and the redemption catalog), points-report (issued / redeemed / expired / outstanding), get-settings (current whitelisted settings). Write tools (all \"proposed\" — the system shows the customer a confirmation card and only applies after they click Confirm, so never ask for confirmation yourself): adjust-points (add or deduct points for a customer, note optional), redeem-points (redeem a reward for a customer), expire-points (run a store-wide expiry sweep), update-setting (change ONE whitelisted setting — always call get-settings first to see the exact key and current value). Points are integers; identify a customer by user_id or email. Reply in the language the user writes in. Always finish with a text answer, never stop on a tool call."
+msgstr "你同時也在管理一套 WooCommerce 點數與儲值金計畫。唯讀工具:get-balance 與 get-history (顧客的點數 / 儲值金)、list-rules 與 list-rewards (賺點規則與兌換型錄)、points-report (已發出 / 已兌換 / 已過期 / 未兌換)、get-settings (目前白名單內的設定)。寫入工具 (全部都是「提案」—— 系統會顯示確認卡片給使用者,按下確認後才會實際執行,因此你自己絕對不要再詢問確認):adjust-points (為顧客增減點數,備註選填)、redeem-points (為顧客兌換獎勵)、expire-points (執行全站到期掃描)、update-setting (變更「一項」白名單內的設定 —— 請務必先呼叫 get-settings 確認正確的鍵值與目前的值)。點數為整數;可用 user_id 或電子郵件指定顧客。請以使用者所用的語言回覆。務必以文字回答作結,不要停在工具呼叫。"
+
+#: src/Modules/Abilities/Ability.php:1668
+msgid "A valid user_id (or email) and a non-zero points value are required."
+msgstr "必須提供有效的 user_id (或電子郵件) 與不為零的點數。"
+
+#. translators: 1: signed points, 2: user id, 3: current balance, 4: note.
+#: src/Modules/Abilities/Ability.php:1674
+#, php-format
+msgid "Adjust customer #%2$d by %1$s point(s) (current balance %3$s). Note: %4$s"
+msgstr "為顧客 #%2$d 調整 %1$s 點 (目前餘額 %3$s)。備註:%4$s"
+
+#: src/Modules/Abilities/Ability.php:1701
+msgid "A valid user_id (or email) and a redemption type are required."
+msgstr "必須提供有效的 user_id (或電子郵件) 與兌換類型。"
+
+#. translators: 1: reward kind, 2: user id, 3: current balance.
+#: src/Modules/Abilities/Ability.php:1706
+#, php-format
+msgid "Redeem \"%1$s\" for customer #%2$d (current balance %3$s point(s))."
+msgstr "為顧客 #%2$d 兌換「%1$s」(目前餘額 %3$s 點)。"
+
+#: src/Modules/Abilities/Ability.php:1730
+msgid "Run a store-wide points expiry sweep now: expired, unused points will be deducted and recorded in the ledger."
+msgstr "立即執行全站點數到期掃描:已過期且未使用的點數將被扣除並記入帳本。"
+
+#. translators: 1: setting label, 2: old value, 3: new value.
+#: src/Modules/Abilities/Ability.php:1756
+#, php-format
+msgid "Change setting \"%1$s\" from \"%2$s\" to \"%3$s\"."
+msgstr "將設定「%1$s」由「%2$s」變更為「%3$s」。"
+
+#. translators: 1: points, 2: sender id, 3: recipient id, 4: sender balance.
+#: src/Modules/Abilities/Ability.php:1785
+#, php-format
+msgid "Transfer %1$s point(s) from customer #%2$d (balance %4$s) to customer #%3$d."
+msgstr "將 %1$s 點從顧客 #%2$d (餘額 %4$s) 轉給顧客 #%3$d。"
+
+#: src/Modules/Abilities/Ability.php:1803
+msgid "A valid user_id (or email) and a non-zero amount are required."
+msgstr "必須提供有效的 user_id (或電子郵件) 與不為零的金額。"
+
+#. translators: 1: signed amount, 2: user id, 3: current balance, 4: note.
+#: src/Modules/Abilities/Ability.php:1808
+#, php-format
+msgid "Adjust store credit for customer #%2$d by %1$s (current balance %3$s). Note: %4$s"
+msgstr "為顧客 #%2$d 調整儲值金 %1$s (目前餘額 %3$s)。備註:%4$s"
+
+#. translators: %d: reward id.
+#: src/Modules/Abilities/Ability.php:1829
+#, php-format
+msgid "Update reward #%d."
+msgstr "更新獎勵 #%d。"
+
+#. translators: %s: new reward label.
+#: src/Modules/Abilities/Ability.php:1832
+#, php-format
+msgid "New label: %s."
+msgstr "新名稱:%s。"
+
+#. translators: %s: reward label.
+#: src/Modules/Abilities/Ability.php:1836
+#, php-format
+msgid "Create reward \"%s\"."
+msgstr "建立獎勵「%s」。"
+
+#. translators: %s: cost in points.
+#: src/Modules/Abilities/Ability.php:1839
+#, php-format
+msgid "Cost: %s point(s)."
+msgstr "所需點數:%s 點。"
+
+#. translators: %d: order id.
+#: src/Modules/Abilities/Ability.php:1858
+#, php-format
+msgid "Reverse the points earned on order #%d."
+msgstr "回收訂單 #%d 賺得的點數。"
+
+#: src/Modules/Abilities/Module.php:25
+msgid "Points Abilities (AI / MCP capabilities)"
+msgstr "點數 Abilities(AI / MCP 能力)"
+
+#: src/Modules/Abilities/Module.php:33
+msgid "Register points lookup / reporting / adjustment as WordPress Abilities for the command palette, REST and MCP"
+msgstr "把點數查詢 / 報表 / 調整登錄為 WordPress Abilities,供命令面板、REST 與 MCP 使用"
+
+#: src/Modules/AdminMenu/Dashboard.php:33
+msgid "Moksa Points management"
+msgstr "Moksa 點數管理"
+
+#: src/Modules/AdminMenu/Dashboard.php:34
+msgid "A central place to view the points circulation overview, manage the redemption catalog, and adjust settings."
+msgstr "在這裡集中查看點數流通概況、管理兌換型錄與調整設定。"
+
+#. translators: %s: the (customisable) points unit, e.g.「點」「金幣」.
+#: src/Modules/AdminMenu/Dashboard.php:45
+#, php-format
+msgid "Total %s issued"
+msgstr "累計發放%s數"
+
+#: src/Modules/AdminMenu/Dashboard.php:50
+msgid "Total redeemed / applied"
+msgstr "累計兌換 / 折抵"
+
+#. translators: %s: the (customisable) points unit, e.g.「點」「金幣」.
+#: src/Modules/AdminMenu/Dashboard.php:54
+#, php-format
+msgid "%s in circulation"
+msgstr "流通中%s數"
+
+#: src/Modules/AdminMenu/Dashboard.php:59
+msgid "Redemption items"
+msgstr "兌換項目數"
+
+#: src/Modules/AdminMenu/Dashboard.php:69
+#: src/Settings/SettingsScreen.php:109
+#: src/Settings/SettingsScreen.php:110
+msgid "Points settings"
+msgstr "點數設定"
+
+#: src/Modules/AdminMenu/Dashboard.php:70
+msgid "Enable / disable each points feature module."
+msgstr "啟用 / 關閉各項點數功能模組。"
+
+#: src/Modules/AdminMenu/Dashboard.php:74
+#: src/Modules/RewardAdmin/Module.php:34
+#: src/Modules/RewardAdmin/Module.php:71
+#: src/Modules/RewardAdmin/Module.php:72
+#: src/Modules/RewardAdmin/Screen.php:28
+msgid "Redemption catalog"
+msgstr "兌換型錄"
+
+#: src/Modules/AdminMenu/Dashboard.php:75
+msgid "Manage items redeemable with points (template, cost, stock, availability)."
+msgstr "管理可用點數兌換的項目(範本、成本、庫存、上下架)。"
+
+#: src/Modules/AdminMenu/Dashboard.php:79
+#: src/Modules/Campaign/Module.php:35
+#: src/Modules/Campaign/Module.php:99
+#: src/Modules/Campaign/Module.php:100
+#: src/Modules/Campaign/Screen.php:31
+#: src/Settings/SettingsScreen.php:144
+msgid "Marketing campaigns"
+msgstr "行銷活動"
+
+#: src/Modules/AdminMenu/Dashboard.php:80
+msgid "A platform-wide campaign hub: limited-time double points, commission multipliers, member discounts."
+msgstr "全平台共用的活動 hub:限時加倍點數、分潤倍率、會員折扣。"
+
+#: src/Modules/AdminMenu/Dashboard.php:122
+msgid "Set the purchase earning rate (points per NT$1)"
+msgstr "設定消費集點匯率(每 NT$1 得幾點)"
+
+#: src/Modules/AdminMenu/Dashboard.php:123
+msgid "Enable at least one earning method (purchase points / behavior rewards)"
+msgstr "開啟至少一種賺點方式(消費集點 / 行為獎勵)"
+
+#: src/Modules/AdminMenu/Dashboard.php:124
+msgid "Create a redemption item, or enable the My Account \"My points\" page"
+msgstr "建立兌換項目,或開啟會員中心「我的點數」頁"
+
+#: src/Modules/AdminMenu/Dashboard.php:130
+msgid "Start collecting points in three steps"
+msgstr "三步驟開始集點"
+
+#: src/Modules/AdminMenu/Dashboard.php:143
+msgid "Don't show again"
+msgstr "不再顯示"
+
+#: src/Modules/AdminMenu/Dashboard.php:158
+msgid "Points activity in the last 30 days"
+msgstr "近 30 天點數動態"
+
+#: src/Modules/AdminMenu/Dashboard.php:167
+msgid "Issued"
+msgstr "發放"
+
+#: src/Modules/AdminMenu/Dashboard.php:168
+msgid "Redeemed / applied"
+msgstr "兌換 / 折抵"
+
+#. translators: %s: the highest single-day value on the chart.
+#: src/Modules/AdminMenu/Dashboard.php:172
+#, php-format
+msgid "Daily peak %s"
+msgstr "單日最高 %s"
+
+#: src/Modules/AdminMenu/Dashboard.php:182
+msgid "Issuance sources breakdown (30 days)"
+msgstr "發放來源占比(30 天)"
+
+#: src/Modules/AdminMenu/Dashboard.php:184
+msgid "No issuance records in this period."
+msgstr "期間內沒有發放紀錄。"
+
+#: src/Modules/AdminMenu/Dashboard.php:200
+msgid "Top 10 balances"
+msgstr "Top 10 餘額"
+
+#: src/Modules/AdminMenu/Dashboard.php:202
+msgid "No balance data yet."
+msgstr "尚無餘額資料。"
+
+#: src/Modules/AdminMenu/Dashboard.php:387
+msgid "Liability and breakage forecast"
+msgstr "負債與耗損預測"
+
+#: src/Modules/AdminMenu/Dashboard.php:392
+msgid "Outstanding liability (NT$)"
+msgstr "未兌換負債 (NT$)"
+
+#: src/Modules/AdminMenu/Dashboard.php:396
+msgid "Expiring within 30 days"
+msgstr "30 天內到期"
+
+#: src/Modules/AdminMenu/Dashboard.php:400
+msgid "Redeemed of all issued"
+msgstr "已發出點數的兌換比例"
+
+#: src/Modules/AdminMenu/Dashboard.php:404
+msgid "Expired unused (breakage)"
+msgstr "過期未用 (耗損)"
+
+#: src/Modules/AdminMenu/Dashboard.php:421
+msgid "Entry reward"
+msgstr "入門獎勵"
+
+#: src/Modules/AdminMenu/Dashboard.php:422
+msgid "Core reward"
+msgstr "主力獎勵"
+
+#: src/Modules/AdminMenu/Dashboard.php:423
+msgid "Aspirational reward"
+msgstr "進階獎勵"
+
+#: src/Modules/AdminMenu/Dashboard.php:426
+msgid "Suggested reward"
+msgstr "建議獎勵"
+
+#: src/Modules/AdminMenu/Dashboard.php:426
+msgid "Price (points)"
+msgstr "定價 (點數)"
+
+#: src/Modules/AdminMenu/Dashboard.php:426
+msgid "Members within reach"
+msgstr "換得起的會員比例"
+
+#: src/Modules/AdminMenu/Dashboard.php:426
+msgid "Why"
+msgstr "理由"
+
+#: src/Modules/AdminMenu/Menu.php:39
+#: src/Modules/AdminMenu/Menu.php:40
+msgid "Dashboard"
+msgstr "儀表板"
+
+#: src/Modules/AdminMenu/Module.php:25
+msgid "Points management menu"
+msgstr "點數管理選單"
+
+#: src/Modules/AdminMenu/Module.php:33
+msgid "Move points management into a dedicated top-level menu \"Moksa Points\" (Settings / Redemption catalog)"
+msgstr "把點數管理收進獨立頂層選單「Moksa 點數」(設定 / 兌換型錄)"
+
+#: src/Modules/Badges/Module.php:35
+#: src/Settings/SettingsScreen.php:154
+msgid "Achievement badges"
+msgstr "成就徽章"
+
+#: src/Modules/Badges/Module.php:43
+msgid "Award a badge when cumulative earned points cross a threshold (Bronze / Silver / Gold, thresholds configurable); idempotent, no duplicate awards"
+msgstr "累計賺點跨越門檻時授予徽章(銅 / 銀 / 金,門檻可設),冪等不重複授予"
+
+#: src/Modules/Badges/Module.php:264
+msgid "Bronze"
+msgstr "銅牌"
+
+#: src/Modules/Badges/Module.php:269
+#: src/Support/Tiers.php:274
+msgid "Silver"
+msgstr "銀牌"
+
+#: src/Modules/Badges/Module.php:274
+#: src/Support/Tiers.php:279
+msgid "Gold"
+msgstr "金牌"
+
+#: src/Modules/Blocks/Module.php:32
+#: src/Settings/SettingsScreen.php:156
+msgid "Editor blocks"
+msgstr "編輯器區塊"
+
+#: src/Modules/Blocks/Module.php:40
+msgid "Place the points balance, tier, quests, how-to-earn guide, leaderboard and redemption mall from the block editor instead of typing shortcodes"
+msgstr "不必記短碼,直接從區塊編輯器放入點數餘額、會員階梯、任務、如何賺點指南、排行榜與兌換商城"
+
+#: src/Modules/Blocks/Module.php:57
+msgid "Points balance"
+msgstr "點數餘額"
+
+#: src/Modules/Blocks/Module.php:58
+msgid "The logged-in member's current points balance."
+msgstr "已登入會員目前的點數餘額。"
+
+#: src/Modules/Blocks/Module.php:62
+msgid "Member tier"
+msgstr "會員階梯"
+
+#: src/Modules/Blocks/Module.php:63
+msgid "The member's current tier and how far the next one is."
+msgstr "會員目前的階梯,以及距離下一階還差多少。"
+
+#: src/Modules/Blocks/Module.php:67
+#: src/Settings/SettingsScreen.php:172
+msgid "Quests"
+msgstr "任務"
+
+#: src/Modules/Blocks/Module.php:68
+msgid "The member's quest board with progress."
+msgstr "會員的任務板與進度。"
+
+#: src/Modules/Blocks/Module.php:72
+#: src/Modules/Engage/HowToEarn.php:194
+msgid "How to earn points"
+msgstr "如何賺點"
+
+#: src/Modules/Blocks/Module.php:73
+msgid "A guide assembled from the earning features you have switched on."
+msgstr "依你已啟用的賺點功能自動組成的指南。"
+
+#: src/Modules/Blocks/Module.php:77
+#: src/Modules/Leaderboard/Module.php:33
+#: src/Modules/Leaderboard/Module.php:314
+#: src/Settings/SettingsScreen.php:152
+msgid "Points leaderboard"
+msgstr "點數排行榜"
+
+#: src/Modules/Blocks/Module.php:78
+msgid "The top members by total points earned."
+msgstr "依累計賺得點數排名最前的會員。"
+
+#: src/Modules/Blocks/Module.php:82
+msgid "Redemption mall"
+msgstr "兌換商城"
+
+#: src/Modules/Blocks/Module.php:83
+msgid "The catalogue of items members can redeem with points."
+msgstr "會員可用點數兌換的項目型錄。"
+
+#: src/Modules/BuyWithPoints/Module.php:29
+msgid "Buy products with points only"
+msgstr "純點數購買商品"
+
+#: src/Modules/BuyWithPoints/Module.php:37
+msgid "Offer \"Redeem the whole item for X points\" on the product page (creates an NT$0 order). Set a points price per product; deducting points uses a per-user lock to prevent concurrent double-spend."
+msgstr "在商品頁提供「用 X 點兌換整件商品」(建 NT$0 訂單)。每商品設定點數售價;扣點加每使用者鎖防並發雙花。"
+
+#: src/Modules/BuyWithPoints/Module.php:60
+msgid "Points price (points-only purchase)"
+msgstr "點數售價(純點數購買)"
+
+#: src/Modules/BuyWithPoints/Module.php:61
+msgid "Once set, members can redeem the whole item on the product page for this many points (creates an NT$0 order). Leave empty / 0 = points-only purchase not available. Requires the \"Buy products with points only\" module to be enabled."
+msgstr "設定後,會員可在商品頁用這麼多點數兌換整件商品(建 NT$0 訂單)。留空 / 0 = 不開放純點數購買。需啟用「純點數購買商品」模組。"
+
+#. translators: %s: points cost.
+#: src/Modules/BuyWithPoints/Module.php:104
+#, php-format
+msgid "Redeem the whole item for %s points"
+msgstr "用 %s 點兌換整件商品"
+
+#: src/Modules/BuyWithPoints/Module.php:108
+#: src/Modules/MyAccount/Mall.php:107
+msgid "Please log in first"
+msgstr "請先登入"
+
+#. translators: %s: current points.
+#. translators: %s: points balance.
+#: src/Modules/BuyWithPoints/Module.php:115
+#: src/Modules/Transfer/Module.php:120
+#, php-format
+msgid "You currently have %s point(s)"
+msgstr "您目前有 %s 點"
+
+#. translators: %d: points spent.
+#: src/Modules/BuyWithPoints/Module.php:166
+#, php-format
+msgid "Redemption successful! Deducted %d point(s) and created an order."
+msgstr "兌換成功!已扣 %d 點並建立訂單。"
+
+#: src/Modules/BuyWithPoints/Service.php:53
+msgid "Points-only purchase is not enabled."
+msgstr "純點數購買功能未啟用。"
+
+#: src/Modules/BuyWithPoints/Service.php:56
+#: src/Modules/MyAccount/RedeemCode.php:54
+#: src/Modules/Redeem/Service.php:29
+msgid "Please log in before redeeming."
+msgstr "請先登入再兌換。"
+
+#: src/Modules/BuyWithPoints/Service.php:60
+msgid "This product cannot be redeemed with points."
+msgstr "此商品無法用點數兌換。"
+
+#: src/Modules/BuyWithPoints/Service.php:63
+msgid "Redemption service is not ready."
+msgstr "兌換服務未就緒。"
+
+#: src/Modules/BuyWithPoints/Service.php:70
+#: src/Modules/Redeem/Service.php:56
+#: src/Modules/Transfer/Service.php:131
+msgid "Insufficient points."
+msgstr "點數不足。"
+
+#. translators: %d: product id.
+#: src/Modules/BuyWithPoints/Service.php:83
+#, php-format
+msgid "Points-only purchase #%d"
+msgstr "純點數購買商品 #%d"
+
+#: src/Modules/BuyWithPoints/Service.php:88
+#: src/Modules/Redeem/Service.php:89
+msgid "Failed to deduct points, please try again later."
+msgstr "扣點失敗,請稍後再試。"
+
+#: src/Modules/BuyWithPoints/Service.php:92
+msgid "Points-only redemption, NT$0, not a sales transaction; handle invoices / tax per points-redemption rules."
+msgstr "純點數兌換,NT$0,非銷售交易,發票 / 稅務請依點數兌換規定處理。"
+
+#: src/Modules/BuyWithPoints/Service.php:101
+#: src/Modules/Redeem/Service.php:100
+msgid "Redemption failed, points have been refunded."
+msgstr "兌換失敗,點數已退回。"
+
+#: src/Modules/Campaign/Module.php:43
+msgid "A platform-wide campaign hub: limited-time points multiplier / commission multiplier / member discount (other plugins read the same campaign)"
+msgstr "全平台共用的活動 hub:限時加倍點數 / 分潤倍率 / 會員折扣(其他外掛讀同一個活動)"
+
+#. translators: 1: campaign name, 2: points multiplier (e.g. 2).
+#: src/Modules/Campaign/Module.php:139
+#, php-format
+msgid "🔥 %1$s points at %2$s×"
+msgstr "🔥 %1$s 點數 %2$s 倍中"
+
+#. translators: %s: campaign name.
+#: src/Modules/Campaign/Module.php:146
+#, php-format
+msgid "🔥 %s campaign in progress"
+msgstr "🔥 %s 活動進行中"
+
+#: src/Modules/Campaign/Screen.php:34
+#: src/Modules/RewardAdmin/Screen.php:31
+msgid "Back to list"
+msgstr "回到列表"
+
+#: src/Modules/Campaign/Screen.php:36
+#: src/Modules/Campaign/Screen.php:162
+msgid "Add campaign"
+msgstr "新增活動"
+
+#: src/Modules/Campaign/Screen.php:61
+msgid "Campaign saved."
+msgstr "活動已儲存。"
+
+#: src/Modules/Campaign/Screen.php:62
+msgid "Campaign deleted."
+msgstr "活動已刪除。"
+
+#: src/Modules/Campaign/Screen.php:63
+msgid "Enabled status updated."
+msgstr "啟用狀態已更新。"
+
+#: src/Modules/Campaign/Screen.php:78
+#: src/Modules/RewardAdmin/Screen.php:73
+#: src/Modules/RewardAdmin/Screen.php:184
+msgid "Name"
+msgstr "名稱"
+
+#: src/Modules/Campaign/Screen.php:79
+msgid "Start / end time"
+msgstr "起訖時間"
+
+#: src/Modules/Campaign/Screen.php:80
+#: src/Modules/Campaign/Screen.php:194
+msgid "Points multiplier"
+msgstr "點數倍率"
+
+#: src/Modules/Campaign/Screen.php:81
+#: src/Modules/Campaign/Screen.php:200
+msgid "Commission multiplier"
+msgstr "分潤倍率"
+
+#: src/Modules/Campaign/Screen.php:82
+msgid "Member discount"
+msgstr "會員折扣"
+
+#: src/Modules/Campaign/Screen.php:83
+#: src/Modules/RewardAdmin/Screen.php:78
+msgid "Status"
+msgstr "狀態"
+
+#: src/Modules/Campaign/Screen.php:84
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Modules/RewardAdmin/Screen.php:79
+msgid "Actions"
+msgstr "操作"
+
+#: src/Modules/Campaign/Screen.php:88
+msgid "No campaigns yet. Click \"Add campaign\" above to get started."
+msgstr "尚無活動,點上方「新增活動」開始建立。"
+
+#: src/Modules/Campaign/Screen.php:122
+msgid "In progress"
+msgstr "進行中"
+
+#: src/Modules/Campaign/Screen.php:124
+#: src/Settings/SettingsScreen.php:1393
+msgid "Enabled"
+msgstr "已啟用"
+
+#: src/Modules/Campaign/Screen.php:126
+#: src/Modules/Campaign/Screen.php:131
+msgid "Disabled"
+msgstr "停用"
+
+#: src/Modules/Campaign/Screen.php:130
+#: src/Modules/RewardAdmin/Screen.php:140
+msgid "Edit"
+msgstr "編輯"
+
+#: src/Modules/Campaign/Screen.php:131
+#: src/Modules/Campaign/Screen.php:212
+msgid "Enable"
+msgstr "啟用"
+
+#: src/Modules/Campaign/Screen.php:132
+msgid "Are you sure you want to delete this campaign?"
+msgstr "確定要刪除這個活動嗎?"
+
+#: src/Modules/Campaign/Screen.php:132
+#: src/Modules/RewardAdmin/Screen.php:142
+msgid "Delete"
+msgstr "刪除"
+
+#: src/Modules/Campaign/Screen.php:140
+msgid "If multiple campaigns are running at the same time, the system uses the one that ends earliest as the active public campaign. The points multiplier compounds into earning (up to 10×); the commission multiplier and member discount are read and applied by other plugins (affiliate / member)."
+msgstr "同一時間若有多個活動進行中,系統取「最早結束」的那個作為對外的進行中活動。點數倍率會疊乘進賺點(上限 10 倍);分潤倍率與會員折扣供其他外掛(分潤 / 會員)讀取套用。"
+
+#: src/Modules/Campaign/Screen.php:162
+msgid "Edit campaign"
+msgstr "編輯活動"
+
+#: src/Modules/Campaign/Screen.php:174
+msgid "Campaign name"
+msgstr "活動名稱"
+
+#: src/Modules/Campaign/Screen.php:176
+msgid "The campaign name shown on the store badge and in the admin list, e.g. \"11.11 Triple Points\"."
+msgstr "顯示在商店徽章與後台列表的活動名稱,例如「雙11 點數三倍」。"
+
+#: src/Modules/Campaign/Screen.php:180
+msgid "Start time"
+msgstr "開始時間"
+
+#: src/Modules/Campaign/Screen.php:182
+msgid "Leave blank for no start limit."
+msgstr "留空表示不限制開始時間。"
+
+#: src/Modules/Campaign/Screen.php:186
+msgid "End time"
+msgstr "結束時間"
+
+#: src/Modules/Campaign/Screen.php:188
+msgid "The campaign is only active between the start and end times; with a repeat schedule these two act as the overall validity range. Leave blank for no limit."
+msgstr "活動僅在開始與結束時間之間生效;若設定了重複排程,這兩個時間就是整體有效範圍。留空表示不限制。"
+
+#: src/Modules/Campaign/Screen.php:196
+msgid "During the campaign, earning is multiplied by this factor (1 = no boost, max 10)."
+msgstr "活動期間賺點乘上此倍率(1 = 不加倍,上限 10)。"
+
+#: src/Modules/Campaign/Screen.php:202
+msgid "The commission multiplier read by the affiliate plugin (moforaffiliate) (1 = no boost, max 10)."
+msgstr "提供給分潤外掛(moforaffiliate)讀取的佣金倍率(1 = 不加倍,上限 10)。"
+
+#: src/Modules/Campaign/Screen.php:206
+msgid "Member discount %"
+msgstr "會員折扣 %"
+
+#: src/Modules/Campaign/Screen.php:208
+msgid "The extra campaign discount percentage read by the member plugin (moformember) (0–90)."
+msgstr "提供給會員外掛(moformember)讀取的活動加碼折扣百分比(0–90)。"
+
+#: src/Modules/Campaign/Screen.php:213
+msgid "Enable this campaign (still only active within the start and end times)"
+msgstr "啟用此活動(仍需落在起訖時間內才會生效)"
+
+#: src/Modules/Campaign/Screen.php:218
+#: src/Modules/RewardAdmin/Screen.php:278
+msgid "Save"
+msgstr "儲存"
+
+#: src/Modules/Campaign/Screen.php:219
+#: src/Modules/RewardAdmin/Screen.php:279
+msgid "Cancel"
+msgstr "取消"
+
+#: src/Modules/Campaign/Screen.php:234
+msgid "Repeat schedule"
+msgstr "重複排程"
+
+#: src/Modules/Campaign/Screen.php:237
+msgid "Do not repeat (a single window)"
+msgstr "不重複 (單一時段)"
+
+#: src/Modules/Campaign/Screen.php:238
+msgid "Weekly (e.g. double points every weekend)"
+msgstr "每週 (例如每逢週末雙倍點數)"
+
+#: src/Modules/Campaign/Screen.php:239
+msgid "Monthly (e.g. bonus day on the 5th of every month)"
+msgstr "每月 (例如每月 5 號紅利日)"
+
+#: src/Modules/Campaign/Screen.php:240
+msgid "Yearly (e.g. an anniversary sale)"
+msgstr "每年 (例如週年慶)"
+
+#: src/Modules/Campaign/Screen.php:246
+msgid "A repeating campaign is only live on the days you pick below, within the daily time window."
+msgstr "重複性活動只在下方所選的日子、且落在每日時段內時才會生效。"
+
+#: src/Modules/Campaign/Screen.php:251
+msgid "Repeat on these weekdays"
+msgstr "在這些星期重複"
+
+#: src/Modules/Campaign/Screen.php:261
+msgid "Repeat on these days of the month"
+msgstr "在每月的這些日期重複"
+
+#: src/Modules/Campaign/Screen.php:263
+msgid "Comma-separated, 1–31. A day later than the month is long runs on the last day of that month instead (31 → 30 / 28)."
+msgstr "以逗號分隔,1–31。若日期超過該月天數,會改在該月最後一天執行 (31 → 30 / 28)。"
+
+#: src/Modules/Campaign/Screen.php:268
+msgid "Repeat on these dates each year"
+msgstr "在每年的這些日期重複"
+
+#: src/Modules/Campaign/Screen.php:270
+msgid "Comma-separated MM-DD dates, e.g. 11-11,12-25."
+msgstr "以逗號分隔的 MM-DD 日期,例如 11-11,12-25。"
+
+#: src/Modules/Campaign/Screen.php:274
+msgid "Daily time window"
+msgstr "每日時段"
+
+#: src/Modules/Campaign/Screen.php:277
+msgid "Leave both blank for the whole day. Times are the site timezone, e.g. 20:00–23:59 for an evening flash sale."
+msgstr "兩欄都留空表示整天。時間以網站時區為準,例如晚間快閃可設 20:00–23:59。"
+
+#: src/Modules/Campaign/Screen.php:418
+#: src/Modules/Campaign/Screen.php:419
+#: src/Modules/RewardAdmin/Screen.php:131
+msgid "No limit"
+msgstr "不限"
+
+#: src/Modules/Campaign/Screen.php:436
+msgid "Repeats, but no days selected yet (not running)"
+msgstr "已設為重複,但尚未選擇任何日子 (不會生效)"
+
+#. translators: %s: comma-separated weekday names.
+#: src/Modules/Campaign/Screen.php:445
+#, php-format
+msgid "Every week on %s"
+msgstr "每週 %s"
+
+#. translators: %s: comma-separated days of the month.
+#: src/Modules/Campaign/Screen.php:448
+#, php-format
+msgid "Every month on day %s"
+msgstr "每月 %s 號"
+
+#. translators: %s: comma-separated MM-DD dates.
+#: src/Modules/Campaign/Screen.php:451
+#, php-format
+msgid "Every year on %s"
+msgstr "每年 %s"
+
+#: src/Modules/Cashback/Module.php:32
+#: src/Settings/SettingsScreen.php:224
+msgid "Purchase cashback (store credit)"
+msgstr "消費回饋(儲值金)"
+
+#: src/Modules/Cashback/Module.php:40
+msgid "After an order is paid, give back a fixed % of the amount as customer store credit (usable at checkout); refunds reverse it proportionally."
+msgstr "訂單付款後回饋一定 % 的金額為顧客儲值金(可結帳折抵);退款按比例反向。"
+
+#: src/Modules/Cashback/Module.php:127
+msgid "Purchase cashback store credit"
+msgstr "消費回饋儲值金"
+
+#: src/Modules/Cashback/Module.php:159
+msgid "Purchase cashback store credit reversal"
+msgstr "消費回饋儲值金退回"
+
+#: src/Modules/CategoryPoints/Module.php:28
+#: src/Settings/SettingsScreen.php:222
+msgid "Per-category earning multiplier"
+msgstr "逐分類賺點倍率"
+
+#: src/Modules/CategoryPoints/Module.php:36
+msgid "Set \"this category's points multiplier\" on a product category (default 1); applied per line item when earning, taking the maximum across multiple categories"
+msgstr "在商品分類設「此分類點數倍率」(預設 1),賺點時逐行套用、多分類取最大"
+
+#: src/Modules/CategoryPoints/Module.php:51
+#: src/Modules/CategoryPoints/Module.php:77
+msgid "This category's points multiplier"
+msgstr "此分類點數倍率"
+
+#. translators: %s: maximum allowed multiplier.
+#: src/Modules/CategoryPoints/Module.php:58
+#: src/Modules/CategoryPoints/Module.php:85
+#, php-format
+msgid "This category's product earning multiplier (default 1, i.e. no boost). Each earning line is multiplied by this factor, up to %s×. When a product belongs to multiple categories, the maximum multiplier is used."
+msgstr "此分類商品賺點倍率(預設 1,即不加成)。每行賺點乘以此倍率,上限 %s 倍。商品屬於多個分類時取最大倍率。"
+
+#: src/Modules/CheckoutRedeem/Module.php:38
+#: src/Modules/CheckoutRedeem/Module.php:515
+msgid "Checkout points redemption"
+msgstr "結帳點數折抵"
+
+#: src/Modules/CheckoutRedeem/Module.php:46
+msgid "Redeem points for an amount at cart / checkout (clamped by min/step/balance/cap; idempotent deduction on order, refunded on refund)"
+msgstr "購物車 / 結帳時用點數折抵金額(min/step/餘額/上限夾住,下單冪等扣點、退款回補)"
+
+#: src/Modules/CheckoutRedeem/Module.php:283
+#: src/Modules/MyAccount/Endpoint.php:297
+#: src/Modules/Redeem/Module.php:23
+#: src/Settings/SettingsScreen.php:236
+msgid "Points redemption"
+msgstr "點數折抵"
+
+#: src/Modules/CheckoutRedeem/Module.php:304
+msgid "Use points redemption"
+msgstr "使用點數折抵"
+
+#. translators: 1: points balance, 2: redeem rate (points per NT$1).
+#: src/Modules/CheckoutRedeem/Module.php:309
+#, php-format
+msgid "You have %1$s point(s) (every %2$s point(s) is worth NT$1)."
+msgstr "您有 %1$s 點(每 %2$s 點可折 NT$1)。"
+
+#. translators: %s: max discount amount, formatted as currency.
+#. translators: %s: max discount amount.
+#: src/Modules/CheckoutRedeem/Module.php:317
+#: src/Modules/Wallet/Module.php:192
+#, php-format
+msgid "Maximum redeemable this time: %s"
+msgstr "本次最多可折抵:%s"
+
+#. translators: 1: points used, 2: discount amount.
+#: src/Modules/CheckoutRedeem/Module.php:326
+#, php-format
+msgid "Used %1$s point(s), redeemed %2$s."
+msgstr "已使用 %1$s 點,折抵 %2$s。"
+
+#: src/Modules/CheckoutRedeem/Module.php:333
+msgid "Remove points redemption"
+msgstr "移除點數折抵"
+
+#: src/Modules/CheckoutRedeem/Module.php:336
+msgid "Points to use"
+msgstr "要使用的點數"
+
+#: src/Modules/CheckoutRedeem/Module.php:342
+#: src/Modules/PointsAdmin/Module.php:150
+#: src/Modules/Wallet/Module.php:216
+msgid "Apply"
+msgstr "套用"
+
+#. translators: 1: minimum points, 2: step.
+#: src/Modules/CheckoutRedeem/Module.php:347
+#, php-format
+msgid "Minimum %1$s point(s), in increments of %2$s point(s)."
+msgstr "最低 %1$s 點起,以 %2$s 點為單位。"
+
+#. translators: %1$s: points used; %2$s: NT$ amount discounted.
+#: src/Modules/CheckoutRedeem/Module.php:399
+#, php-format
+msgid "Used %1$s point(s), redeemed NT$%2$s."
+msgstr "已使用 %1$s 點,折抵 NT$%2$s。"
+
+#: src/Modules/CheckoutRedeem/Module.php:410
+#: src/Modules/CheckoutRedeem/Module.php:432
+#: src/Modules/EarnTriggers/Module.php:209
+#: src/Modules/Engage/Share.php:59
+#: src/Modules/Transfer/Service.php:99
+#: src/Modules/Wallet/Module.php:273
+#: src/Modules/Wallet/Module.php:290
+msgid "Please log in first."
+msgstr "請先登入。"
+
+#: src/Modules/CheckoutRedeem/Module.php:415
+msgid "Insufficient points or usage threshold not met."
+msgstr "點數不足或未達使用門檻。"
+
+#: src/Modules/CheckoutRedeem/Module.php:551
+msgid "Checkout points redemption reversal"
+msgstr "結帳點數折抵退回"
+
+#: src/Modules/Display/Frontend.php:146
+#: src/Modules/Display/Frontend.php:147
+msgid "Estimated earning"
+msgstr "預估賺點"
+
+#: src/Modules/Display/Frontend.php:210
+#: src/Settings/SettingsScreen.php:315
+msgid "Earn {points} {points_label} on this purchase"
+msgstr "購買可得 {points} {points_label}"
+
+#: src/Modules/Display/Frontend.php:215
+#: src/Settings/SettingsScreen.php:346
+msgid "This purchase earns about {points} {points_label}"
+msgstr "本次消費可得約 {points} {points_label}"
+
+#: src/Modules/EarnOnCoupon/Module.php:29
+#: src/Modules/EarnOnCoupon/Module.php:71
+#: src/Modules/MyAccount/Endpoint.php:566
+msgid "Add points on coupon use"
+msgstr "用券加點"
+
+#: src/Modules/EarnOnCoupon/Module.php:37
+msgid "Add points when a customer uses a coupon (listens to moforcoupon's coupon_redeemed event)"
+msgstr "顧客使用優惠券時加點(聽 moforcoupon 的 coupon_redeemed 事件)"
+
+#: src/Modules/EarnTriggers/Module.php:27
+msgid "Earning triggers (registration / review / first-purchase gift)"
+msgstr "賺點觸發(註冊 / 評論 / 首購禮)"
+
+#: src/Modules/EarnTriggers/Module.php:35
+msgid "Points for registering, a reward for approved product reviews, and a first-purchase gift (each amount configurable, 0 = off)"
+msgstr "註冊送點、通過的商品評論回饋、首次消費禮(各自金額可設,0 = 關閉)"
+
+#: src/Modules/EarnTriggers/Module.php:69
+msgid "Registration gift"
+msgstr "註冊禮"
+
+#. translators: %s: reviewed product title.
+#: src/Modules/EarnTriggers/Module.php:121
+#, php-format
+msgid "Product review reward: %s"
+msgstr "商品評論回饋:%s"
+
+#: src/Modules/EarnTriggers/Module.php:161
+msgid "First-purchase gift"
+msgstr "首次消費禮"
+
+#: src/Modules/EarnTriggers/Module.php:174
+msgid "Please log in to check in daily and earn points."
+msgstr "請先登入即可每日簽到領點。"
+
+#. translators: %s: check-in bonus points.
+#: src/Modules/EarnTriggers/Module.php:185
+#, php-format
+msgid "Check in daily to earn %s point(s)"
+msgstr "每日簽到領 %s 點"
+
+#: src/Modules/EarnTriggers/Module.php:190
+msgid "Already checked in today, come back tomorrow!"
+msgstr "今日已簽到,明天再來!"
+
+#: src/Modules/EarnTriggers/Module.php:212
+msgid "Daily check-in is not enabled."
+msgstr "每日簽到未啟用。"
+
+#: src/Modules/EarnTriggers/Module.php:215
+msgid "You have already checked in today."
+msgstr "今天已經簽到過了。"
+
+#: src/Modules/EarnTriggers/Module.php:223
+#: src/Modules/Engage/HowToEarn.php:80
+#: src/Modules/Quests/Quests.php:52
+msgid "Daily check-in"
+msgstr "每日簽到"
+
+#: src/Modules/EarnTriggers/Module.php:227
+msgid "Check-in successful! Come back tomorrow."
+msgstr "簽到成功!明天再來。"
+
+#: src/Modules/EarnTriggers/Module.php:254
+#: src/Modules/Engage/HowToEarn.php:94
+msgid "Birthday gift"
+msgstr "生日賀禮"
+
+#: src/Modules/EarnTriggers/Module.php:295
+msgid "Membership anniversary gift"
+msgstr "入會週年禮"
+
+#: src/Modules/EmailNotices/Module.php:40
+#: src/Settings/SettingsScreen.php:240
+msgid "Event-based notification emails"
+msgstr "事件式通知信"
+
+#: src/Modules/EmailNotices/Module.php:48
+msgid "Custom notification emails triggered by earning / redemption events (configure recipients, amount thresholds, throttling). Placeholders: {points} {balance} {note} {name} {site}."
+msgstr "賺點 / 兌點事件觸發自訂通知信(可設收件人、金額門檻、節流)。佔位符 {points} {balance} {note} {name} {site}。"
+
+#: src/Modules/EmailNotices/Module.php:185
+msgid "You have used {points} points"
+msgstr "您已使用 {points} 點"
+
+#: src/Modules/EmailNotices/Module.php:186
+msgid "You earned {points} points"
+msgstr "您獲得了 {points} 點"
+
+#: src/Modules/EmailNotices/Module.php:194
+msgid "Hi {name},\\nYou just used {points} points and now have {balance} points left.\\nThank you for your support!"
+msgstr "{name} 您好,\\n您剛使用了 {points} 點,目前剩餘 {balance} 點。\\n感謝您的支持!"
+
+#: src/Modules/EmailNotices/Module.php:195
+msgid "Hi {name},\\nYou just earned {points} points ({note}) and now have {balance} points total.\\nThank you for your support!"
+msgstr "{name} 您好,\\n您剛獲得 {points} 點({note}),目前累積 {balance} 點。\\n感謝您的支持!"
+
+#. translators: 1: points earned per NT$1 spent; 2: the points unit, e.g.「點」.
+#: src/Modules/Engage/HowToEarn.php:40
+#, php-format
+msgid "Every NT$1 you spend earns %1$s %2$s, credited once the order is paid."
+msgstr "每消費 NT$1 可得 %1$s %2$s,訂單付款後入帳。"
+
+#. translators: %s: maximum points earnable from a single order (with unit).
+#: src/Modules/Engage/HowToEarn.php:48
+#, php-format
+msgid "Up to %s per order."
+msgstr "每張訂單最多 %s。"
+
+#: src/Modules/Engage/HowToEarn.php:54
+msgid "Earn on every purchase"
+msgstr "每筆消費都能賺點"
+
+#: src/Modules/Engage/HowToEarn.php:66
+msgid "Sign-up bonus"
+msgstr "註冊禮"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:68
+#, php-format
+msgid "Get %s just for creating an account."
+msgstr "只要註冊帳號就能獲得 %s。"
+
+#: src/Modules/Engage/HowToEarn.php:73
+msgid "First-order bonus"
+msgstr "首購禮"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:75
+#, php-format
+msgid "Get an extra %s on your first paid order."
+msgstr "首次付款訂單額外獲得 %s。"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:82
+#, php-format
+msgid "Check in once a day for %s."
+msgstr "每日簽到一次可得 %s。"
+
+#: src/Modules/Engage/HowToEarn.php:87
+msgid "Write a review"
+msgstr "撰寫評價"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:89
+#, php-format
+msgid "Get %s for an approved product review."
+msgstr "商品評價通過審核可得 %s。"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:96
+#, php-format
+msgid "Get %s in your birthday month."
+msgstr "生日當月可得 %s。"
+
+#: src/Modules/Engage/HowToEarn.php:101
+msgid "Membership anniversary"
+msgstr "入會週年"
+
+#. translators: %s: a points amount with its unit, e.g.「100 點」.
+#: src/Modules/Engage/HowToEarn.php:103
+#, php-format
+msgid "Get %s each year you stay a member."
+msgstr "每滿一年會員可得 %s。"
+
+#. translators: %s: points the referrer receives (with unit).
+#: src/Modules/Engage/HowToEarn.php:130
+#, php-format
+msgid "You get %s when a friend you invited completes a qualifying order."
+msgstr "你邀請的好友完成符合資格的訂單時,你可得 %s。"
+
+#. translators: %s: points the invited friend receives (with unit).
+#: src/Modules/Engage/HowToEarn.php:137
+#, php-format
+msgid "Your friend gets %s too."
+msgstr "你的好友也能獲得 %s。"
+
+#: src/Modules/Engage/HowToEarn.php:143
+msgid "Invite a friend"
+msgstr "邀請好友"
+
+#: src/Modules/Engage/HowToEarn.php:153
+msgid "Bonus-point products"
+msgstr "加碼點數商品"
+
+#: src/Modules/Engage/HowToEarn.php:154
+msgid "Selected products and categories earn extra points — look for the earning hint on the product page."
+msgstr "部分商品與分類可獲得額外點數 —— 請留意商品頁上的賺點提示。"
+
+#. translators: %s: the points multiplier currently running, e.g. "2".
+#: src/Modules/Engage/HowToEarn.php:167
+#, php-format
+msgid "Running now: earn %s× points on every purchase."
+msgstr "進行中:每筆消費點數 %s 倍。"
+
+#: src/Modules/Engage/Module.php:36
+#: src/Settings/SettingsScreen.php:294
+#: src/Settings/SettingsScreen.php:297
+msgid "Storefront engagement polish"
+msgstr "前台互動打磨"
+
+#: src/Modules/Engage/Module.php:44
+msgid "A \"how to earn points\" guide, an earned-points toast after checkout, and a shareable achievement card"
+msgstr "「如何賺點」指南、結帳後的賺點提示,以及可分享的成就卡"
+
+#: src/Modules/Engage/Share.php:64
+msgid "Sharing does not earn points right now."
+msgstr "目前分享不會獲得點數。"
+
+#: src/Modules/Engage/Share.php:69
+msgid "Unknown share channel."
+msgstr "未知的分享管道。"
+
+#: src/Modules/Engage/Share.php:78
+#: src/Settings/SettingsScreen.php:300
+msgid "Sharing bonus"
+msgstr "分享獎勵"
+
+#: src/Modules/Engage/Share.php:82
+msgid "You have already claimed the bonus for this channel."
+msgstr "你已領取過這個管道的獎勵。"
+
+#. translators: %s: the points just earned, with unit.
+#: src/Modules/Engage/Share.php:89
+#, php-format
+msgid "Thanks for sharing! You earned %s."
+msgstr "感謝分享!你獲得了 %s。"
+
+#: src/Modules/Engage/Share.php:123
+msgid "Share my achievement"
+msgstr "分享我的成就"
+
+#: src/Modules/Engage/Share.php:131
+msgid "Share on LINE"
+msgstr "分享到 LINE"
+
+#: src/Modules/Engage/Share.php:137
+msgid "Share on Facebook"
+msgstr "分享到 Facebook"
+
+#: src/Modules/Engage/Share.php:142
+msgid "Copied"
+msgstr "已複製"
+
+#: src/Modules/Engage/Share.php:143
+msgid "Copy link"
+msgstr "複製連結"
+
+#. translators: %s: the one-off sharing bonus, with unit.
+#: src/Modules/Engage/Share.php:150
+#, php-format
+msgid "Share for the first time on each channel and earn %s."
+msgstr "每個管道第一次分享可得 %s。"
+
+#. translators: 1: shop name; 2: points with unit, e.g.「1,200 點」; 3: number of badges.
+#: src/Modules/Engage/Share.php:173
+#, php-format
+msgid "I have %2$s and %3$s badge at %1$s!"
+msgid_plural "I have %2$s and %3$s badges at %1$s!"
+msgstr[0] "我在 %1$s 已有 %2$s 和 %3$s 枚徽章!"
+msgstr[1] "我在 %1$s 已有 %2$s 和 %3$s 枚徽章!"
+
+#. translators: 1: shop name; 2: points with unit, e.g.「1,200 點」.
+#: src/Modules/Engage/Share.php:182
+#, php-format
+msgid "I have %2$s at %1$s!"
+msgstr "我在 %1$s 已有 %2$s!"
+
+#. translators: %s: the points just earned, with unit, e.g.「120 點」.
+#: src/Modules/Engage/Toast.php:54
+#, php-format
+msgid "🎉 You earned %s from this purchase!"
+msgstr "🎉 本次消費獲得 %s!"
+
+#: src/Modules/ExpiryReminder/Module.php:28
+#: src/Settings/SettingsScreen.php:193
+msgid "Points expiry reminder"
+msgstr "點數到期提醒"
+
+#: src/Modules/ExpiryReminder/Module.php:36
+msgid "Email members before their points expire (includes the expiring points and the expiry date; idempotent, never re-sent)"
+msgstr "點數即將到期前寄信提醒會員(含即將到期點數與到期日,冪等不重寄)"
+
+#. translators: %s: site name.
+#: src/Modules/ExpiryReminder/Reminder.php:140
+#: src/Modules/ExpiryReminder/Reminder.php:229
+#, php-format
+msgid "[%s] Your points are about to expire"
+msgstr "【%s】您的點數即將到期"
+
+#. translators: %s: customer display name.
+#: src/Modules/ExpiryReminder/Reminder.php:194
+#, php-format
+msgid "Hi %s,"
+msgstr "%s 您好,"
+
+#. translators: 1: expiring points (e.g. "300 點"), 2: expiry date (e.g. "2026-07-14").
+#: src/Modules/ExpiryReminder/Reminder.php:200
+#, php-format
+msgid "This is a reminder that the %1$s in your account will expire on %2$s and be forfeited automatically after that."
+msgstr "提醒您,您帳戶中的 %1$s 將於 %2$s 到期,逾期將自動失效。"
+
+#: src/Modules/ExpiryReminder/Reminder.php:205
+msgid "Use your points to pay or redeem a reward before they expire!"
+msgstr "把握時間,趕快使用點數折抵或兌換好禮!"
+
+#: src/Modules/ExpiryReminder/Reminder.php:206
+msgid "This is an automated notification; please do not reply directly."
+msgstr "此為系統自動通知,請勿直接回覆。"
+
+#. translators: a placeholder member name shown only in the admin e-mail preview.
+#: src/Modules/ExpiryReminder/Reminder.php:237
+msgid "John Doe"
+msgstr "王小明"
+
+#: src/Modules/GiftCard/Module.php:52
+msgid "Stored-value products (gift card / points pack)"
+msgstr "儲值商品 (禮品卡 / 點數包)"
+
+#: src/Modules/GiftCard/Module.php:60
+msgid "Mark a product as a gift card (adds its face value to store credit) or as a points pack (adds points) on purchase; refunds reverse it automatically."
+msgstr "將商品標記為禮品卡 (購買後把面額加進儲值金) 或點數包 (購買後給點);退款會自動反轉。"
+
+#: src/Modules/GiftCard/Module.php:91
+msgid "This product is a gift card"
+msgstr "此商品為禮品卡"
+
+#: src/Modules/GiftCard/Module.php:92
+msgid "When checked, buying this product adds its face value to the customer's store credit balance (usable at checkout)."
+msgstr "勾選後,購買此商品會把面額加值為顧客的儲值金餘額(可於結帳折抵)。"
+
+#: src/Modules/GiftCard/Module.php:98
+msgid "Gift card face value (NT$)"
+msgstr "禮品卡面額(NT$)"
+
+#: src/Modules/GiftCard/Module.php:100
+msgid "Leave empty or 0 = use the product price as the top-up amount."
+msgstr "留空或 0 = 使用商品售價作為加值面額。"
+
+#: src/Modules/GiftCard/Module.php:111
+msgid "This product is a points pack"
+msgstr "此商品為點數包"
+
+#: src/Modules/GiftCard/Module.php:112
+msgid "When checked, buying this product adds the points below to the customer's balance."
+msgstr "勾選後,購買此商品會把下方的點數加進顧客餘額。"
+
+#: src/Modules/GiftCard/Module.php:118
+msgid "Points granted per unit"
+msgstr "每件給予的點數"
+
+#: src/Modules/GiftCard/Module.php:120
+msgid "How many points one unit of this product grants. Purchased points are spendable but do not count towards tiers or badges by default."
+msgstr "此商品每一件給予多少點數。買來的點數可以使用,但預設不計入階梯與徽章。"
+
+#: src/Modules/GiftCard/Module.php:210
+#: src/Modules/MyAccount/Endpoint.php:568
+#: src/Settings/SettingsScreen.php:225
+msgid "Gift card top-up"
+msgstr "禮品卡儲值"
+
+#: src/Modules/GiftCard/Module.php:230
+msgid "Points pack purchase"
+msgstr "點數包購買"
+
+#: src/Modules/GiftCard/Module.php:281
+msgid "Gift card top-up reversal"
+msgstr "禮品卡儲值退回"
+
+#: src/Modules/GiftCard/Module.php:297
+msgid "Points pack purchase reversal"
+msgstr "點數包購買反轉"
+
+#: src/Modules/Leaderboard/Module.php:41
+msgid "Rank members by total points earned (names can be masked), for all-time or the current month, with a shortcode and a \"My rank\" display"
+msgstr "依「累計賺點」排名會員(可遮罩姓名),支援全期 / 當月,提供短碼與「我的排名」"
+
+#: src/Modules/Leaderboard/Module.php:88
+msgid "No ranking data yet."
+msgstr "目前還沒有任何排名資料。"
+
+#: src/Modules/Leaderboard/Module.php:95
+#: src/Modules/Leaderboard/Module.php:106
+msgid "Rank"
+msgstr "排名"
+
+#: src/Modules/Leaderboard/Module.php:96
+#: src/Modules/Leaderboard/Module.php:107
+#: src/Modules/Leaderboard/Module.php:327
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Settings/SettingsScreen.php:205
+#: src/Settings/SettingsScreen.php:211
+#: src/Support/Tiers.php:269
+msgid "Member"
+msgstr "會員"
+
+#: src/Modules/Leaderboard/Module.php:97
+#: src/Modules/Leaderboard/Module.php:108
+msgid "Total points"
+msgstr "累計點數"
+
+#: src/Modules/Leaderboard/Module.php:306
+msgid "Today's points leaderboard"
+msgstr "今日點數排行榜"
+
+#: src/Modules/Leaderboard/Module.php:308
+msgid "This week's points leaderboard"
+msgstr "本週點數排行榜"
+
+#: src/Modules/Leaderboard/Module.php:310
+msgid "This month's points leaderboard"
+msgstr "本月點數排行榜"
+
+#: src/Modules/Leaderboard/Module.php:312
+msgid "Last month's points leaderboard"
+msgstr "上月點數排行榜"
+
+#. translators: %s: rank position, e.g. "1".
+#: src/Modules/Leaderboard/Module.php:384
+#, php-format
+msgid "No. %s"
+msgstr "第 %s 名"
+
+#: src/Modules/Ledger/Expiry.php:99
+#: src/Modules/MyAccount/Endpoint.php:575
+msgid "Points expiry"
+msgstr "點數到期"
+
+#: src/Modules/Ledger/Module.php:23
+#: src/Settings/SettingsScreen.php:141
+msgid "Points ledger"
+msgstr "點數帳本"
+
+#: src/Modules/Ledger/Module.php:31
+msgid "An idempotent points / store-credit ledger (earn, deduct, redeem, expire) — the single source of truth for platform value"
+msgstr "冪等的點數 / 儲值金帳本(賺、扣、兌換、到期),平台價值的單一真相"
+
+#: src/Modules/LineNotify/Module.php:47
+#: src/Settings/SettingsScreen.php:584
+#: src/Settings/SettingsScreen.php:587
+msgid "LINE notifications"
+msgstr "LINE 通知"
+
+#: src/Modules/LineNotify/Module.php:55
+msgid "Push points earned / redeemed / expiring messages to members over the LINE Messaging API (members link their LINE account in the membership plugin; unlinked members are skipped)"
+msgstr "透過 LINE Messaging API 把賺點 / 花點 / 即將到期的訊息推播給會員 (會員在會員外掛中綁定 LINE 帳號;未綁定者會略過)"
+
+#. translators: 1: points just earned, with unit; 2: the member's new balance, with unit.
+#: src/Modules/LineNotify/Module.php:90
+#, php-format
+msgid "You earned %1$s. Your balance is now %2$s."
+msgstr "你獲得了 %1$s,目前餘額為 %2$s。"
+
+#. translators: 1: points just spent, with unit; 2: the member's remaining balance, with unit.
+#: src/Modules/LineNotify/Module.php:110
+#, php-format
+msgid "You redeemed %1$s. Your balance is now %2$s."
+msgstr "你使用了 %1$s,目前餘額為 %2$s。"
+
+#. translators: 1: points about to expire, with unit; 2: the expiry date.
+#: src/Modules/LineNotify/Module.php:131
+#, php-format
+msgid "%1$s expire on %2$s — use them before they are gone."
+msgstr "%1$s 將於 %2$s 到期 —— 請在失效前使用。"
+
+#: src/Modules/Mcp/Module.php:30
+msgid "Points MCP server"
+msgstr "點數 MCP 伺服器"
+
+#: src/Modules/Mcp/Module.php:38
+msgid "A self-hosted 1:1 MCP server that exposes the points Abilities as tools to AI clients (requires the separate server toggle)"
+msgstr "自建 1:1 MCP 伺服器,把點數 Abilities 以工具形式提供給 AI 用戶端(需另開啟伺服器開關)"
+
+#: src/Modules/MyAccount/Endpoint.php:44
+#: src/Modules/MyAccount/Endpoint.php:49
+msgid "My points"
+msgstr "我的點數"
+
+#: src/Modules/MyAccount/Endpoint.php:58
+msgid "Please log in to view your points."
+msgstr "請先登入以查看您的點數。"
+
+#. translators: %s: rank position, e.g. "3".
+#: src/Modules/MyAccount/Endpoint.php:100
+#, php-format
+msgid "My rank: No. %s"
+msgstr "我的排名:第 %s 名"
+
+#: src/Modules/MyAccount/Endpoint.php:123
+msgid "My achievement badges"
+msgstr "我的成就徽章"
+
+#: src/Modules/MyAccount/Endpoint.php:126
+msgid "No badges earned yet — keep earning points to unlock them!"
+msgstr "還沒有獲得任何徽章,繼續賺點來解鎖!"
+
+#. translators: 1: next badge name (with icon), 2: points still needed.
+#: src/Modules/MyAccount/Endpoint.php:149
+#, php-format
+msgid "%2$s to go until the next badge \"%1$s\""
+msgstr "距離下一個徽章「%1$s」還差 %2$s"
+
+#. translators: 1: points amount (e.g. "300 點"), 2: expiry date (e.g. "2026-07-14").
+#: src/Modules/MyAccount/Endpoint.php:211
+#, php-format
+msgid "Expiring soon: %1$s will expire on %2$s"
+msgstr "最近到期:%1$s 將於 %2$s 到期"
+
+#. translators: 1: points earned per NT$1 spent (number); 2: the points unit, e.g.「點」.
+#: src/Modules/MyAccount/Endpoint.php:230
+#, php-format
+msgid "Earn %1$s %2$s per NT$1 spent"
+msgstr "消費 NT$1 可得 %1$s %2$s"
+
+#. translators: 1: points required to redeem NT$1 (with unit, e.g.「100 點」).
+#: src/Modules/MyAccount/Endpoint.php:236
+#, php-format
+msgid "%s = NT$1"
+msgstr "%s = NT$1"
+
+#: src/Modules/MyAccount/Endpoint.php:241
+msgid "Earning / redemption rate"
+msgstr "賺點 / 折抵比例"
+
+#. translators: %s: minimum points (with unit) needed to start redeeming, e.g.「100 點」.
+#: src/Modules/MyAccount/Endpoint.php:249
+#, php-format
+msgid "Reach %s to redeem at checkout"
+msgstr "滿 %s 即可在結帳時折抵"
+
+#. translators: 1: member points (with unit, e.g.「500 點」); 2: their cash value.
+#: src/Modules/MyAccount/Endpoint.php:260
+#, php-format
+msgid "Your current %1$s is worth about %2$s"
+msgstr "您目前的 %1$s 約可折抵 %2$s"
+
+#: src/Modules/MyAccount/Endpoint.php:310
+#: src/Modules/MyAccount/Mall.php:120
+msgid "Out of stock"
+msgstr "已兌完"
+
+#: src/Modules/MyAccount/Endpoint.php:310
+#: src/Modules/MyAccount/Mall.php:124
+msgid "Redeem now"
+msgstr "立即兌換"
+
+#: src/Modules/MyAccount/Endpoint.php:310
+#: src/Modules/MyAccount/Mall.php:122
+msgid "Insufficient points"
+msgstr "點數不足"
+
+#. translators: %s: the created order number.
+#: src/Modules/MyAccount/Endpoint.php:383
+#, php-format
+msgid "Redemption successful! We have created gift order #%s and will ship it shortly."
+msgstr "兌換成功!已為您建立贈品訂單 #%s,我們會盡快出貨。"
+
+#: src/Modules/MyAccount/Endpoint.php:387
+msgid "Redemption successful! Your gift order has been created and will ship shortly."
+msgstr "兌換成功!贈品訂單已建立,我們會盡快出貨。"
+
+#. translators: %s: minted coupon code.
+#: src/Modules/MyAccount/Endpoint.php:393
+#, php-format
+msgid "Redemption successful! Your coupon code: %s"
+msgstr "兌換成功!您的優惠券代碼:%s"
+
+#: src/Modules/MyAccount/Endpoint.php:398
+msgid "Redemption successful!"
+msgstr "兌換成功!"
+
+#: src/Modules/MyAccount/Endpoint.php:405
+#: src/Modules/PointsAdmin/Module.php:259
+msgid "Current points"
+msgstr "目前點數"
+
+#: src/Modules/MyAccount/Endpoint.php:409
+msgid "Store credit balance"
+msgstr "儲值金餘額"
+
+#: src/Modules/MyAccount/Endpoint.php:424
+msgid "Points history"
+msgstr "點數異動紀錄"
+
+#: src/Modules/MyAccount/Endpoint.php:427
+msgid "No points history yet."
+msgstr "目前沒有任何點數異動紀錄。"
+
+#: src/Modules/MyAccount/Endpoint.php:433
+#: src/Modules/MyAccount/Endpoint.php:449
+msgid "Date"
+msgstr "日期"
+
+#: src/Modules/MyAccount/Endpoint.php:434
+#: src/Modules/MyAccount/Endpoint.php:450
+msgid "Item"
+msgstr "項目"
+
+#: src/Modules/MyAccount/Endpoint.php:436
+#: src/Modules/MyAccount/Endpoint.php:452
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+msgid "Store credit"
+msgstr "儲值金"
+
+#: src/Modules/MyAccount/Endpoint.php:437
+#: src/Modules/MyAccount/Endpoint.php:453
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+msgid "Balance"
+msgstr "餘額"
+
+#: src/Modules/MyAccount/Endpoint.php:472
+msgid "Previous"
+msgstr "上一頁"
+
+#: src/Modules/MyAccount/Endpoint.php:476
+msgid "Next"
+msgstr "下一頁"
+
+#: src/Modules/MyAccount/Endpoint.php:567
+msgid "Purchase cashback"
+msgstr "消費回饋"
+
+#: src/Modules/MyAccount/Endpoint.php:569
+#: src/Modules/SpendRules/Module.php:31
+#: src/Modules/SpendRules/Module.php:176
+#: src/Settings/SettingsScreen.php:221
+msgid "Earn points on purchase"
+msgstr "消費集點"
+
+#: src/Modules/MyAccount/Endpoint.php:571
+msgid "Redeem for a coupon"
+msgstr "兌換優惠券"
+
+#: src/Modules/MyAccount/Endpoint.php:572
+msgid "Redeem for a product"
+msgstr "兌換商品"
+
+#: src/Modules/MyAccount/Endpoint.php:573
+msgid "Checkout redemption"
+msgstr "結帳折抵"
+
+#: src/Modules/MyAccount/Endpoint.php:574
+msgid "Refund reversal"
+msgstr "退款回補"
+
+#: src/Modules/MyAccount/Endpoint.php:576
+msgid "Opening balance import"
+msgstr "舊餘額轉入"
+
+#: src/Modules/MyAccount/Endpoint.php:582
+msgid "Earned"
+msgstr "獲得"
+
+#: src/Modules/MyAccount/Endpoint.php:583
+msgid "Redeemed"
+msgstr "兌換"
+
+#: src/Modules/MyAccount/Endpoint.php:584
+msgid "Expired"
+msgstr "到期"
+
+#: src/Modules/MyAccount/Endpoint.php:585
+msgid "Adjustment"
+msgstr "調整"
+
+#: src/Modules/MyAccount/Endpoint.php:586
+msgid "Top-up"
+msgstr "儲值"
+
+#: src/Modules/MyAccount/Endpoint.php:587
+msgid "Deducted"
+msgstr "扣除"
+
+#: src/Modules/MyAccount/Endpoint.php:589
+#: src/Settings/SettingsScreen.php:1876
+msgid "Change"
+msgstr "異動"
+
+#: src/Modules/MyAccount/Mall.php:60
+msgid "Points store"
+msgstr "點數商城"
+
+#. translators: %s: the member's current points balance.
+#: src/Modules/MyAccount/Mall.php:65
+#, php-format
+msgid "You currently have %s"
+msgstr "您目前有 %s"
+
+#: src/Modules/MyAccount/Mall.php:75
+msgid "No redeemable items right now."
+msgstr "目前沒有可兌換的項目。"
+
+#: src/Modules/MyAccount/Mall.php:182
+#: src/Modules/RewardAdmin/Screen.php:431
+msgid "Coupon"
+msgstr "優惠券"
+
+#: src/Modules/MyAccount/Mall.php:183
+#: src/Modules/RewardAdmin/Screen.php:432
+msgid "Physical gift"
+msgstr "實物贈品"
+
+#: src/Modules/MyAccount/Module.php:27
+msgid "My points (My Account)"
+msgstr "我的點數(會員中心)"
+
+#: src/Modules/MyAccount/Module.php:35
+msgid "Show the customer's points / store-credit balance and history in WooCommerce \"My Account\""
+msgstr "在 WooCommerce「我的帳戶」顯示顧客的點數 / 儲值金餘額與異動紀錄"
+
+#: src/Modules/MyAccount/RedeemCode.php:42
+msgid "Enter a redemption code"
+msgstr "輸入兌點碼"
+
+#: src/Modules/MyAccount/RedeemCode.php:46
+msgid "Enter a code, e.g. SUMMER100"
+msgstr "輸入代碼,例如 SUMMER100"
+
+#: src/Modules/MyAccount/RedeemCode.php:71
+msgid "Please enter a code."
+msgstr "請輸入代碼。"
+
+#: src/Modules/MyAccount/RedeemCode.php:78
+msgid "Too many attempts; please try again in 10 minutes."
+msgstr "嘗試次數過多,請 10 分鐘後再試。"
+
+#: src/Modules/MyAccount/RedeemCode.php:84
+#: src/Modules/MyAccount/RedeemCode.php:93
+msgid "The code is invalid or does not exist."
+msgstr "代碼無效或不存在。"
+
+#: src/Modules/MyAccount/RedeemCode.php:96
+msgid "This code's redemption period has ended."
+msgstr "這個代碼已過兌換期限。"
+
+#: src/Modules/MyAccount/RedeemCode.php:109
+msgid "This code has been fully redeemed."
+msgstr "這個代碼已被兌換完畢。"
+
+#. translators: %s: the redeem code.
+#: src/Modules/MyAccount/RedeemCode.php:123
+#, php-format
+msgid "Redemption code: %s"
+msgstr "兌點碼:%s"
+
+#: src/Modules/MyAccount/RedeemCode.php:135
+msgid "You have already redeemed this code, or points cannot be credited to this account right now."
+msgstr "您已兌換過這個代碼,或目前無法為此帳號入點。"
+
+#. translators: %s: granted points.
+#: src/Modules/MyAccount/RedeemCode.php:144
+#, php-format
+msgid "Redemption successful — %s credited!"
+msgstr "兌換成功,已入點 %s!"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:49
+#: src/Modules/PointsAdmin/Module.php:82
+#: src/Modules/PointsAdmin/Module.php:83
+msgid "Points records"
+msgstr "點數紀錄"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:50
+msgid "The points / store-credit ledger records for all members. Filter by member, type, source and date; \"Reverse\" writes a new equal-and-opposite record (the original is never deleted or modified), and each record can be reversed at most once."
+msgstr "所有會員的點數 / 儲值金帳本紀錄。可依會員、類型、來源與日期篩選;「沖正」會寫入一筆等額反向的新紀錄(不刪除、不修改原紀錄),同一筆最多只能沖正一次。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:60
+msgid "No records match."
+msgstr "沒有符合條件的紀錄。"
+
+#. translators: %s: total row count.
+#: src/Modules/PointsAdmin/LedgerBrowser.php:68
+#, php-format
+msgid "%s record(s) in total"
+msgstr "共 %s 筆"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Settings/SettingsScreen.php:1831
+#: src/Settings/SettingsScreen.php:1866
+#: src/Settings/SettingsScreen.php:1964
+msgid "Time (UTC)"
+msgstr "時間(UTC)"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Modules/PointsAdmin/LedgerBrowser.php:163
+#: src/Modules/RewardAdmin/Screen.php:74
+#: src/Modules/RewardAdmin/Screen.php:190
+#: src/Settings/SettingsScreen.php:1866
+msgid "Type"
+msgstr "類型"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+#: src/Modules/PointsAdmin/LedgerBrowser.php:169
+#: src/Settings/SettingsScreen.php:1964
+msgid "Source"
+msgstr "來源"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+msgid "Note"
+msgstr "備註"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:74
+msgid "Order"
+msgstr "訂單"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:120
+msgid "Reverse this record? A new equal-and-opposite record will be written."
+msgstr "確定要沖正這筆紀錄嗎?會寫入一筆等額反向的新紀錄。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:124
+msgid "Reverse"
+msgstr "沖正"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:161
+#: src/Modules/PointsAdmin/Module.php:142
+msgid "Member (ID / email / username)"
+msgstr "會員(ID / Email / 帳號)"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:163
+#: src/Modules/PointsAdmin/LedgerBrowser.php:169
+msgid "All"
+msgstr "全部"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:175
+msgid "From"
+msgstr "起"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:176
+msgid "To"
+msgstr "迄"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:178
+msgid "Filter"
+msgstr "篩選"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:179
+msgid "Clear"
+msgstr "清除"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:180
+msgid "Export CSV (current filter)"
+msgstr "匯出 CSV(目前篩選)"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:323
+msgid "« Previous"
+msgstr "« 上一頁"
+
+#. translators: 1: current page, 2: total pages.
+#: src/Modules/PointsAdmin/LedgerBrowser.php:328
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr "第 %1$d / %2$d 頁"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:334
+msgid "Next page »"
+msgstr "下一頁 »"
+
+#. translators: %d: reversed ledger row id.
+#: src/Modules/PointsAdmin/LedgerBrowser.php:443
+#, php-format
+msgid "Reversal record #%d"
+msgstr "沖正紀錄 #%d"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:465
+msgid "Reversal record written."
+msgstr "已寫入沖正紀錄。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:466
+msgid "This record was already reversed; no duplicate was written."
+msgstr "這筆紀錄先前已沖正過,未重複寫入。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:467
+msgid "The member's current balance is not enough to reverse this issuance (the points may have already been used)."
+msgstr "會員目前餘額不足以沖正這筆發放(點數可能已被使用)。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:468
+msgid "No reversible record found."
+msgstr "找不到可沖正的紀錄。"
+
+#: src/Modules/PointsAdmin/LedgerBrowser.php:469
+msgid "A reversal record itself cannot be reversed again."
+msgstr "沖正紀錄本身不可再被沖正。"
+
+#: src/Modules/PointsAdmin/Module.php:38
+#: src/Modules/PointsAdmin/Module.php:74
+#: src/Modules/PointsAdmin/Module.php:75
+#: src/Modules/PointsAdmin/Module.php:102
+#: src/Settings/SettingsScreen.php:238
+msgid "Batch / manual add or deduct points"
+msgstr "批次 / 手動加扣點"
+
+#: src/Modules/PointsAdmin/Module.php:46
+msgid "Batch issue / revoke points in the admin (by role or list), let support search a single member to manually add or deduct points, and query and reverse site-wide points history; idempotent, revoking will not go negative."
+msgstr "後台批次發放 / 撤銷點數(依角色或名單)、客服搜尋單一會員手動加扣點,以及全站點數紀錄查詢與沖正;冪等、撤銷不會變負。"
+
+#: src/Modules/PointsAdmin/Module.php:106
+msgid "Batch issue / revoke"
+msgstr "批次發放 / 撤銷"
+
+#: src/Modules/PointsAdmin/Module.php:107
+msgid "Issue or revoke points for an entire role, or paste a list of member IDs / emails / usernames to do it all at once. Revoking will not make points go negative; large lists are processed in batches automatically."
+msgstr "對整個角色、或貼上會員 ID / Email / 帳號清單,一次發放或撤銷點數。撤銷不會使點數變負;大量名單會自動分批處理。"
+
+#: src/Modules/PointsAdmin/Module.php:113
+#: src/Settings/SettingsScreen.php:1391
+msgid "Target"
+msgstr "對象"
+
+#: src/Modules/PointsAdmin/Module.php:114
+msgid "Entire role"
+msgstr "整個角色"
+
+#: src/Modules/PointsAdmin/Module.php:120
+msgid "List (ID / email / username, separated by commas or line breaks)"
+msgstr "名單(ID / Email / 帳號,以逗號或換行分隔)"
+
+#: src/Modules/PointsAdmin/Module.php:124
+#: src/Modules/PointsAdmin/Module.php:143
+msgid "Action"
+msgstr "動作"
+
+#: src/Modules/PointsAdmin/Module.php:125
+msgid "Issue (add points)"
+msgstr "發放(加點)"
+
+#: src/Modules/PointsAdmin/Module.php:126
+msgid "Revoke (deduct points)"
+msgstr "撤銷(扣點)"
+
+#: src/Modules/PointsAdmin/Module.php:130
+#: src/Modules/PointsAdmin/Module.php:148
+msgid "Reason / note"
+msgstr "原因 / 備註"
+
+#: src/Modules/PointsAdmin/Module.php:132
+msgid "Run batch"
+msgstr "執行批次"
+
+#: src/Modules/PointsAdmin/Module.php:137
+msgid "Support manual add / deduct (single member)"
+msgstr "客服手動加扣(單一會員)"
+
+#: src/Modules/PointsAdmin/Module.php:144
+#: src/Modules/PointsAdmin/Module.php:261
+msgid "Add points"
+msgstr "加點"
+
+#: src/Modules/PointsAdmin/Module.php:145
+#: src/Modules/PointsAdmin/Module.php:262
+msgid "Deduct points"
+msgstr "扣點"
+
+#. translators: %d: number of members changed in the first pass.
+#: src/Modules/PointsAdmin/Module.php:169
+#, php-format
+msgid "Batch submitted; %d member(s) processed this time (if the list is large, the rest will continue via the scheduler)."
+msgstr "批次已送出,本次已處理 %d 位會員(若名單很大,其餘會由排程繼續)。"
+
+#: src/Modules/PointsAdmin/Module.php:174
+msgid "Single-member add / deduct applied."
+msgstr "已套用單一會員加扣點。"
+
+#: src/Modules/PointsAdmin/Module.php:176
+msgid "No matching members or the amount was 0; no changes were made."
+msgstr "沒有符合的會員或金額為 0,未做任何變更。"
+
+#: src/Modules/PointsAdmin/Module.php:203
+msgid "Batch add / deduct points"
+msgstr "批次加扣點"
+
+#: src/Modules/PointsAdmin/Module.php:237
+msgid "Support manual add / deduct"
+msgstr "客服手動加扣"
+
+#: src/Modules/PointsAdmin/Module.php:260
+msgid "Quick add / deduct"
+msgstr "快速加扣"
+
+#: src/Modules/PointsAdmin/Module.php:264
+msgid "Reason (optional)"
+msgstr "原因(選填)"
+
+#: src/Modules/PointsAdmin/Module.php:265
+msgid "Enter the points and save the profile to apply; deducting will not make points go negative."
+msgstr "填入點數並儲存個人資料即會套用;扣點不會使點數變負。"
+
+#: src/Modules/PointsAdmin/Module.php:287
+msgid "Profile page quick add / deduct"
+msgstr "個人資料頁快速加扣"
+
+#: src/Modules/ProductPoints/Module.php:25
+msgid "Per-product points override"
+msgstr "逐商品點數覆寫"
+
+#: src/Modules/ProductPoints/Module.php:33
+msgid "Add a \"Points\" tab in the product editor: how many points per item, this product cannot earn points / cannot be paid for with points"
+msgstr "在商品編輯器加「點數」分頁:每件給幾點、此商品不可賺點 / 不可用點折抵"
+
+#: src/Modules/ProductPoints/Module.php:70
+msgid "Points per item (override)"
+msgstr "每件給幾點(覆寫)"
+
+#: src/Modules/ProductPoints/Module.php:72
+msgid "Leave empty = use the site-wide \"points per NT$1\" ratio. Enter a number (including 0) = this product gives this many points per item."
+msgstr "留空 = 使用全站「每 NT$1 給幾點」比例。填數字(含 0)= 此商品每件固定給這麼多點。"
+
+#: src/Modules/ProductPoints/Module.php:85
+msgid "This product cannot earn points"
+msgstr "此商品不可賺點"
+
+#: src/Modules/ProductPoints/Module.php:86
+msgid "When checked, this product's amount is not counted toward the earning base."
+msgstr "勾選後,此商品金額不計入賺點基底。"
+
+#: src/Modules/ProductPoints/Module.php:94
+msgid "This product cannot be paid for with points"
+msgstr "此商品不可用點折抵"
+
+#: src/Modules/ProductPoints/Module.php:95
+msgid "When checked, this product's amount is not included in the base eligible for points redemption."
+msgstr "勾選後,此商品的金額不列入可用點數折抵的基底。"
+
+#: src/Modules/Quests/Module.php:34
+#: src/Settings/SettingsScreen.php:157
+msgid "Quests / achievements"
+msgstr "任務 / 成就"
+
+#: src/Modules/Quests/Module.php:42
+msgid "Missions such as \"complete 3 orders\" or \"leave a review\" that pay out points when finished; progress is shown on \"My points\""
+msgstr "「完成 3 筆訂單」「留下一則評價」這類任務,達成後發放點數;進度顯示在「我的點數」"
+
+#. translators: %s: the quest name.
+#: src/Modules/Quests/Module.php:217
+#, php-format
+msgid "Quest completed: %s"
+msgstr "任務完成:%s"
+
+#: src/Modules/Quests/Module.php:262
+msgid "My quests"
+msgstr "我的任務"
+
+#: src/Modules/Quests/Module.php:279
+msgid "Completed"
+msgstr "已完成"
+
+#. translators: 1: progress so far; 2: the target.
+#: src/Modules/Quests/Module.php:284
+#, php-format
+msgid "Progress %1$s / %2$s"
+msgstr "進度 %1$s / %2$s"
+
+#: src/Modules/Quests/Quests.php:48
+msgid "Complete an order"
+msgstr "完成訂單"
+
+#: src/Modules/Quests/Quests.php:49
+msgid "Cumulative spend (NT$)"
+msgstr "累積消費金額 (NT$)"
+
+#: src/Modules/Quests/Quests.php:50
+msgid "Leave an approved product review"
+msgstr "留下通過審核的商品評價"
+
+#: src/Modules/Quests/Quests.php:51
+msgid "A friend you invited completes an order"
+msgstr "邀請的好友完成訂單"
+
+#: src/Modules/Redeem/Module.php:31
+msgid "Redeem coupons / products / cart discounts with points (redemption coupons are issued by moforcoupon)"
+msgstr "用點數兌換優惠券 / 商品 / 購物車折抵(兌券由 moforcoupon 發行)"
+
+#: src/Modules/Redeem/Service.php:33
+msgid "Redemption item not found."
+msgstr "找不到兌換項目。"
+
+#: src/Modules/Redeem/Service.php:36
+msgid "This redemption item is disabled."
+msgstr "此兌換項目已停用。"
+
+#: src/Modules/Redeem/Service.php:40
+msgid "This is a redemption code; please enter the code in the \"Enter redemption code\" field in My Account."
+msgstr "這是兌點碼,請在會員中心「輸入兌點碼」欄位輸入代碼。"
+
+#: src/Modules/Redeem/Service.php:43
+msgid "This redemption item is sold out."
+msgstr "此兌換項目已兌完。"
+
+#: src/Modules/Redeem/Service.php:67
+msgid "You have reached the redemption limit for this reward."
+msgstr "你已達到這項獎勵的兌換上限。"
+
+#. translators: %s: reward label.
+#: src/Modules/Redeem/Service.php:82
+#, php-format
+msgid "Redeem: %s"
+msgstr "兌換:%s"
+
+#: src/Modules/Redeem/Service.php:127
+msgid "The coupon plugin is not active, so coupons cannot be redeemed right now."
+msgstr "優惠券外掛未啟用,目前無法兌換優惠券。"
+
+#: src/Modules/Redeem/Service.php:132
+msgid "The template coupon used for redemption does not exist."
+msgstr "兌換用的範本優惠券不存在。"
+
+#: src/Modules/Redeem/Service.php:164
+msgid "This discount reward is misconfigured (no amount)."
+msgstr "此折扣獎勵設定不完整 (未設定金額)。"
+
+#: src/Modules/Redeem/Service.php:174
+msgid "Redeemed points for store credit"
+msgstr "以點數兌換儲值金"
+
+#: src/Modules/Redeem/Service.php:178
+msgid "Failed to grant the store credit, please try again later."
+msgstr "儲值金發放失敗,請稍後再試。"
+
+#: src/Modules/Redeem/Service.php:183
+msgid "Unsupported redemption type."
+msgstr "不支援的兌換類型。"
+
+#: src/Modules/Redeem/Service.php:215
+msgid "WooCommerce is not active, so physical gifts cannot be redeemed right now."
+msgstr "WooCommerce 未啟用,目前無法兌換實物贈品。"
+
+#: src/Modules/Redeem/Service.php:220
+msgid "The gift product used for redemption is not set."
+msgstr "兌換用的贈品商品未設定。"
+
+#: src/Modules/Redeem/Service.php:225
+msgid "The gift product used for redemption does not exist."
+msgstr "兌換用的贈品商品不存在。"
+
+#: src/Modules/Redeem/Service.php:233
+msgid "Failed to create the gift order; please try again later."
+msgstr "建立贈品訂單失敗,請稍後再試。"
+
+#: src/Modules/Redeem/Service.php:247
+msgid "Could not add the gift to the order."
+msgstr "無法把贈品加入訂單。"
+
+#. translators: %s: optional operator note appended to the order.
+#: src/Modules/Redeem/Service.php:259
+#, php-format
+msgid "Redeem points for a physical gift. %s"
+msgstr "點數兌換實物贈品。%s"
+
+#: src/Modules/Redeem/Service.php:265
+msgid "Redeemed points for a physical gift, pending shipment."
+msgstr "點數兌換實物贈品,待出貨。"
+
+#: src/Modules/Redeem/Service.php:268
+msgid "An error occurred while creating the gift order; please try again later."
+msgstr "建立贈品訂單時發生錯誤,請稍後再試。"
+
+#: src/Modules/Redeem/Service.php:283
+msgid "Failed to create the gift order; it has been canceled."
+msgstr "贈品訂單建立失敗,已取消。"
+
+#: src/Modules/Referral/Module.php:37
+#: src/Settings/SettingsScreen.php:239
+#: src/Settings/SettingsScreen.php:522
+msgid "Refer a friend to earn points"
+msgstr "推薦好友得點"
+
+#: src/Modules/Referral/Module.php:45
+msgid "Members refer friends with a dedicated link; after a friend completes their first purchase, both sides earn points (once per friend, with an optional cap). Shortcode [moksafopoi_referral]."
+msgstr "會員用專屬連結推薦好友,好友完成首購後雙方得點(每位好友一次、可設上限)。短碼 [moksafopoi_referral]。"
+
+#: src/Modules/Referral/Module.php:109
+msgid "Claw back referral reward on refund"
+msgstr "退款扣回推薦獎勵"
+
+#: src/Modules/Referral/Module.php:265
+msgid "Referral reward"
+msgstr "推薦好友獎勵"
+
+#: src/Modules/Referral/Module.php:279
+msgid "Referred friend reward"
+msgstr "受推薦好友獎勵"
+
+#: src/Modules/Referral/Module.php:308
+msgid "Please log in first to get your referral link."
+msgstr "請先登入以取得您的推薦連結。"
+
+#: src/Modules/Referral/Module.php:315
+msgid "Your dedicated referral link"
+msgstr "您的專屬推薦連結"
+
+#. translators: %d: points reward.
+#: src/Modules/Referral/Module.php:321
+#, php-format
+msgid "When a friend registers through this link and completes their first purchase, you earn %d point(s)."
+msgstr "好友透過此連結註冊並完成首購,您可得 %d 點。"
+
+#. translators: %d: number of referred friends.
+#: src/Modules/Referral/Module.php:329
+#, php-format
+msgid "Friends successfully referred: %d"
+msgstr "已成功推薦好友:%d 位"
+
+#: src/Modules/Refund/Module.php:36
+msgid "Refund claw-back (claw back earned points)"
+msgstr "退款回補(扣回已賺點數)"
+
+#: src/Modules/Refund/Module.php:44
+msgid "When an order is canceled / refunded, claw back the points issued for that purchase (clamped so the balance does not go negative); works alongside checkout redemption refunds and store credit refunds."
+msgstr "訂單取消 / 退款時,扣回該筆消費所發放的點數(夾住餘額不為負);與結帳折抵退回、儲值金退回分工。"
+
+#: src/Modules/Refund/Module.php:119
+msgid "Claw back points earned on purchase"
+msgstr "退款扣回消費點數"
+
+#: src/Modules/RestApi/Module.php:41
+#: src/Settings/SettingsScreen.php:615
+msgid "Customer REST API"
+msgstr "顧客 REST API"
+
+#: src/Modules/RestApi/Module.php:49
+msgid "Read-only endpoints a headless storefront or app can call for the LOGGED-IN customer's own balance, tier and history (no user_id parameter — a member can only ever read themselves)"
+msgstr "供 headless 前台或 App 呼叫的唯讀端點,只回傳「已登入」顧客本人的餘額、階梯與紀錄 (沒有 user_id 參數 —— 會員永遠只讀得到自己)"
+
+#: src/Modules/RestApi/Module.php:85
+msgid "Rows per page (1-100)."
+msgstr "每頁筆數 (1-100)。"
+
+#: src/Modules/RestApi/Module.php:91
+msgid "Page number, from 1."
+msgstr "頁碼,從 1 開始。"
+
+#: src/Modules/RestApi/Module.php:110
+msgid "You must be logged in to read your points."
+msgstr "必須先登入才能查看點數。"
+
+#: src/Modules/RewardAdmin/Module.php:42
+msgid "Manage the items that can be redeemed with points in the admin (coupon templates, points cost, stock, publish status)"
+msgstr "後台管理可用點數兌換的項目(優惠券範本、點數成本、庫存、上下架)"
+
+#: src/Modules/RewardAdmin/Screen.php:33
+#: src/Modules/RewardAdmin/Screen.php:172
+msgid "Add redemption item"
+msgstr "新增兌換項目"
+
+#: src/Modules/RewardAdmin/Screen.php:58
+msgid "Redemption item saved."
+msgstr "兌換項目已儲存。"
+
+#: src/Modules/RewardAdmin/Screen.php:59
+msgid "Redemption item deleted."
+msgstr "兌換項目已刪除。"
+
+#: src/Modules/RewardAdmin/Screen.php:60
+msgid "Publish status updated."
+msgstr "上下架狀態已更新。"
+
+#: src/Modules/RewardAdmin/Screen.php:75
+#: src/Modules/RewardAdmin/Screen.php:201
+msgid "Points required"
+msgstr "所需點數"
+
+#: src/Modules/RewardAdmin/Screen.php:76
+#: src/Modules/RewardAdmin/Screen.php:206
+msgid "Template coupon"
+msgstr "範本券"
+
+#: src/Modules/RewardAdmin/Screen.php:77
+#: src/Modules/RewardAdmin/Screen.php:266
+msgid "Stock"
+msgstr "庫存"
+
+#: src/Modules/RewardAdmin/Screen.php:83
+msgid "No redemption items yet; click \"Add redemption item\" above to start creating one."
+msgstr "尚無兌換項目,點上方「新增兌換項目」開始建立。"
+
+#. translators: %s: WooCommerce product ID.
+#: src/Modules/RewardAdmin/Screen.php:111
+#, php-format
+msgid "Product #%s"
+msgstr "商品 #%s"
+
+#. translators: 1: the redeem code, 2: points it grants.
+#: src/Modules/RewardAdmin/Screen.php:118
+#, php-format
+msgid "%1$s (+%2$s points)"
+msgstr "%1$s(+%2$s 點)"
+
+#: src/Modules/RewardAdmin/Screen.php:134
+msgid "Published"
+msgstr "上架中"
+
+#: src/Modules/RewardAdmin/Screen.php:136
+msgid "Unpublished"
+msgstr "已下架"
+
+#: src/Modules/RewardAdmin/Screen.php:141
+msgid "Unpublish"
+msgstr "下架"
+
+#: src/Modules/RewardAdmin/Screen.php:141
+#: src/Modules/RewardAdmin/Screen.php:272
+msgid "Publish"
+msgstr "上架"
+
+#: src/Modules/RewardAdmin/Screen.php:142
+msgid "Are you sure you want to delete this redemption item?"
+msgstr "確定要刪除這個兌換項目嗎?"
+
+#: src/Modules/RewardAdmin/Screen.php:150
+msgid "Redemption items are used by the \"Points redemption\" module: stock -1 means unlimited; the template coupon must be an existing moforcoupon coupon code or ID."
+msgstr "兌換項目供「點數兌換」模組使用:庫存 -1 代表不限量;範本券需是 moforcoupon 既有的優惠券代碼或 ID。"
+
+#: src/Modules/RewardAdmin/Screen.php:172
+msgid "Edit redemption item"
+msgstr "編輯兌換項目"
+
+#: src/Modules/RewardAdmin/Screen.php:186
+msgid "The redemption item name shown to customers."
+msgstr "顯示給顧客看的兌換項目名稱。"
+
+#: src/Modules/RewardAdmin/Screen.php:192
+msgid "Coupon (template coupon)"
+msgstr "優惠券(範本券)"
+
+#: src/Modules/RewardAdmin/Screen.php:193
+msgid "Physical gift (WooCommerce product)"
+msgstr "實物贈品(WooCommerce 商品)"
+
+#: src/Modules/RewardAdmin/Screen.php:194
+msgid "Store-credit discount (redeem points for store credit)"
+msgstr "儲值金折抵 (以點數兌換儲值金)"
+
+#: src/Modules/RewardAdmin/Screen.php:195
+msgid "Redemption code (member enters a code to claim points)"
+msgstr "兌點碼(會員輸入代碼領點)"
+
+#: src/Modules/RewardAdmin/Screen.php:197
+msgid "Coupon: copy a moforcoupon template coupon to the customer. Physical gift: after deducting points, create an order with a total of 0 for the customer, pending shipment."
+msgstr "優惠券:複製 moforcoupon 範本券給顧客。實物贈品:扣點後為顧客建立一張金額 0 的待出貨訂單。"
+
+#: src/Modules/RewardAdmin/Screen.php:208
+msgid "The template coupon code or ID (issued by moforcoupon) to copy to the customer."
+msgstr "要複製給顧客的範本優惠券代碼或 ID(由 moforcoupon 發行)。"
+
+#: src/Modules/RewardAdmin/Screen.php:212
+msgid "Coupon code prefix"
+msgstr "券碼前綴"
+
+#: src/Modules/RewardAdmin/Screen.php:214
+msgid "The prefix for the dedicated coupon code redeemed, for example PTS."
+msgstr "兌出的專屬券代碼前綴,例如 PTS。"
+
+#: src/Modules/RewardAdmin/Screen.php:218
+msgid "Valid days"
+msgstr "有效天數"
+
+#: src/Modules/RewardAdmin/Screen.php:220
+msgid "How many days after the redemption date the redeemed coupon expires; 0 means use the template setting."
+msgstr "兌出的券自兌換日起幾天後到期;0 代表沿用範本設定。"
+
+#: src/Modules/RewardAdmin/Screen.php:224
+msgid "Gift product"
+msgstr "贈品商品"
+
+#: src/Modules/RewardAdmin/Screen.php:226
+msgid "The WooCommerce product ID to send; upon redemption, an order with a total of 0 is created from this product, pending shipment."
+msgstr "要送出的 WooCommerce 商品 ID;兌換時會以此商品建立一張金額 0 的待出貨訂單。"
+
+#: src/Modules/RewardAdmin/Screen.php:230
+msgid "Order note"
+msgstr "訂單備註"
+
+#: src/Modules/RewardAdmin/Screen.php:232
+msgid "Optional: a note attached when creating the gift order."
+msgstr "選填:建立贈品訂單時附加的備註。"
+
+#: src/Modules/RewardAdmin/Screen.php:239
+#: src/Modules/RewardAdmin/Screen.php:433
+msgid "Redemption code"
+msgstr "兌點碼"
+
+#: src/Modules/RewardAdmin/Screen.php:241
+msgid "The code the member enters in My Account (case-insensitive). Works on package inserts, livestream passwords, LINE groups, and more; each member can redeem the same code only once, and the \"Stock\" field = the total number of redemptions allowed site-wide (-1 for unlimited)."
+msgstr "會員在會員中心輸入的代碼(不分大小寫)。印在包裹小卡、直播口令、LINE 群都適用;每位會員同一代碼只能兌換一次,「庫存」欄 = 全站可兌換總次數(-1 不限)。"
+
+#: src/Modules/RewardAdmin/Screen.php:243
+msgid "Points claimable"
+msgstr "可領點數"
+
+#: src/Modules/RewardAdmin/Screen.php:246
+msgid "Redemption deadline"
+msgstr "兌換截止日"
+
+#: src/Modules/RewardAdmin/Screen.php:248
+msgid "After this day the code becomes invalid; leave empty = no time limit."
+msgstr "過了這天代碼即失效;留空 = 不限期。"
+
+#: src/Modules/RewardAdmin/Screen.php:253
+msgid "Store-credit amount (NT$)"
+msgstr "儲值金金額 (NT$)"
+
+#: src/Modules/RewardAdmin/Screen.php:255
+msgid "The store-credit value granted when the customer redeems this reward (spendable at checkout via the wallet)."
+msgstr "顧客兌換此獎勵時發放的儲值金金額 (可於結帳時透過錢包折抵)。"
+
+#: src/Modules/RewardAdmin/Screen.php:260
+msgid "Per-customer limit"
+msgstr "每人兌換上限"
+
+#: src/Modules/RewardAdmin/Screen.php:262
+msgid "How many times each customer may redeem this reward (0 = unlimited). The \"Stock\" field above is the site-wide total."
+msgstr "每位顧客最多可兌換這項獎勵幾次 (0 = 不限)。上方的「庫存」則是全站總量。"
+
+#: src/Modules/RewardAdmin/Screen.php:268
+msgid "Redeemable quantity; -1 means unlimited."
+msgstr "可兌換數量;-1 代表不限量。"
+
+#: src/Modules/RewardAdmin/Screen.php:273
+msgid "Show in catalog and make redeemable"
+msgstr "在型錄中顯示並可兌換"
+
+#: src/Modules/RewardAdmin/Screen.php:434
+msgid "Store-credit discount"
+msgstr "儲值金折抵"
+
+#: src/Modules/RewardHub/Module.php:35
+#: src/Settings/SettingsScreen.php:158
+msgid "Front-end reward hub widget"
+msgstr "前台獎勵中心浮窗"
+
+#: src/Modules/RewardHub/Module.php:43
+msgid "A floating button in the bottom-right corner of the front end + a \"How to earn points\" popup (its content is assembled automatically from the enabled earning features), plus a \"You earned +N points this time\" hint on the thank-you page. Display only."
+msgstr "前台右下角浮動按鈕 + 「如何賺點」彈窗(內容依已啟用的賺點功能自動組成),以及感謝頁「本次獲得 +N 點」提示。純顯示。"
+
+#. translators: %s: the (customisable) points unit.
+#: src/Modules/RewardHub/Module.php:71
+#, php-format
+msgid "Earn %s"
+msgstr "賺%s"
+
+#. translators: %s: the (customisable) points unit.
+#: src/Modules/RewardHub/Module.php:80
+#, php-format
+msgid "How to earn %s"
+msgstr "如何賺%s"
+
+#. translators: 1: points balance, 2: unit.
+#: src/Modules/RewardHub/Module.php:89
+#, php-format
+msgid "You currently have %1$s %2$s"
+msgstr "目前擁有 %1$s %2$s"
+
+#: src/Modules/RewardHub/Module.php:97
+msgid "There are no active earning campaigns right now."
+msgstr "目前沒有進行中的賺點活動。"
+
+#. translators: %s: the (customisable) points unit.
+#: src/Modules/RewardHub/Module.php:112
+#, php-format
+msgid "View my %s »"
+msgstr "查看我的%s »"
+
+#: src/Modules/SpendRules/EarnPreview.php:108
+#: src/Settings/SettingsScreen.php:272
+msgid "Earn about {points} {points_label} on purchase"
+msgstr "購買可得約 {points} {points_label}"
+
+#: src/Modules/SpendRules/Module.php:39
+msgid "Add points based on the amount spent after order payment (default 1 point / NT$1, applies the membership multiplier)."
+msgstr "訂單付款後依消費金額加點(預設 1 點 / NT$1,吃會員加倍)"
+
+#. translators: %s: number of points earned on the order.
+#: src/Modules/SpendRules/Module.php:202
+#, php-format
+msgid "Earned %s points on this purchase."
+msgstr "本次購買獲得 %s 點。"
+
+#: src/Modules/TierLadder/Module.php:34
+#: src/Settings/SettingsScreen.php:155
+msgid "Member tier ladder"
+msgstr "會員階梯"
+
+#: src/Modules/TierLadder/Module.php:42
+msgid "Show the member's current tier and how far the next one is (\"2,400 points to Gold\"); reads the membership plugin's tiers when it is installed, otherwise a points ladder of its own"
+msgstr "顯示會員目前的階梯以及距離下一階還差多少 (例如「距金卡還差 2,400 點」);已安裝會員外掛時讀取它的分層,否則使用本外掛自己的點數階梯"
+
+#: src/Modules/TierLadder/Module.php:94
+msgid "My tier"
+msgstr "我的階梯"
+
+#. translators: %s: the member's current tier name, e.g.「金卡」.
+#: src/Modules/TierLadder/Module.php:101
+#, php-format
+msgid "Current tier: %s"
+msgstr "目前階梯:%s"
+
+#: src/Modules/TierLadder/Module.php:108
+msgid "You have reached the highest tier — thank you!"
+msgstr "你已達到最高階 —— 感謝支持!"
+
+#. translators: %s: the next tier name.
+#: src/Modules/TierLadder/Module.php:119
+#, php-format
+msgid "Next tier: %s"
+msgstr "下一階:%s"
+
+#. translators: 1: points still needed, with unit, e.g.「2,400 點」; 2: the next tier name.
+#: src/Modules/TierLadder/Module.php:128
+#, php-format
+msgid "%1$s to go until %2$s"
+msgstr "距 %2$s 還差 %1$s"
+
+#. translators: %s: the member's lifetime earned points, with unit.
+#: src/Modules/TierLadder/Module.php:143
+#, php-format
+msgid "Lifetime points earned: %s"
+msgstr "終身累積賺得點數:%s"
+
+#: src/Modules/Transfer/Module.php:33
+msgid "Points transfer"
+msgstr "點數轉贈"
+
+#: src/Modules/Transfer/Module.php:41
+msgid "Transfer points between members (shortcode [moksafopoi_transfer]). Deduction uses a per-user lock to prevent concurrent double-spending, conserves the amount, and supports per-transfer min/max limits and a daily count."
+msgstr "會員之間互相轉贈點數(短碼 [moksafopoi_transfer])。扣點加每使用者鎖防並發雙花,金額守恆、可設每次上下限與每日次數。"
+
+#: src/Modules/Transfer/Module.php:69
+msgid "Too many actions; please try again later."
+msgstr "操作太頻繁,請稍後再試。"
+
+#. translators: 1: points, 2: recipient identifier.
+#: src/Modules/Transfer/Module.php:90
+#, php-format
+msgid "Successfully transferred %1$d point(s) to %2$s."
+msgstr "已成功轉贈 %1$d 點給 %2$s。"
+
+#: src/Modules/Transfer/Module.php:104
+msgid "Please log in to transfer points."
+msgstr "請先登入才能轉贈點數。"
+
+#: src/Modules/Transfer/Module.php:125
+msgid "Recipient member (email or username)"
+msgstr "收點會員(電子郵件或帳號)"
+
+#: src/Modules/Transfer/Module.php:127
+msgid "Transfer points"
+msgstr "轉贈點數"
+
+#: src/Modules/Transfer/Module.php:129
+msgid "Note (optional)"
+msgstr "附註(選填)"
+
+#: src/Modules/Transfer/Module.php:131
+msgid "Confirm transfer"
+msgstr "確認轉贈"
+
+#: src/Modules/Transfer/Service.php:96
+msgid "Points transfer is not enabled."
+msgstr "點數轉贈功能未啟用。"
+
+#: src/Modules/Transfer/Service.php:102
+msgid "Recipient member not found; please check the email / username."
+msgstr "找不到這位收點會員,請確認電子郵件 / 帳號。"
+
+#: src/Modules/Transfer/Service.php:105
+msgid "You cannot transfer to yourself."
+msgstr "不能轉贈給自己。"
+
+#: src/Modules/Transfer/Service.php:108
+msgid "Please enter the number of points to transfer."
+msgstr "請輸入要轉贈的點數。"
+
+#. translators: %d: minimum points.
+#: src/Modules/Transfer/Service.php:113
+#, php-format
+msgid "At least %d point(s) per transfer."
+msgstr "每次至少轉贈 %d 點。"
+
+#. translators: %d: maximum points.
+#: src/Modules/Transfer/Service.php:118
+#, php-format
+msgid "At most %d point(s) per transfer."
+msgstr "每次最多轉贈 %d 點。"
+
+#. translators: %d: max transfers per day.
+#: src/Modules/Transfer/Service.php:123
+#, php-format
+msgid "You have reached today's transfer limit (%d times)."
+msgstr "今日轉贈次數已達上限(%d 次)。"
+
+#: src/Modules/Transfer/Service.php:145
+msgid "Transfer failed; please try again later."
+msgstr "轉贈失敗,請稍後再試。"
+
+#: src/Modules/Transfer/Service.php:164
+msgid "Auto-refund on failed transfer"
+msgstr "轉贈失敗自動退回"
+
+#: src/Modules/Transfer/Service.php:166
+msgid "Transfer failed; your points have been refunded."
+msgstr "轉贈失敗,已退回您的點數。"
+
+#: src/Modules/Wallet/Module.php:40
+#: src/Modules/Wallet/Module.php:371
+msgid "Checkout store credit redemption"
+msgstr "結帳儲值金折抵"
+
+#: src/Modules/Wallet/Module.php:48
+msgid "Use your store credit balance to reduce the amount at checkout (clamped by balance / cart cap, idempotent deduction on order, refunded on refund)."
+msgstr "結帳時用儲值金餘額折抵金額(餘額 / 購物車上限夾住,下單冪等扣帳、退款回補)。"
+
+#: src/Modules/Wallet/Module.php:162
+msgid "Store credit redemption"
+msgstr "儲值金折抵"
+
+#: src/Modules/Wallet/Module.php:181
+msgid "Apply store credit"
+msgstr "使用儲值金折抵"
+
+#. translators: %s: store-credit balance, formatted as currency.
+#: src/Modules/Wallet/Module.php:185
+#, php-format
+msgid "Your store credit balance: %s"
+msgstr "您的儲值金餘額:%s"
+
+#. translators: %s: applied discount amount.
+#: src/Modules/Wallet/Module.php:201
+#, php-format
+msgid "Applied %s in store credit."
+msgstr "已折抵儲值金 %s。"
+
+#: src/Modules/Wallet/Module.php:207
+msgid "Remove store credit"
+msgstr "移除儲值金折抵"
+
+#: src/Modules/Wallet/Module.php:211
+msgid "Amount to apply (NT$)"
+msgstr "要折抵的金額(NT$)"
+
+#. translators: %s: NT$ amount discounted from store credit.
+#: src/Modules/Wallet/Module.php:262
+#, php-format
+msgid "Applied NT$%s in store credit."
+msgstr "已折抵儲值金 NT$%s。"
+
+#: src/Modules/Wallet/Module.php:278
+msgid "Insufficient store credit or invalid amount."
+msgstr "儲值金不足或金額無效。"
+
+#: src/Modules/Wallet/Module.php:407
+msgid "Checkout store credit refund"
+msgstr "結帳儲值金折抵退回"
+
+#: src/Modules/Webhooks/Module.php:48
+msgid "Points earned"
+msgstr "賺得點數"
+
+#: src/Modules/Webhooks/Module.php:49
+msgid "Points redeemed"
+msgstr "兌換點數"
+
+#: src/Modules/Webhooks/Module.php:50
+msgid "Points expiring soon"
+msgstr "點數即將到期"
+
+#: src/Modules/Webhooks/Module.php:51
+msgid "Quest completed"
+msgstr "任務完成"
+
+#: src/Modules/Webhooks/Module.php:60
+#: src/Settings/SettingsScreen.php:597
+#: src/Settings/SettingsScreen.php:600
+msgid "Outbound webhooks"
+msgstr "對外 Webhooks"
+
+#: src/Modules/Webhooks/Module.php:68
+msgid "Push points events (earned / redeemed / expiring / quest completed) to an ESP, CRM or automation platform; signed, queued, and never blocking checkout"
+msgstr "把點數事件 (賺得 / 兌換 / 即將到期 / 任務完成) 推送到 ESP、CRM 或自動化平台;附簽章、排入佇列,絕不阻擋結帳"
+
+#: src/Plugin.php:69
+#: src/Settings/SettingsScreen.php:74
+#: src/Settings/SettingsScreen.php:1964
+msgid "Settings"
+msgstr "設定"
+
+#: src/Settings/SettingsScreen.php:50
+msgid "General"
+msgstr "一般"
+
+#: src/Settings/SettingsScreen.php:51
+#: src/Settings/SettingsScreen.php:218
+msgid "Earn points"
+msgstr "賺點"
+
+#: src/Settings/SettingsScreen.php:52
+msgid "Redeem"
+msgstr "折抵"
+
+#: src/Settings/SettingsScreen.php:53
+msgid "Display"
+msgstr "顯示"
+
+#: src/Settings/SettingsScreen.php:54
+msgid "Emails"
+msgstr "信件"
+
+#: src/Settings/SettingsScreen.php:55
+msgid "Advanced"
+msgstr "進階"
+
+#: src/Settings/SettingsScreen.php:56
+#: src/Settings/SettingsScreen.php:89
+#: src/Settings/SettingsScreen.php:90
+msgid "Tools / History"
+msgstr "工具 / 紀錄"
+
+#: src/Settings/SettingsScreen.php:73
+msgid "Basic settings"
+msgstr "基本設定"
+
+#: src/Settings/SettingsScreen.php:75
+msgid "Choose the points and member reward features you want to enable. Click each section heading to collapse it and focus on the settings you need."
+msgstr "選擇你想開啟的點數與會員回饋功能。點各區塊標題可以收合,方便專注在需要的設定。"
+
+#: src/Settings/SettingsScreen.php:81
+#: src/Settings/SettingsScreen.php:82
+msgid "Display and emails"
+msgstr "顯示與信件"
+
+#: src/Settings/SettingsScreen.php:83
+msgid "Adjust how points appear on the product page, cart, and My Account, and the look and content of notification emails."
+msgstr "調整點數在商品頁、購物車與會員中心的顯示文案,以及通知信的外觀與內容。"
+
+#: src/Settings/SettingsScreen.php:91
+msgid "Export / import settings, and view the settings change log."
+msgstr "匯出 / 匯入設定檔,並查看設定變更紀錄。"
+
+#: src/Settings/SettingsScreen.php:138
+msgid "Core"
+msgstr "核心"
+
+#: src/Settings/SettingsScreen.php:139
+msgid "The points ledger is the foundation of all features; we recommend keeping it enabled."
+msgstr "點數帳本是所有功能的基礎,建議保持啟用。"
+
+#: src/Settings/SettingsScreen.php:141
+msgid "Records each member's points and store credit balance; the foundation of all points features."
+msgstr "記錄每位會員的點數與儲值金餘額,是所有點數功能的基礎。"
+
+#: src/Settings/SettingsScreen.php:142
+msgid "Standalone points menu"
+msgstr "獨立點數選單"
+
+#: src/Settings/SettingsScreen.php:142
+msgid "Move points management into a standalone top-level menu \"Moksa Points\"."
+msgstr "把點數管理收進獨立頂層選單「Moksa 點數」。"
+
+#: src/Settings/SettingsScreen.php:143
+msgid "My Account \"My points\""
+msgstr "會員中心「我的點數」"
+
+#: src/Settings/SettingsScreen.php:143
+msgid "Add points balance and history tabs to \"My Account\"."
+msgstr "在「我的帳戶」加入點數餘額與歷史分頁。"
+
+#: src/Settings/SettingsScreen.php:144
+msgid "A site-wide campaign: limited-time double points, commission multiplier, and member discount (other plugins apply the same active campaign)."
+msgstr "全站共用的行銷活動:限時加倍點數、分潤倍率、會員折扣(其他外掛會套用同一個進行中的活動)。"
+
+#: src/Settings/SettingsScreen.php:149
+msgid "Gamification (leaderboard / badges)"
+msgstr "遊戲化(排行榜 / 徽章)"
+
+#: src/Settings/SettingsScreen.php:150
+msgid "The leaderboard ranks by \"total points earned\" (names can be masked); achievement badges are awarded when total points earned crosses a threshold."
+msgstr "排行榜依「累計賺點」排名(可遮罩姓名);成就徽章在累計賺點跨越門檻時授予。"
+
+#: src/Settings/SettingsScreen.php:152
+msgid "Provides the [moksafopoi_leaderboard] shortcode and shows \"My rank\" on \"My points\"."
+msgstr "提供 [moksafopoi_leaderboard] 短碼,並在「我的點數」顯示「我的排名」。"
+
+#: src/Settings/SettingsScreen.php:153
+msgid "Mask names on leaderboard"
+msgstr "排行榜遮罩姓名"
+
+#: src/Settings/SettingsScreen.php:153
+msgid "Mask members' display names on the public leaderboard (e.g. \"J*hn\"). We recommend enabling this."
+msgstr "公開排行榜時把會員顯示名遮罩(如「王*明」)。建議開啟。"
+
+#: src/Settings/SettingsScreen.php:154
+msgid "Award badges (bronze / silver / gold) when total points earned crosses a threshold, and show them on \"My points\"."
+msgstr "累計賺點跨越門檻時授予徽章(銅 / 銀 / 金),並在「我的點數」顯示。"
+
+#: src/Settings/SettingsScreen.php:155
+msgid "Show the member's current tier and the distance to the next one on \"My points\", plus the [moksafopoi_tier] shortcode. When the membership plugin (moformember) is installed its tiers are used; otherwise the ladder below applies."
+msgstr "在「我的點數」顯示會員目前的階梯與距離下一階的差距,並提供 [moksafopoi_tier] 短碼。已安裝會員外掛 (moformember) 時使用它的分層,否則套用下方的階梯。"
+
+#: src/Settings/SettingsScreen.php:156
+msgid "Add the points balance / tier / quests / how-to-earn / leaderboard / redemption mall as blocks in the editor. Each block renders exactly what its shortcode renders."
+msgstr "在編輯器中以區塊形式加入點數餘額 / 階梯 / 任務 / 如何賺點 / 排行榜 / 兌換商城。每個區塊的輸出與對應短碼完全相同。"
+
+#: src/Settings/SettingsScreen.php:157
+msgid "Missions such as \"complete 3 orders\" or \"leave a review\" that pay out points when finished; progress shows on \"My points\" and via the [moksafopoi_quests] shortcode."
+msgstr "「完成 3 筆訂單」「留下一則評價」這類任務,達成後發放點數;進度會顯示在「我的點數」並可用 [moksafopoi_quests] 短碼呈現。"
+
+#: src/Settings/SettingsScreen.php:158
+msgid "A floating button in the bottom-right on the front end + a \"How to earn points\" popup (content assembled automatically from the enabled earning features), plus a \"You earned +N points\" hint on the thank-you page. Display only."
+msgstr "前台右下角浮動按鈕 + 「如何賺點」彈窗(內容依已啟用的賺點功能自動組成),及感謝頁「本次獲得 +N 點」提示。純顯示。"
+
+#: src/Settings/SettingsScreen.php:163
+msgid "Tier ladder"
+msgstr "階梯設定"
+
+#: src/Settings/SettingsScreen.php:164
+msgid "The tiers used when the membership plugin is not installed. Tiers are reached on LIFETIME points earned, so spending never demotes a member. Leave a name blank to drop that rung."
+msgstr "未安裝會員外掛時所使用的階梯。階梯依「終身累積賺得點數」判定,因此花點永遠不會使會員降級。名稱留空即可移除該階。"
+
+#: src/Settings/SettingsScreen.php:166
+msgid "Tiers"
+msgstr "階梯"
+
+#: src/Settings/SettingsScreen.php:166
+msgid "Name plus the lifetime points needed. The lowest rung is usually 0 so every member starts inside the ladder."
+msgstr "階梯名稱與所需的終身累積點數。最低一階通常設為 0,讓每位會員一開始就在階梯內。"
+
+#: src/Settings/SettingsScreen.php:167
+msgid "Purchased points count towards tiers"
+msgstr "買來的點數計入階梯"
+
+#: src/Settings/SettingsScreen.php:167
+msgid "Off by default: points a customer BOUGHT (points pack) are spendable but do not raise their tier or unlock badges, so nobody can buy their way past members who earned it."
+msgstr "預設關閉:顧客「購買」而來的點數 (點數包) 可以使用,但不會提升階梯或解鎖徽章,以免有人用錢買過真正賺上去的會員。"
+
+#: src/Settings/SettingsScreen.php:173
+msgid "Each quest pays its points ONCE, the moment a member reaches the target. Leave a name blank to remove that quest. Changing a target does not take points back from members who already finished it."
+msgstr "每項任務在會員達標的當下只發放一次點數。名稱留空即可移除該任務。調整目標值不會向已完成的會員收回點數。"
+
+#: src/Settings/SettingsScreen.php:175
+msgid "Quest list"
+msgstr "任務清單"
+
+#: src/Settings/SettingsScreen.php:175
+msgid "Name, what is counted, how many times, and the reward."
+msgstr "名稱、計數的事件、次數,以及獎勵。"
+
+#: src/Settings/SettingsScreen.php:180
+msgid "Email appearance"
+msgstr "信件外觀"
+
+#: src/Settings/SettingsScreen.php:181
+msgid "The shared email appearance for all notification emails sent to members (such as expiry reminders): the header background color and header text. A live preview is shown below."
+msgstr "所有寄給會員的通知信(如到期提醒)共用的信件外觀:標頭底色與標頭文字。下方有即時預覽。"
+
+#: src/Settings/SettingsScreen.php:183
+msgid "The background color of the band at the top of the email (default gold #d4af37)."
+msgstr "信件頂端色帶的背景色(預設金色 #d4af37)。"
+
+#: src/Settings/SettingsScreen.php:184
+msgid "The text shown in the band at the top of the email (empty = site name)."
+msgstr "信件頂端色帶顯示的文字(留空 = 站名)。"
+
+#: src/Settings/SettingsScreen.php:184
+msgid "Empty = site name"
+msgstr "留空 = 站名"
+
+#: src/Settings/SettingsScreen.php:189
+msgid "Points validity / expiry reminder"
+msgstr "點數有效期 / 到期提醒"
+
+#: src/Settings/SettingsScreen.php:190
+msgid "How many months after being earned points expire (0 = never expires), and how many days before expiry to email a reminder to members."
+msgstr "點數會在賺到後幾個月到期(0 = 永不過期),以及到期前幾天寄信提醒會員。"
+
+#: src/Settings/SettingsScreen.php:192
+msgid "How many months after the earned date points expire (0 = never expires)."
+msgstr "點數自賺到日起幾個月到期(0 = 永不過期)。"
+
+#: src/Settings/SettingsScreen.php:193
+msgid "Email a reminder to members before points expire (automatically disabled when set to never expire)."
+msgstr "在點數到期前寄信提醒會員(永不過期時自動停用)。"
+
+#: src/Settings/SettingsScreen.php:194
+msgid "How many days before points expire to send the reminder email (default 14 days)."
+msgstr "點數到期前幾天寄出提醒信(預設 14 天)。"
+
+#: src/Settings/SettingsScreen.php:199
+msgid "Event-based notification emails (earn / redeem)"
+msgstr "事件式通知信(賺點 / 兌點)"
+
+#: src/Settings/SettingsScreen.php:200
+msgid "Custom notification emails sent automatically when a member earns / redeems points. Requires \"Event-based notification emails\" to be enabled. Available variables: {points} {balance} {note} {name} {site}. \"Throttle\" is the minimum interval between emails for the same event to the same member (in seconds, 0 = no limit)."
+msgstr "會員賺點 / 兌點時自動寄送的自訂通知信。需啟用「事件式通知信」。可用變數:{points} {balance} {note} {name} {site}。「節流」是同一會員同一事件的最短寄信間隔(秒,0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:202
+msgid "Earn points notification email"
+msgstr "賺點通知信"
+
+#: src/Settings/SettingsScreen.php:202
+msgid "Sent when a member earns points."
+msgstr "會員賺到點數時寄出。"
+
+#: src/Settings/SettingsScreen.php:203
+msgid "Earn email subject"
+msgstr "賺點信主旨"
+
+#: src/Settings/SettingsScreen.php:203
+#: src/Settings/SettingsScreen.php:209
+msgid "Leave empty to use the default. The variables above are available."
+msgstr "留空用預設。可用上方變數。"
+
+#: src/Settings/SettingsScreen.php:204
+msgid "Earn email body"
+msgstr "賺點信內文"
+
+#: src/Settings/SettingsScreen.php:204
+#: src/Settings/SettingsScreen.php:210
+msgid "Leave empty to use the default; one paragraph per line. The variables above are available."
+msgstr "留空用預設;每行一段。可用上方變數。"
+
+#: src/Settings/SettingsScreen.php:205
+msgid "Earn email recipient"
+msgstr "賺點信收件人"
+
+#: src/Settings/SettingsScreen.php:205
+#: src/Settings/SettingsScreen.php:211
+msgid "Send to member / admin / both."
+msgstr "寄給會員 / 管理員 / 兩者。"
+
+#: src/Settings/SettingsScreen.php:205
+#: src/Settings/SettingsScreen.php:211
+msgid "Admin"
+msgstr "管理員"
+
+#: src/Settings/SettingsScreen.php:205
+#: src/Settings/SettingsScreen.php:211
+msgid "Both"
+msgstr "兩者"
+
+#: src/Settings/SettingsScreen.php:206
+msgid "Earn email threshold (points)"
+msgstr "賺點信門檻(點)"
+
+#: src/Settings/SettingsScreen.php:206
+msgid "Send only when points earned reach this value (0 = no limit)."
+msgstr "賺到點數達此值才寄(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:207
+msgid "Earn email throttle (seconds)"
+msgstr "賺點信節流(秒)"
+
+#: src/Settings/SettingsScreen.php:207
+msgid "Minimum interval between two earn emails to the same member (0 = send every time)."
+msgstr "同一會員兩封賺點信的最短間隔(0 = 每次都寄)。"
+
+#: src/Settings/SettingsScreen.php:208
+msgid "Redeem points notification email"
+msgstr "兌點通知信"
+
+#: src/Settings/SettingsScreen.php:208
+msgid "Sent when a member uses / redeems points."
+msgstr "會員使用 / 兌換點數時寄出。"
+
+#: src/Settings/SettingsScreen.php:209
+msgid "Redeem email subject"
+msgstr "兌點信主旨"
+
+#: src/Settings/SettingsScreen.php:210
+msgid "Redeem email body"
+msgstr "兌點信內文"
+
+#: src/Settings/SettingsScreen.php:211
+msgid "Redeem email recipient"
+msgstr "兌點信收件人"
+
+#: src/Settings/SettingsScreen.php:212
+msgid "Redeem email threshold (points)"
+msgstr "兌點信門檻(點)"
+
+#: src/Settings/SettingsScreen.php:212
+msgid "Send only when points used reach this value (0 = no limit)."
+msgstr "使用點數達此值才寄(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:213
+msgid "Redeem email throttle (seconds)"
+msgstr "兌點信節流(秒)"
+
+#: src/Settings/SettingsScreen.php:213
+msgid "Minimum interval between two redeem emails to the same member (0 = send every time)."
+msgstr "同一會員兩封兌點信的最短間隔(0 = 每次都寄)。"
+
+#: src/Settings/SettingsScreen.php:219
+msgid "How customers earn points / store credit."
+msgstr "顧客如何賺到點數 / 儲值金。"
+
+#: src/Settings/SettingsScreen.php:221
+msgid "Add points by rule after order payment (spend N to earn Y points)."
+msgstr "訂單付款後依規則加點(消費 N 元得 Y 點)。"
+
+#: src/Settings/SettingsScreen.php:222
+msgid "Set \"this category's points multiplier\" on the product category edit page; applied line by line when earning points."
+msgstr "在商品分類編輯頁設「此分類點數倍率」,賺點時逐行套用。"
+
+#: src/Settings/SettingsScreen.php:223
+msgid "Earn points with coupons"
+msgstr "用券集點"
+
+#: src/Settings/SettingsScreen.php:223
+msgid "Award extra points when customers use a coupon (requires the coupon plugin)."
+msgstr "顧客使用優惠券時額外加點(需搭配優惠券外掛)。"
+
+#: src/Settings/SettingsScreen.php:224
+msgid "After order payment, give back a configured percentage of the amount as the customer's store credit (redeemable at checkout); refunds reverse automatically. See the store credit economy on the \"Redeem\" tab for the ratio / threshold."
+msgstr "訂單付款後回饋設定比例的金額為顧客儲值金(可結帳折抵);退款自動反向。比例 / 門檻見「折抵」分頁的儲值金經濟。"
+
+#: src/Settings/SettingsScreen.php:225
+msgid "Mark a product as a \"gift card\" on the product edit page; after purchase, its face value is added to the customer's store credit (redeemable at checkout); refunds reverse automatically."
+msgstr "在商品編輯頁把商品勾選為「禮品卡」,購買後面額加值為顧客儲值金(可結帳折抵);退款自動反向。"
+
+#: src/Settings/SettingsScreen.php:230
+msgid "Spend"
+msgstr "花用"
+
+#: src/Settings/SettingsScreen.php:231
+msgid "How customers use points / store credit."
+msgstr "顧客如何使用點數 / 儲值金。"
+
+#: src/Settings/SettingsScreen.php:233
+msgid "Checkout redemption with points"
+msgstr "結帳以點數折抵"
+
+#: src/Settings/SettingsScreen.php:233
+msgid "Let customers redeem their points balance as a discount at checkout (classic and block checkout), using the redemption rate and limits below."
+msgstr "讓顧客在結帳時以點數餘額折抵(傳統與區塊結帳皆支援),依下方的兌換比率與上限計算。"
+
+#: src/Settings/SettingsScreen.php:234
+msgid "Checkout redemption with wallet"
+msgstr "結帳折抵錢包"
+
+#: src/Settings/SettingsScreen.php:234
+msgid "Redeem using your store credit balance at checkout (takes over checkout redemption; deducted after payment)."
+msgstr "結帳時用儲值金餘額折抵(接管結帳折抵,付款後扣帳)。"
+
+#: src/Settings/SettingsScreen.php:235
+msgid "Reclaim points on refund"
+msgstr "退款扣回點數"
+
+#: src/Settings/SettingsScreen.php:235
+msgid "When an order is cancelled / refunded, reclaim the points awarded for that purchase (the balance will not go negative); store credit redemption and gift cards / cashback are reversed by their own features."
+msgstr "訂單取消 / 退款時,扣回該筆消費發放的點數(餘額不會變成負數);儲值金折抵、禮品卡 / 回饋則由各自功能反向處理。"
+
+#: src/Settings/SettingsScreen.php:236
+msgid "Redeem points for coupons / products / cart discount."
+msgstr "用點數兌換優惠券 / 商品 / 購物車折抵。"
+
+#: src/Settings/SettingsScreen.php:237
+msgid "Redemption catalog management"
+msgstr "兌換型錄管理"
+
+#: src/Settings/SettingsScreen.php:237
+msgid "Add / edit / delete / list or delist redeemable items in the admin (used by \"Points redemption\")."
+msgstr "在後台新增 / 編輯 / 刪除 / 上下架可兌換的項目(供「點數兌換」使用)。"
+
+#: src/Settings/SettingsScreen.php:238
+msgid "Batch issue / revoke points in the admin (by role or list); support staff can search for a single member to manually add or deduct; quick add / deduct on the member edit page."
+msgstr "後台批次發放 / 撤銷點數(依角色或名單)、客服搜尋單一會員手動加扣、會員編輯頁快速加扣。"
+
+#: src/Settings/SettingsScreen.php:239
+msgid "Members refer friends with a personal link; both sides earn points after the friend completes their first purchase. Shortcode [moksafopoi_referral]."
+msgstr "會員用專屬連結推薦好友,好友完成首購後雙方得點。短碼 [moksafopoi_referral]。"
+
+#: src/Settings/SettingsScreen.php:240
+msgid "Earn / redeem events trigger custom notification emails (recipient / threshold / throttling). Configure the content on the \"Notification emails\" tab."
+msgstr "賺點 / 兌點事件觸發自訂通知信(收件人 / 門檻 / 節流)。內容在「通知信」分頁設定。"
+
+#: src/Settings/SettingsScreen.php:245
+msgid "Points branding"
+msgstr "點數品牌化"
+
+#: src/Settings/SettingsScreen.php:246
+msgid "Customize the unit name for points. Once changed, the My Account area, points store, leaderboard, badge progress, and admin dashboard all display the new unit."
+msgstr "自訂點數的單位名稱。改了之後,會員中心、點數商城、排行榜、徽章進度與後台儀表板都會同步顯示新單位。"
+
+#: src/Settings/SettingsScreen.php:248
+msgid "The points unit shown to customers (default \"points\"; can be changed to \"coins / miles / P\", etc.)."
+msgstr "顯示給顧客看的點數單位(預設「點」,可改成「金幣 / 哩程 / P」等)。"
+
+#: src/Settings/SettingsScreen.php:248
+msgid "For example: coins"
+msgstr "例如:金幣"
+
+#: src/Settings/SettingsScreen.php:253
+msgid "Product page earning preview"
+msgstr "商品頁賺點預覽"
+
+#: src/Settings/SettingsScreen.php:254
+msgid "Show \"Earn about X points on purchase\" on individual product pages so customers see the reward before adding to cart. Requires \"Earn points on purchase\" to be enabled first."
+msgstr "在單一商品頁顯示「購買可得約 X 點」,讓顧客在加入購物車前就看到回饋。需先啟用「消費集點」。"
+
+#: src/Settings/SettingsScreen.php:256
+msgid "Show earning preview"
+msgstr "顯示賺點預覽"
+
+#: src/Settings/SettingsScreen.php:256
+msgid "Show the estimated points earnable on the product page (based on the product price × rate, applying per-product and per-category settings)."
+msgstr "在商品頁顯示可得點數估算(依該商品價格 × 比例,並套用個別商品與分類的設定)。"
+
+#: src/Settings/SettingsScreen.php:259
+msgid "Preview display position"
+msgstr "預覽顯示位置"
+
+#: src/Settings/SettingsScreen.php:260
+msgid "Where to place the preview on the product page."
+msgstr "預覽要放在商品頁的哪裡。"
+
+#: src/Settings/SettingsScreen.php:263
+#: src/Settings/SettingsScreen.php:285
+msgid "Above the add-to-cart button"
+msgstr "加入購物車按鈕上方"
+
+#: src/Settings/SettingsScreen.php:264
+#: src/Settings/SettingsScreen.php:286
+msgid "Bottom of the product summary"
+msgstr "商品摘要欄底部"
+
+#: src/Settings/SettingsScreen.php:269
+msgid "Product page message template"
+msgstr "商品頁訊息範本"
+
+#. translators: do not translate the {tokens}.
+#: src/Settings/SettingsScreen.php:271
+msgid "Copy for the product page earning preview. Available variables: {points} (points), {points_label} (unit name), {value} (redeemable amount). Basic HTML is allowed."
+msgstr "商品頁賺點預覽的文案。可用變數:{points}(點數)、{points_label}(單位名)、{value}(可折抵金額)。允許基本 HTML。"
+
+#: src/Settings/SettingsScreen.php:274
+#: src/Settings/SettingsScreen.php:317
+#: src/Settings/SettingsScreen.php:348
+#: src/Settings/SettingsScreen.php:378
+msgid "Text color"
+msgstr "文字色"
+
+#: src/Settings/SettingsScreen.php:274
+msgid "Text color of the product page message (default black #000000)."
+msgstr "商品頁訊息的文字顏色(預設黑色 #000000)。"
+
+#: src/Settings/SettingsScreen.php:275
+#: src/Settings/SettingsScreen.php:318
+#: src/Settings/SettingsScreen.php:349
+#: src/Settings/SettingsScreen.php:379
+msgid "Background color"
+msgstr "底色"
+
+#: src/Settings/SettingsScreen.php:275
+msgid "Background color of the product page message (leave blank = transparent)."
+msgstr "商品頁訊息的背景色(留空 = 透明)。"
+
+#: src/Settings/SettingsScreen.php:275
+#: src/Settings/SettingsScreen.php:318
+#: src/Settings/SettingsScreen.php:349
+#: src/Settings/SettingsScreen.php:379
+msgid "Leave blank = transparent"
+msgstr "留空 = 透明"
+
+#: src/Settings/SettingsScreen.php:276
+#: src/Settings/SettingsScreen.php:319
+#: src/Settings/SettingsScreen.php:350
+#: src/Settings/SettingsScreen.php:380
+msgid "Border color"
+msgstr "框線色"
+
+#: src/Settings/SettingsScreen.php:276
+#: src/Settings/SettingsScreen.php:319
+#: src/Settings/SettingsScreen.php:350
+#: src/Settings/SettingsScreen.php:380
+msgid "Message border color (leave blank = no border). Setting a border or background automatically adds padding and turns it into a label style."
+msgstr "訊息外框顏色(留空 = 無框)。設了框線或底色會自動加內距、變成標籤樣式。"
+
+#: src/Settings/SettingsScreen.php:276
+#: src/Settings/SettingsScreen.php:319
+#: src/Settings/SettingsScreen.php:350
+#: src/Settings/SettingsScreen.php:380
+msgid "Leave blank = no border"
+msgstr "留空 = 無框"
+
+#: src/Settings/SettingsScreen.php:277
+#: src/Settings/SettingsScreen.php:320
+#: src/Settings/SettingsScreen.php:351
+#: src/Settings/SettingsScreen.php:381
+msgid "Leading icon"
+msgstr "前置圖示"
+
+#: src/Settings/SettingsScreen.php:277
+#: src/Settings/SettingsScreen.php:320
+#: src/Settings/SettingsScreen.php:351
+#: src/Settings/SettingsScreen.php:381
+msgid "A small icon shown at the start of the message (you can paste an emoji, e.g. 🎁 ⭐ 💰; up to 8 characters)."
+msgstr "顯示在訊息最前面的小圖示(可貼 emoji,如 🎁 ⭐ 💰;最多 8 字)。"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Audience"
+msgstr "顯示對象"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Who this message is shown to. \"Members only / non-members only\" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively."
+msgstr "這則訊息要顯示給誰看。「僅會員 / 僅非會員」需搭配會員外掛;未安裝時分別視為登入 / 未登入。"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Everyone"
+msgstr "所有人"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Logged-in users only"
+msgstr "僅登入者"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Guests only (not logged in)"
+msgstr "僅訪客(未登入)"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Members only"
+msgstr "僅會員"
+
+#: src/Settings/SettingsScreen.php:278
+#: src/Settings/SettingsScreen.php:321
+#: src/Settings/SettingsScreen.php:352
+#: src/Settings/SettingsScreen.php:382
+msgid "Non-members only"
+msgstr "僅非會員"
+
+#: src/Settings/SettingsScreen.php:281
+#: src/Settings/SettingsScreen.php:324
+#: src/Settings/SettingsScreen.php:355
+#: src/Settings/SettingsScreen.php:385
+msgid "Display position"
+msgstr "顯示位置"
+
+#: src/Settings/SettingsScreen.php:282
+msgid "Where the message is placed on the product page (overrides the \"Preview display position\" above)."
+msgstr "訊息要掛在商品頁的哪個位置(會覆蓋上方的「預覽顯示位置」)。"
+
+#: src/Settings/SettingsScreen.php:287
+msgid "After the product meta"
+msgstr "商品中繼資料後"
+
+#: src/Settings/SettingsScreen.php:295
+msgid "A \"how to earn points\" guide, an earned-points toast after checkout, and a shareable achievement card. Display only — none of these write to the ledger, and every figure is read from the features you already switched on."
+msgstr "「如何賺點」指南、結帳後的賺點提示,以及可分享的成就卡。純顯示 —— 這些都不會寫入帳本,每個數字都讀自你已啟用的功能。"
+
+#: src/Settings/SettingsScreen.php:297
+msgid "Master switch for the three surfaces below."
+msgstr "下列三個介面的總開關。"
+
+#: src/Settings/SettingsScreen.php:298
+msgid "\"How to earn points\" guide"
+msgstr "「如何賺點」指南"
+
+#: src/Settings/SettingsScreen.php:298
+msgid "Show the guide under \"My points\" and provide the [moksafopoi_how_to_earn] shortcode. Its content is assembled automatically from the enabled earning features."
+msgstr "在「我的點數」下方顯示指南,並提供 [moksafopoi_how_to_earn] 短碼。內容會依已啟用的賺點功能自動組成。"
+
+#: src/Settings/SettingsScreen.php:299
+msgid "Earned-points toast"
+msgstr "賺點提示"
+
+#: src/Settings/SettingsScreen.php:299
+msgid "On the order-received page, show the points this order actually booked (read from the ledger; nothing is shown when no points were awarded)."
+msgstr "在訂單完成頁顯示這張訂單實際入帳的點數 (讀自帳本;沒有發放點數時不顯示)。"
+
+#: src/Settings/SettingsScreen.php:300
+msgid "One-off points the first time a member shares on each channel (0 = sharing earns nothing). Sharing cannot be verified from the store, so the bonus is deliberately once per channel for life."
+msgstr "會員在每個管道第一次分享時可得的一次性點數 (0 = 分享不給點)。分享無法從商店端驗證,因此這項獎勵刻意設計成每個管道終生只給一次。"
+
+#: src/Settings/SettingsScreen.php:301
+msgid "Shareable achievement card"
+msgstr "可分享的成就卡"
+
+#: src/Settings/SettingsScreen.php:301
+msgid "Let members share their own points / badges to LINE or Facebook, or copy the link. Uses their referral link when the referral feature is on."
+msgstr "讓會員把自己的點數 / 徽章分享到 LINE 或 Facebook,或複製連結。已啟用推薦好友功能時,分享的是會員本人的推薦連結。"
+
+#: src/Settings/SettingsScreen.php:306
+msgid "Shop listing earning hint"
+msgstr "商店列表賺點提示"
+
+#: src/Settings/SettingsScreen.php:307
+msgid "Below each product card in the shop / category listing, show the estimated points earnable on purchase (applies per-product and per-category settings; products that earn no points are not shown)."
+msgstr "在商店 / 分類列表的每張商品卡下方,顯示購買可得的預估點數(會套用個別商品與分類的設定;不賺點的商品不顯示)。"
+
+#: src/Settings/SettingsScreen.php:309
+msgid "Show earning in the shop listing"
+msgstr "在商店列表顯示賺點"
+
+#: src/Settings/SettingsScreen.php:309
+msgid "Show \"Earn X points on purchase\" below the product listing card."
+msgstr "在商品列表卡片下方顯示「購買可得 X 點」。"
+
+#: src/Settings/SettingsScreen.php:312
+msgid "Listing message template"
+msgstr "列表訊息範本"
+
+#. translators: do not translate the {tokens}.
+#: src/Settings/SettingsScreen.php:314
+msgid "Copy for the listing card. Available variables: {points}, {points_label}, {value}. Basic HTML is allowed."
+msgstr "列表卡片的文案。可用變數:{points}、{points_label}、{value}。允許基本 HTML。"
+
+#: src/Settings/SettingsScreen.php:317
+msgid "Text color of the listing message (default black #000000)."
+msgstr "列表訊息的文字顏色(預設黑色 #000000)。"
+
+#: src/Settings/SettingsScreen.php:318
+msgid "Background color of the listing message (leave blank = transparent)."
+msgstr "列表訊息的背景色(留空 = 透明)。"
+
+#: src/Settings/SettingsScreen.php:325
+msgid "Where the message is placed on each product card."
+msgstr "訊息要掛在每張商品卡的哪個位置。"
+
+#: src/Settings/SettingsScreen.php:328
+msgid "Below the product title"
+msgstr "商品標題下方"
+
+#: src/Settings/SettingsScreen.php:329
+msgid "Above the product title"
+msgstr "商品標題上方"
+
+#: src/Settings/SettingsScreen.php:330
+msgid "After the price"
+msgstr "價格之後"
+
+#: src/Settings/SettingsScreen.php:337
+msgid "Cart earning hint"
+msgstr "購物車賺點提示"
+
+#: src/Settings/SettingsScreen.php:338
+msgid "Show the estimated points earnable from this purchase in the cart totals area (marked as \"approx.\", not yet including the spend-threshold multiplier)."
+msgstr "在購物車總計區顯示這次購物可得的預估點數(以「約」標示,尚未計入滿額加倍)。"
+
+#: src/Settings/SettingsScreen.php:340
+msgid "Show earning in the cart"
+msgstr "在購物車顯示賺點"
+
+#: src/Settings/SettingsScreen.php:340
+msgid "Show \"Earn about X points from this purchase\" below the cart totals."
+msgstr "在購物車總計下方顯示「本次消費可得約 X 點」。"
+
+#: src/Settings/SettingsScreen.php:343
+msgid "Cart message template"
+msgstr "購物車訊息範本"
+
+#. translators: do not translate the {tokens}.
+#: src/Settings/SettingsScreen.php:345
+msgid "Copy for the cart. Available variables: {points}, {points_label}, {value}. Basic HTML is allowed."
+msgstr "購物車的文案。可用變數:{points}、{points_label}、{value}。允許基本 HTML。"
+
+#: src/Settings/SettingsScreen.php:348
+msgid "Text color of the cart message (default black #000000)."
+msgstr "購物車訊息的文字顏色(預設黑色 #000000)。"
+
+#: src/Settings/SettingsScreen.php:349
+msgid "Background color of the cart message (leave blank = transparent)."
+msgstr "購物車訊息的背景色(留空 = 透明)。"
+
+#: src/Settings/SettingsScreen.php:356
+msgid "Where the message is placed in the cart totals area."
+msgstr "訊息要掛在購物車總計區的哪個位置。"
+
+#: src/Settings/SettingsScreen.php:359
+msgid "Below the order total"
+msgstr "訂單總計下方"
+
+#: src/Settings/SettingsScreen.php:360
+msgid "Above the order total"
+msgstr "訂單總計上方"
+
+#: src/Settings/SettingsScreen.php:361
+msgid "After the cart table"
+msgstr "購物車表格之後"
+
+#: src/Settings/SettingsScreen.php:368
+msgid "My Account message"
+msgstr "會員中心訊息"
+
+#: src/Settings/SettingsScreen.php:369
+msgid "Add a custom message below the \"My points\" balance card (optional; leave blank to hide). {points} is replaced with the member's current balance."
+msgstr "在「我的點數」餘額卡下方加一句自訂訊息(選配,留空則不顯示)。{points} 代入會員目前餘額。"
+
+#: src/Settings/SettingsScreen.php:373
+msgid "My Account message template"
+msgstr "會員中心訊息範本"
+
+#. translators: do not translate the {tokens}.
+#: src/Settings/SettingsScreen.php:375
+msgid "Additional copy for the My points page. Available variables: {points} (current balance), {points_label}, {value}. Basic HTML is allowed. Leave blank to hide."
+msgstr "我的點數頁的附加文案。可用變數:{points}(目前餘額)、{points_label}、{value}。允許基本 HTML。留空則不顯示。"
+
+#: src/Settings/SettingsScreen.php:378
+msgid "Text color of the My Account message (default black #000000)."
+msgstr "會員中心訊息的文字顏色(預設黑色 #000000)。"
+
+#: src/Settings/SettingsScreen.php:379
+msgid "Background color of the My Account message (leave blank = transparent)."
+msgstr "會員中心訊息的背景色(留空 = 透明)。"
+
+#: src/Settings/SettingsScreen.php:386
+msgid "Where the message is placed on the \"My points\" page."
+msgstr "訊息要掛在「我的點數」頁的哪個位置。"
+
+#: src/Settings/SettingsScreen.php:389
+msgid "Below the balance card"
+msgstr "餘額卡下方"
+
+#: src/Settings/SettingsScreen.php:396
+msgid "Earning rate"
+msgstr "賺點比例"
+
+#: src/Settings/SettingsScreen.php:397
+msgid "The calculation granularity for earning points on purchase: how many points per unit spent, the rounding method, sale-price exclusion, per-order cap, and whether the earning base includes shipping / tax."
+msgstr "消費集點的計算粒度:每元給幾點、進位方式、特價排除、單筆上限,以及賺點基底是否含運費 / 稅額。"
+
+#: src/Settings/SettingsScreen.php:399
+msgid "How many points to award per 1 unit of the purchase base (decimals allowed, e.g. 0.5)."
+msgstr "消費基底每 1 元給多少點(可填小數,如 0.5)。"
+
+#: src/Settings/SettingsScreen.php:403
+msgid "How fractional points are rounded. Default is round down (safest for the store)."
+msgstr "小數點數如何取整。預設無條件捨去(對店家最安全)。"
+
+#: src/Settings/SettingsScreen.php:406
+msgid "Round down"
+msgstr "無條件捨去"
+
+#: src/Settings/SettingsScreen.php:407
+msgid "Round half up"
+msgstr "四捨五入"
+
+#: src/Settings/SettingsScreen.php:408
+msgid "Round up"
+msgstr "無條件進位"
+
+#: src/Settings/SettingsScreen.php:411
+msgid "When checked, products currently on sale are excluded from the earning base."
+msgstr "勾選後,正在特價的商品不計入賺點基底。"
+
+#: src/Settings/SettingsScreen.php:412
+msgid "When checked, shipping is also included in the earning base (excluded by default; only the product amount counts)."
+msgstr "勾選後,運費也計入賺點基底(預設不含,只算商品金額)。"
+
+#: src/Settings/SettingsScreen.php:413
+msgid "When checked, tax is also included in the earning base (excluded by default; only the product amount counts)."
+msgstr "勾選後,稅額也計入賺點基底(預設不含,只算商品金額)。"
+
+#: src/Settings/SettingsScreen.php:414
+msgid "Maximum points awarded per order (0 = no limit)."
+msgstr "單一訂單最多給多少點(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:419
+msgid "Role multiplier / spend-threshold multiplier"
+msgstr "角色加倍 / 滿額加倍"
+
+#: src/Settings/SettingsScreen.php:420
+msgid "Advanced earning multipliers. Final multiplier = membership tier (filter) × role multiplier × spend-threshold multiplier; category multipliers are applied row by row. Each multiplier is capped at 10×."
+msgstr "進階賺點倍率。最終倍率 = 會員等級(filter)× 角色倍率 × 滿額加倍;分類倍率逐行套用。每個倍率上限 10 倍。"
+
+#: src/Settings/SettingsScreen.php:422
+msgid "Role earning multiplier"
+msgstr "角色賺點倍率"
+
+#: src/Settings/SettingsScreen.php:422
+msgid "Set an earning multiplier for each user role (default 1). Each customer's \"highest role multiplier\" is multiplied into their total earning."
+msgstr "為每個會員角色設賺點倍率(預設 1)。顧客取其「最高角色倍率」乘進總賺點。"
+
+#: src/Settings/SettingsScreen.php:423
+msgid "Spend-threshold multiplier tiers"
+msgstr "滿額加倍門檻"
+
+#: src/Settings/SettingsScreen.php:423
+msgid "When the order's earnable base amount reaches the threshold, the entire earning is multiplied by the corresponding multiplier. Enter 0 to disable that tier."
+msgstr "訂單可賺基底金額達門檻時,整筆賺點乘上對應倍率。填 0 = 停用該階。"
+
+#: src/Settings/SettingsScreen.php:428
+msgid "Buy a whole product with points only"
+msgstr "純點數購買整件商品"
+
+#: src/Settings/SettingsScreen.php:429
+msgid "Provide a \"Redeem the whole product for X points\" button on the product page (creates an NT$0 order). Set the points price for each product on the \"General\" tab of the product editor. Point deduction uses a per-user lock to prevent concurrent double-spending, and points are automatically refunded on failure."
+msgstr "在商品頁提供「用 X 點兌換整件商品」按鈕(建 NT$0 訂單)。每件商品在商品編輯頁的「一般」分頁設定點數售價。扣點加每使用者鎖防並發雙花,失敗自動退點。"
+
+#: src/Settings/SettingsScreen.php:431
+msgid "Enable buy with points only"
+msgstr "啟用純點數購買"
+
+#: src/Settings/SettingsScreen.php:431
+msgid "For products with a points price set, members can redeem the whole item directly with points on the product page (NT$0 order)."
+msgstr "有設定點數售價的商品,會員可在商品頁直接用點數兌換整件(NT$0 訂單)。"
+
+#: src/Settings/SettingsScreen.php:436
+msgid "Points transfer (between members)"
+msgstr "點數轉贈(會員互轉)"
+
+#: src/Settings/SettingsScreen.php:437
+msgid "Let members transfer points to other members. Place the shortcode [moksafopoi_transfer] in the My Account area / any page. Point deduction uses a per-user lock to prevent concurrent double-spending, and the amount is conserved."
+msgstr "讓會員把點數轉贈給其他會員。把短碼 [moksafopoi_transfer] 放到會員中心 / 任一頁面。扣點加每使用者鎖防並發雙花,金額守恆。"
+
+#: src/Settings/SettingsScreen.php:439
+msgid "Enable points transfer"
+msgstr "啟用點數轉贈"
+
+#: src/Settings/SettingsScreen.php:439
+msgid "Provide the [moksafopoi_transfer] shortcode so members can transfer points to each other."
+msgstr "提供 [moksafopoi_transfer] 短碼讓會員互轉點數。"
+
+#: src/Settings/SettingsScreen.php:440
+msgid "Minimum points per transfer"
+msgstr "每次最少轉贈點數"
+
+#: src/Settings/SettingsScreen.php:440
+msgid "Minimum points for a single transfer (default 1)."
+msgstr "單次轉贈的最低點數(預設 1)。"
+
+#: src/Settings/SettingsScreen.php:441
+msgid "Maximum points per transfer"
+msgstr "每次最多轉贈點數"
+
+#: src/Settings/SettingsScreen.php:441
+msgid "Maximum points for a single transfer (0 = no limit)."
+msgstr "單次轉贈的上限點數(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:442
+msgid "Daily transfer count limit per person"
+msgstr "每人每日轉贈次數上限"
+
+#: src/Settings/SettingsScreen.php:442
+msgid "How many transfers a single member can send per day (0 = no limit)."
+msgstr "同一會員每天最多可送出幾次轉贈(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:447
+msgid "Points redemption rate"
+msgstr "點數折抵比例"
+
+#: src/Settings/SettingsScreen.php:448
+msgid "The calculation granularity for checkout points redemption: how many points redeem 1 unit of currency, minimum / step / cap."
+msgstr "結帳點數折抵的計算粒度:幾點折 1 元、最低 / 級距 / 上限。"
+
+#: src/Settings/SettingsScreen.php:450
+msgid "How many points are needed to redeem 1 unit of currency (default 100 points = NT$1)."
+msgstr "需要多少點才能折抵 1 元(預設 100 點 = NT$1)。"
+
+#: src/Settings/SettingsScreen.php:451
+msgid "Below this number of points, redemption cannot be used (default 100)."
+msgstr "低於此點數不能使用折抵(預設 100)。"
+
+#: src/Settings/SettingsScreen.php:452
+msgid "How many points each redemption applies per unit (default 100)."
+msgstr "每次折抵以幾點為單位(預設 100)。"
+
+#: src/Settings/SettingsScreen.php:453
+msgid "Maximum percentage of the redeemable subtotal that points can offset (default 100)."
+msgstr "點數最多折掉可折小計的百分之多少(預設 100)。"
+
+#: src/Settings/SettingsScreen.php:454
+msgid "Maximum amount that points can offset per order (0 = no limit)."
+msgstr "單一訂單點數最多折抵多少元(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:459
+msgid "Redemption condition restrictions"
+msgstr "折抵條件限制"
+
+#: src/Settings/SettingsScreen.php:460
+msgid "Restrict which products / which members can pay with points, and whether it is mutually exclusive with coupons. Leave empty = no limit."
+msgstr "限制哪些商品 / 哪些會員可用點折抵,以及是否與優惠券互斥。留空 = 不限。"
+
+#: src/Settings/SettingsScreen.php:462
+msgid "Limit redeemable categories"
+msgstr "限定可折抵分類"
+
+#: src/Settings/SettingsScreen.php:462
+msgid "Only amounts from these product categories (including subcategories) can be paid with points; multiple selection allowed (leave empty = all products eligible)."
+msgstr "只有這些商品分類(含子分類)的金額可用點數折抵;可多選(留空 = 所有商品皆可)。"
+
+#: src/Settings/SettingsScreen.php:463
+msgid "Minimum membership tier for redemption"
+msgstr "最低可折抵會員等級"
+
+#: src/Settings/SettingsScreen.php:463
+msgid "Only members at this tier (and above) can pay with points; enter the membership tier code (e.g. gold). This restriction is automatically ignored when no member plugin is installed."
+msgstr "僅該等級(含)以上會員可用點折抵;填會員等級代碼(如 gold)。未安裝會員外掛時此限制自動忽略。"
+
+#: src/Settings/SettingsScreen.php:464
+msgid "Disable points redemption when a coupon is present"
+msgstr "有優惠券時停用點數折抵"
+
+#: src/Settings/SettingsScreen.php:464
+msgid "When a coupon is already applied to the cart, points redemption is not allowed (coupon or points, not both)."
+msgstr "購物車已套用優惠券時,不允許再用點數折抵(券與點二擇一)。"
+
+#: src/Settings/SettingsScreen.php:469
+msgid "One-time earning bonuses (signup / first purchase)"
+msgstr "一次性賺點獎勵(註冊 / 首購)"
+
+#: src/Settings/SettingsScreen.php:470
+msgid "Reward members once for registering and once for their first purchase. Off by default (0). Requires the \"Earning triggers\" module to be enabled."
+msgstr "分別在會員註冊與首次購買時各給一次獎勵。預設關閉(0)。需啟用「賺點觸發」模組。"
+
+#: src/Settings/SettingsScreen.php:472
+msgid "Registration bonus points"
+msgstr "註冊獎勵點數"
+
+#: src/Settings/SettingsScreen.php:472
+msgid "Points awarded once when a member registers (0 = off)."
+msgstr "會員註冊時給一次的點數(0 = 關閉)。"
+
+#: src/Settings/SettingsScreen.php:473
+msgid "First-purchase bonus points"
+msgstr "首購獎勵點數"
+
+#: src/Settings/SettingsScreen.php:473
+msgid "Points awarded once when a member completes their first purchase (0 = off)."
+msgstr "會員完成首次購買時給一次的點數(0 = 關閉)。"
+
+#: src/Settings/SettingsScreen.php:478
+msgid "Check-in / birthday earning (repeatable trigger)"
+msgstr "簽到 / 生日賺點(可重複觸發)"
+
+#: src/Settings/SettingsScreen.php:479
+msgid "Daily check-in and birthday gift. Place the check-in shortcode [moksafopoi_checkin] on the member page, limited to once per day; the birthday gift is once per year (requires a member plugin to provide birthday data). Requires the \"Earning triggers\" module to be enabled."
+msgstr "每日簽到與生日賀禮。簽到用短碼 [moksafopoi_checkin] 放到會員頁,每日限一次;生日賀禮每年一次(需會員外掛提供生日資料)。需啟用「賺點觸發」模組。"
+
+#: src/Settings/SettingsScreen.php:481
+msgid "Daily check-in points"
+msgstr "每日簽到送點"
+
+#: src/Settings/SettingsScreen.php:481
+msgid "Points a member can earn for daily check-in (0 = off; shortcode [moksafopoi_checkin])."
+msgstr "會員每日簽到可得點數(0 = 關閉;短碼 [moksafopoi_checkin])。"
+
+#: src/Settings/SettingsScreen.php:482
+msgid "Birthday gift points"
+msgstr "生日賀禮送點"
+
+#: src/Settings/SettingsScreen.php:482
+msgid "Points automatically given on a member's birthday, once per year (0 = off; requires a member plugin installed and birthday data)."
+msgstr "會員生日當天自動送點,每年一次(0 = 關閉;需安裝會員外掛並有生日資料)。"
+
+#: src/Settings/SettingsScreen.php:483
+msgid "Membership anniversary gift points"
+msgstr "入會週年禮送點"
+
+#: src/Settings/SettingsScreen.php:483
+msgid "Points automatically given on a member's registration anniversary, once per year (0 = off; based only on the registration date, no birthday data needed)."
+msgstr "會員註冊週年日自動送點,每年一次(0 = 關閉;只依註冊日計算,不需生日資料)。"
+
+#: src/Settings/SettingsScreen.php:484
+msgid "Product review points"
+msgstr "商品評論送點"
+
+#: src/Settings/SettingsScreen.php:484
+msgid "Points a member can earn for each approved product review (default 20; 0 = off)."
+msgstr "會員每則已核准的商品評論可得點數(預設 20;0 = 關閉)。"
+
+#: src/Settings/SettingsScreen.php:485
+msgid "Points-eligible reviews per product (count)"
+msgstr "每商品評論送點上限(次)"
+
+#: src/Settings/SettingsScreen.php:485
+msgid "The maximum number of reviews for which the same member can be rewarded for the same product, preventing review farming for points (0 = no limit)."
+msgstr "同一會員對同一商品最多可獲獎勵的評論次數,防止刷評論賺點(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:490
+msgid "Total earning cap (anti-abuse safeguard)"
+msgstr "賺點總量上限(防刷安全閥)"
+
+#: src/Settings/SettingsScreen.php:491
+msgid "Limit how many points each member can earn in total from all sources combined within a period, preventing campaign stacking from being abused. This is a \"total\" cap, a different dimension from the \"per-order cap\" or \"how many times per day per action\". Off by default. Purchase-based earning and system sources (transfer in / point purchase / import / scheduled / manual) are always automatically excluded and not subject to this cap."
+msgstr "限制每位會員在一段期間內「所有來源合計」最多能賺多少點,防止活動疊加被刷。這是「總量」上限,與「單筆訂單上限」「某動作每日幾次」是不同維度。預設關閉。購買集點與系統來源(轉入 / 購點 / 匯入 / 排程 / 手動)一律自動排除,不受此限。"
+
+#: src/Settings/SettingsScreen.php:495
+msgid "Cap period"
+msgstr "上限週期"
+
+#: src/Settings/SettingsScreen.php:496
+msgid "Which period is used to calculate the total earning cap. Off = not applied."
+msgstr "以哪個週期計算賺點總量上限。關閉 = 不套用。"
+
+#: src/Settings/SettingsScreen.php:499
+msgid "Off (no limit)"
+msgstr "關閉(不限)"
+
+#: src/Settings/SettingsScreen.php:500
+#: src/Settings/SettingsScreen.php:535
+msgid "Daily"
+msgstr "每日"
+
+#: src/Settings/SettingsScreen.php:501
+msgid "Weekly (starting Monday)"
+msgstr "每週(週一起算)"
+
+#: src/Settings/SettingsScreen.php:502
+#: src/Settings/SettingsScreen.php:537
+msgid "Monthly"
+msgstr "每月"
+
+#: src/Settings/SettingsScreen.php:503
+#: src/Settings/SettingsScreen.php:538
+msgid "Yearly"
+msgstr "每年"
+
+#: src/Settings/SettingsScreen.php:504
+msgid "Cumulative (lifetime)"
+msgstr "累計(終身)"
+
+#: src/Settings/SettingsScreen.php:507
+msgid "Cap earnable per period (points)"
+msgstr "每期可賺上限(點)"
+
+#: src/Settings/SettingsScreen.php:507
+msgid "The maximum points that can be earned from all (non-excluded) sources combined within that period (0 = no limit). The excess is automatically trimmed and not recorded."
+msgstr "該週期內所有(未排除)來源合計最多可賺多少點(0 = 不限)。超過的部分自動裁切、不入帳。"
+
+#: src/Settings/SettingsScreen.php:508
+msgid "Excluded sources"
+msgstr "排除來源"
+
+#: src/Settings/SettingsScreen.php:508
+msgid "Earning sources not counted toward the cap (one per line or comma-separated). By default, purchase-based earning spend_rule is excluded so high-spending members are not mistakenly blocked. You can enter: spend_rule, coupon_redeemed, signup, review, first_order, checkin, birthday."
+msgstr "不計入上限的賺點來源(每行或逗號分隔)。預設排除消費集點 spend_rule,讓高消費會員不被誤擋。可填:spend_rule、coupon_redeemed、signup、review、first_order、checkin、birthday。"
+
+#: src/Settings/SettingsScreen.php:513
+msgid "Earning exclusion list (staff / wholesale / test accounts)"
+msgstr "賺點排除名單(員工 / 批發 / 測試帳號)"
+
+#: src/Settings/SettingsScreen.php:514
+msgid "Roles or accounts on this list will never earn any points (all earning sources are not recorded); spending points, store credit, and manual support adjustments are unaffected. Leaving both fields empty = exclude no one."
+msgstr "名單內的角色或帳號完全不會賺到點數(所有賺點來源一律不入帳);花點、儲值金與客服手動調整不受影響。兩欄留空 = 不排除任何人。"
+
+#: src/Settings/SettingsScreen.php:516
+msgid "Excluded roles"
+msgstr "排除角色"
+
+#: src/Settings/SettingsScreen.php:516
+msgid "Role slugs, one per line or comma-separated, for example: administrator, shop_manager, wholesale_customer."
+msgstr "角色代稱(slug),每行或逗號分隔,例如:administrator、shop_manager、wholesale_customer。"
+
+#: src/Settings/SettingsScreen.php:517
+msgid "Excluded accounts"
+msgstr "排除帳號"
+
+#: src/Settings/SettingsScreen.php:517
+msgid "Member ID / email / username, one per line or comma-separated. Items that cannot be found are automatically ignored."
+msgstr "會員 ID / Email / 帳號,每行或逗號分隔。找不到的項目自動忽略。"
+
+#: src/Settings/SettingsScreen.php:523
+msgid "Members refer friends via a dedicated link ?mfp_ref=; after a friend registers and completes their first purchase, both sides each earn points (once per friend, with a configurable per-period cap). Shortcode [moksafopoi_referral]. Requires the \"Referral points\" module to be enabled."
+msgstr "會員用專屬連結 ?mfp_ref= 推薦好友;好友註冊並完成首購後,雙方各得點(每位好友一次、可設每期上限)。短碼 [moksafopoi_referral]。需啟用「推薦好友得點」模組。"
+
+#: src/Settings/SettingsScreen.php:525
+msgid "Referrer reward points"
+msgstr "推薦人獎勵點數"
+
+#: src/Settings/SettingsScreen.php:525
+msgid "Points the referrer can earn when the friend completes their first purchase (0 = none)."
+msgstr "好友完成首購時,推薦人可得的點數(0 = 不給)。"
+
+#: src/Settings/SettingsScreen.php:526
+msgid "Referred friend reward points"
+msgstr "被推薦好友獎勵點數"
+
+#: src/Settings/SettingsScreen.php:526
+msgid "Extra points the referred friend can earn when completing their first purchase (0 = none)."
+msgstr "被推薦的好友完成首購時額外可得的點數(0 = 不給)。"
+
+#: src/Settings/SettingsScreen.php:527
+msgid "Qualifying order threshold (NT$)"
+msgstr "合格訂單門檻(NT$)"
+
+#: src/Settings/SettingsScreen.php:527
+msgid "The friend's order product subtotal must reach this amount to count as a qualifying referral (0 = no limit)."
+msgstr "好友訂單商品小計需達此金額才算合格推薦(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:528
+msgid "Referral cap per period (count)"
+msgstr "每期推薦上限(次)"
+
+#: src/Settings/SettingsScreen.php:528
+msgid "The maximum number of referrals for which the same referrer can be rewarded within each period (0 = no limit)."
+msgstr "同一推薦人每個週期最多可獲獎勵的推薦次數(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:531
+msgid "Referral cap period"
+msgstr "推薦上限週期"
+
+#: src/Settings/SettingsScreen.php:532
+msgid "Calculated together with the count cap above."
+msgstr "搭配上方次數上限計算。"
+
+#: src/Settings/SettingsScreen.php:536
+msgid "Weekly"
+msgstr "每週"
+
+#: src/Settings/SettingsScreen.php:539
+msgid "No time limit"
+msgstr "不限期間"
+
+#: src/Settings/SettingsScreen.php:546
+msgid "Store credit economy (purchase cashback / redemption)"
+msgstr "儲值金經濟(消費回饋 / 折抵)"
+
+#: src/Settings/SettingsScreen.php:547
+msgid "Cashback of spending into store credit, and the ratio cap for using store credit at checkout. Requires the \"Cashback\" / \"Wallet checkout redemption\" module to be enabled."
+msgstr "消費回饋成儲值金,以及結帳可用儲值金折抵的比例上限。需搭配啟用「消費回饋」/「結帳折抵錢包」模組。"
+
+#: src/Settings/SettingsScreen.php:549
+msgid "Cashback %"
+msgstr "消費回饋 %"
+
+#: src/Settings/SettingsScreen.php:549
+msgid "What percentage of the order amount is returned as store credit (0 = no cashback)."
+msgstr "訂單金額回饋多少 % 為儲值金(0 = 不回饋)。"
+
+#: src/Settings/SettingsScreen.php:550
+msgid "Cashback calculation base"
+msgstr "回饋計算基底"
+
+#: src/Settings/SettingsScreen.php:550
+msgid "Calculate cashback based on the product subtotal (excluding tax) or the order total."
+msgstr "以商品小計(未稅)或訂單總額計算回饋。"
+
+#: src/Settings/SettingsScreen.php:550
+msgid "Product subtotal (excluding tax)"
+msgstr "商品小計(未稅)"
+
+#: src/Settings/SettingsScreen.php:550
+msgid "Order total"
+msgstr "訂單總額"
+
+#: src/Settings/SettingsScreen.php:551
+msgid "Cashback threshold (NT$)"
+msgstr "回饋門檻(NT$)"
+
+#: src/Settings/SettingsScreen.php:551
+msgid "Cashback applies only when the order base reaches this amount (0 = no limit)."
+msgstr "訂單基底達此金額才回饋(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:552
+msgid "Cashback cap per order (NT$)"
+msgstr "單筆回饋上限(NT$)"
+
+#: src/Settings/SettingsScreen.php:552
+msgid "The maximum store credit returned for a single order (0 = no limit)."
+msgstr "單一訂單最多回饋多少儲值金(0 = 不限)。"
+
+#: src/Settings/SettingsScreen.php:553
+msgid "Store credit max cart offset %"
+msgstr "儲值金最多折購物車 %"
+
+#: src/Settings/SettingsScreen.php:553
+msgid "The maximum percentage of the redeemable subtotal that store credit can offset at checkout (default 100)."
+msgstr "結帳時儲值金最多折抵可折小計的百分之多少(預設 100)。"
+
+#: src/Settings/SettingsScreen.php:558
+msgid "Multi-currency rates"
+msgstr "多幣別比率"
+
+#: src/Settings/SettingsScreen.php:559
+msgid "Only needed when your store sells in more than one currency (WPML / Aelia / FOX / WOOCS). Order totals arrive in the CUSTOMER's currency, so a rate calibrated for your base currency would award wildly different amounts for the same real spend. Leave a row blank to convert the base rate with your currency plugin's own exchange rate."
+msgstr "只有在商店以多種貨幣銷售時才需要設定 (WPML / Aelia / FOX / WOOCS)。訂單總額是以「顧客的」貨幣計算,若沿用以本位幣校準的比率,同樣的實質消費會給出天差地遠的點數。整列留空即可用貨幣外掛本身的匯率換算本位比率。"
+
+#: src/Settings/SettingsScreen.php:561
+msgid "Per-currency rates"
+msgstr "逐幣別比率"
+
+#: src/Settings/SettingsScreen.php:561
+msgid "Points earned per 1 unit, and points needed to redeem 1 unit, for each currency you sell in."
+msgstr "你所販售的每種貨幣,每 1 元可得的點數,以及兌換 1 元所需的點數。"
+
+#: src/Settings/SettingsScreen.php:566
+msgid "Per-payment-method bonus"
+msgstr "逐付款方式加碼"
+
+#: src/Settings/SettingsScreen.php:567
+msgid "Give extra points for paying with a particular method. Payment methods do not cost the store the same, and points are the cheapest way to steer customers towards the cheaper one. 1 = no change; the bonus stacks with the other multipliers under the same 10x ceiling."
+msgstr "使用特定付款方式時給予額外點數。各種付款方式對商店的成本並不相同,而點數是引導顧客改用低成本方式最便宜的手段。1 = 不變;此加碼會與其他倍率相乘,並同樣受 10 倍上限限制。"
+
+#: src/Settings/SettingsScreen.php:569
+msgid "Payment method multipliers"
+msgstr "付款方式倍率"
+
+#: src/Settings/SettingsScreen.php:569
+msgid "One row per payment method installed on this store."
+msgstr "本商店已安裝的每種付款方式各一列。"
+
+#: src/Settings/SettingsScreen.php:574
+msgid "WooCommerce Subscriptions"
+msgstr "WooCommerce Subscriptions"
+
+#: src/Settings/SettingsScreen.php:575
+msgid "Only applies when the WooCommerce Subscriptions extension is installed. Renewal orders already earn like any other paid order; these settings decide whether that is what you want. A renewal never counts as a first purchase."
+msgstr "僅在已安裝 WooCommerce Subscriptions 擴充功能時適用。續訂訂單本來就會像其他已付款訂單一樣賺點;這些設定用來決定那是不是你要的結果。續訂永遠不算首次購買。"
+
+#: src/Settings/SettingsScreen.php:577
+msgid "Renewals earn points"
+msgstr "續訂可賺點"
+
+#: src/Settings/SettingsScreen.php:577
+msgid "On by default. Turn off to give no points at all on subscription renewals."
+msgstr "預設開啟。關閉後,訂閱續訂完全不給點數。"
+
+#: src/Settings/SettingsScreen.php:578
+msgid "Renewal multiplier"
+msgstr "續訂倍率"
+
+#: src/Settings/SettingsScreen.php:578
+msgid "Multiply earning on renewal orders (1 = same as a normal order, max 10). Staying subscribed is exactly the behaviour worth rewarding."
+msgstr "續訂訂單的賺點倍率 (1 = 與一般訂單相同,最多 10)。持續訂閱正是最值得獎勵的行為。"
+
+#: src/Settings/SettingsScreen.php:579
+msgid "One-off points when a subscription first becomes active (0 = off). Paid once per subscription."
+msgstr "訂閱首次啟用時給予的一次性點數 (0 = 關閉)。每筆訂閱只發放一次。"
+
+#: src/Settings/SettingsScreen.php:585
+msgid "Push points messages over the LINE Messaging API (LINE Notify was shut down in 2025 and is not used). Members link their LINE account in the membership plugin; anyone who has not linked is simply skipped. Messages are queued, so LINE can never slow down checkout."
+msgstr "透過 LINE Messaging API 推播點數訊息 (LINE Notify 已於 2025 年停止服務,本外掛不使用)。會員在會員外掛中綁定 LINE 帳號;未綁定者一律略過。訊息會排入佇列,因此 LINE 絕不會拖慢結帳。"
+
+#: src/Settings/SettingsScreen.php:587
+msgid "Enable the LINE sender. Nothing is sent until a channel access token and at least one event are set."
+msgstr "啟用 LINE 發送。在設定頻道存取權杖並至少選擇一種事件之前,不會送出任何訊息。"
+
+#: src/Settings/SettingsScreen.php:588
+msgid "Channel access token"
+msgstr "頻道存取權杖"
+
+#: src/Settings/SettingsScreen.php:588
+msgid "The long-lived channel access token of your LINE Messaging API channel."
+msgstr "你的 LINE Messaging API 頻道的長期頻道存取權杖。"
+
+#: src/Settings/SettingsScreen.php:589
+msgid "User-meta key holding the LINE ID"
+msgstr "存放 LINE ID 的使用者中繼資料鍵值"
+
+#: src/Settings/SettingsScreen.php:589
+msgid "Where a member's LINE userId is stored. Leave blank for the membership plugin default (_moformember_line_user_id)."
+msgstr "會員的 LINE userId 存放位置。留空則使用會員外掛的預設值 (_moformember_line_user_id)。"
+
+#: src/Settings/SettingsScreen.php:590
+#: src/Settings/SettingsScreen.php:604
+msgid "Send: points earned"
+msgstr "發送:賺得點數"
+
+#: src/Settings/SettingsScreen.php:590
+msgid "Message the member when points are credited."
+msgstr "點數入帳時通知會員。"
+
+#: src/Settings/SettingsScreen.php:591
+#: src/Settings/SettingsScreen.php:605
+msgid "Send: points redeemed"
+msgstr "發送:兌換點數"
+
+#: src/Settings/SettingsScreen.php:591
+msgid "Message the member when points are spent."
+msgstr "點數被使用時通知會員。"
+
+#: src/Settings/SettingsScreen.php:592
+#: src/Settings/SettingsScreen.php:606
+msgid "Send: points expiring soon"
+msgstr "發送:點數即將到期"
+
+#: src/Settings/SettingsScreen.php:592
+msgid "Message the member alongside the expiry reminder e-mail (same idempotent batch, so no duplicates)."
+msgstr "與到期提醒信同時通知會員 (共用同一個冪等批次,因此不會重複)。"
+
+#: src/Settings/SettingsScreen.php:598
+msgid "Push points events to an ESP, CRM or automation platform (Klaviyo, Brevo, n8n, Zapier, a LINE bot...). Deliveries are queued, so a slow endpoint never delays checkout, and each one is signed so the receiver can verify it. Internal / loopback addresses are refused."
+msgstr "把點數事件推送到 ESP、CRM 或自動化平台 (Klaviyo、Brevo、n8n、Zapier、LINE bot⋯)。送出會排入佇列,因此端點再慢也不會延誤結帳,而且每一次送出都附簽章,接收端可以驗證。內部 / loopback 位址會被拒絕。"
+
+#: src/Settings/SettingsScreen.php:600
+msgid "Enable the webhook sender. Nothing is sent until an endpoint URL and at least one event are set below."
+msgstr "啟用 Webhook 發送。在下方設定端點網址並至少選擇一種事件之前,不會送出任何內容。"
+
+#: src/Settings/SettingsScreen.php:601
+msgid "Endpoint URL"
+msgstr "端點網址"
+
+#: src/Settings/SettingsScreen.php:601
+msgid "The https:// URL each event is POSTed to as JSON."
+msgstr "每個事件會以 JSON 形式 POST 到這個 https:// 網址。"
+
+#: src/Settings/SettingsScreen.php:602
+msgid "Signing secret"
+msgstr "簽章密鑰"
+
+#: src/Settings/SettingsScreen.php:602
+msgid "Optional. When set, each delivery carries X-Moksafopoi-Signature: sha256=HMAC(body, secret) so the receiver can verify it came from this site."
+msgstr "選填。設定後,每次送出都會附上 X-Moksafopoi-Signature: sha256=HMAC(body, secret),接收端可據此驗證確實來自本站。"
+
+#: src/Settings/SettingsScreen.php:603
+msgid "Include the member e-mail"
+msgstr "附上會員電子郵件"
+
+#: src/Settings/SettingsScreen.php:603
+msgid "Off by default: the payload identifies members by user ID only. Turn on when your ESP needs the e-mail address to match a contact."
+msgstr "預設關閉:傳送內容只以使用者 ID 辨識會員。若你的 ESP 需要以電子郵件比對聯絡人,再開啟。"
+
+#: src/Settings/SettingsScreen.php:604
+msgid "POST an event whenever points are credited."
+msgstr "點數入帳時 POST 一個事件。"
+
+#: src/Settings/SettingsScreen.php:605
+msgid "POST an event whenever points are spent."
+msgstr "點數被使用時 POST 一個事件。"
+
+#: src/Settings/SettingsScreen.php:606
+msgid "POST an event alongside the expiry reminder e-mail (same idempotent batch, so no duplicates)."
+msgstr "與到期提醒信同時 POST 一個事件 (共用同一個冪等批次,因此不會重複)。"
+
+#: src/Settings/SettingsScreen.php:607
+msgid "Send: quest completed"
+msgstr "發送:任務完成"
+
+#: src/Settings/SettingsScreen.php:607
+msgid "POST an event when a member finishes a quest."
+msgstr "會員完成任務時 POST 一個事件。"
+
+#: src/Settings/SettingsScreen.php:612
+msgid "AI and external access (MCP)"
+msgstr "AI 與對外開放(MCP)"
+
+#: src/Settings/SettingsScreen.php:613
+msgid "Open points features to external AI tools (Abilities / MCP). All off by default; enable when needed."
+msgstr "把點數功能開放給外部 AI 工具(Abilities / MCP)。預設全部關閉,需要時再開啟。"
+
+#: src/Settings/SettingsScreen.php:615
+msgid "Read-only endpoints for a headless storefront or app: points/v1/me and points/v1/me/history. They always serve the logged-in customer only — there is no user_id parameter, so one member can never read another."
+msgstr "供 headless 前台或 App 使用的唯讀端點:points/v1/me 與 points/v1/me/history。它們一律只服務已登入的顧客本人 —— 沒有 user_id 參數,因此一位會員永遠讀不到另一位。"
+
+#: src/Settings/SettingsScreen.php:616
+msgid "Points AI abilities (Abilities)"
+msgstr "點數 AI 能力(Abilities)"
+
+#: src/Settings/SettingsScreen.php:616
+msgid "Register points features as WordPress AI abilities (Abilities) for use by AI assistants."
+msgstr "把點數功能註冊為 WordPress 的 AI 能力(Abilities),供 AI 助理使用。"
+
+#: src/Settings/SettingsScreen.php:617
+msgid "MCP module"
+msgstr "MCP 模組"
+
+#: src/Settings/SettingsScreen.php:617
+msgid "Load the MCP server module (still requires the \"External MCP server\" toggle below to actually open access)."
+msgstr "載入 MCP 伺服器模組(仍需下方「對外 MCP 伺服器」開關才真正開放)。"
+
+#: src/Settings/SettingsScreen.php:618
+msgid "External MCP server"
+msgstr "對外 MCP 伺服器"
+
+#: src/Settings/SettingsScreen.php:618
+msgid "Open points abilities to external AI tools (MCP). Off by default."
+msgstr "把點數能力開放給外部 AI 工具(MCP)。預設關閉。"
+
+#: src/Settings/SettingsScreen.php:619
+msgid "Change-making calls per hour (per account)"
+msgstr "每小時可變更資料的呼叫次數 (每個帳號)"
+
+#: src/Settings/SettingsScreen.php:619
+msgid "Cap on how many change-making MCP calls one account may make per hour (0 = no limit). External MCP calls run unattended, so a cap is what turns a runaway agent into a stopped one. Every call, allowed or refused, is recorded in the audit log on the Tools page."
+msgstr "限制單一帳號每小時最多可發出幾次「會變更資料」的 MCP 呼叫 (0 = 不限)。外部 MCP 呼叫是無人看管執行的,設上限才能把失控的 agent 變成被擋下的 agent。無論通過或被拒,每一次呼叫都會記錄在「工具」頁的稽核紀錄中。"
+
+#: src/Settings/SettingsScreen.php:620
+msgid "Allow external MCP to execute changes"
+msgstr "允許外部 MCP 執行變更"
+
+#: src/Settings/SettingsScreen.php:620
+msgid "Expose destructive abilities (add / deduct points, redeem, expire) to external MCP clients. Off by default (read-only). WARNING: external MCP calls run UNATTENDED with no confirmation step, so only administrator-level accounts (manage_options) can execute them, and the settings-change tool is never exposed over MCP. Leave off unless you fully trust the connected agent."
+msgstr "把破壞性功能 (增減點數、兌換、到期) 開放給外部 MCP 用戶端。預設關閉 (唯讀)。警告:外部 MCP 呼叫是「無人看管」執行且沒有確認步驟,因此只有管理員層級帳號 (manage_options) 能執行,而變更設定的工具永遠不會透過 MCP 開放。除非你完全信任連線的 agent,否則請保持關閉。"
+
+#: src/Settings/SettingsScreen.php:807
+msgid "Settings saved."
+msgstr "設定已儲存。"
+
+#. translators: 1: applied count, 2: skipped count.
+#: src/Settings/SettingsScreen.php:814
+#, php-format
+msgid "Imported %1$d setting(s) (skipped %2$d)."
+msgstr "已匯入 %1$d 項設定(略過 %2$d 項)。"
+
+#: src/Settings/SettingsScreen.php:818
+msgid "Settings import failed: the file is invalid or the format does not match."
+msgstr "設定匯入失敗:檔案無效或格式不符。"
+
+#: src/Settings/SettingsScreen.php:879
+msgid "Save settings"
+msgstr "儲存設定"
+
+#: src/Settings/SettingsScreen.php:924
+#: src/Settings/SettingsScreen.php:927
+msgid "Email preview"
+msgstr "信件預覽"
+
+#: src/Settings/SettingsScreen.php:926
+msgid "Below is a sample appearance of the \"Points expiry reminder\" email (using sample data). After saving, this preview applies the latest header background color and text."
+msgstr "以下為「點數到期提醒」信件的範例外觀(使用範例資料)。儲存後此預覽會套用最新的標頭底色與文字。"
+
+#: src/Settings/SettingsScreen.php:1195
+msgid "Select categories (multiple allowed)…"
+msgstr "選擇分類(可多選)…"
+
+#: src/Settings/SettingsScreen.php:1291
+msgid "Amount reached (NT$)"
+msgstr "滿額(NT$)"
+
+#: src/Settings/SettingsScreen.php:1292
+#: src/Settings/SettingsScreen.php:1499
+msgid "Multiplier"
+msgstr "倍率"
+
+#: src/Settings/SettingsScreen.php:1318
+msgid "Tier name"
+msgstr "階梯名稱"
+
+#: src/Settings/SettingsScreen.php:1319
+msgid "Lifetime points needed"
+msgstr "所需終身累積點數"
+
+#: src/Settings/SettingsScreen.php:1389
+msgid "Quest name"
+msgstr "任務名稱"
+
+#: src/Settings/SettingsScreen.php:1390
+msgid "What is counted"
+msgstr "計數的事件"
+
+#: src/Settings/SettingsScreen.php:1392
+msgid "Reward points"
+msgstr "獎勵點數"
+
+#: src/Settings/SettingsScreen.php:1493
+msgid "No payment methods are installed yet."
+msgstr "尚未安裝任何付款方式。"
+
+#: src/Settings/SettingsScreen.php:1498
+msgid "Payment method"
+msgstr "付款方式"
+
+#: src/Settings/SettingsScreen.php:1555
+msgid "Currency"
+msgstr "貨幣"
+
+#: src/Settings/SettingsScreen.php:1556
+msgid "Points earned per 1 unit"
+msgstr "每 1 元可得點數"
+
+#: src/Settings/SettingsScreen.php:1557
+msgid "Points to redeem 1 unit"
+msgstr "兌換 1 元所需點數"
+
+#: src/Settings/SettingsScreen.php:1563
+#: src/Settings/SettingsScreen.php:1565
+msgid "auto"
+msgstr "自動"
+
+#: src/Settings/SettingsScreen.php:1671
+msgid "Please choose a CSV file to upload."
+msgstr "請選擇要上傳的 CSV 檔案。"
+
+#: src/Settings/SettingsScreen.php:1709
+msgid "Compact old ledger entries"
+msgstr "壓縮舊帳本紀錄"
+
+#: src/Settings/SettingsScreen.php:1712
+msgid "Replace each member's entries older than the cutoff with a single opening-balance row. Balances stay exactly the same — the sum is preserved and verified per member before anything is deleted — but the individual old rows are gone for good."
+msgstr "把每位會員早於分界時間的紀錄,換成單獨一列期初餘額。餘額完全不變 —— 刪除任何資料前都會逐位會員驗證總和 —— 但個別的舊紀錄將永久消失。"
+
+#. translators: %s: the minimum age in days that may be compacted.
+#: src/Settings/SettingsScreen.php:1718
+#, php-format
+msgid "Entries newer than %s days are never compacted: deleting a row also deletes the duplicate-protection key that stops a replayed payment notification from awarding the same points twice. Entries that have not expired yet are left alone too, because they are still live inventory for the expiry engine."
+msgstr "%s 天內的紀錄永遠不會被壓縮:刪除一列的同時也會刪掉防重複的鍵值,而那正是阻止重送的付款通知重複發點的機制。尚未到期的紀錄同樣不會被動到,因為它們對到期引擎而言仍是有效庫存。"
+
+#: src/Settings/SettingsScreen.php:1727
+msgid "Compact entries older than (days)"
+msgstr "壓縮早於幾天前的紀錄"
+
+#: src/Settings/SettingsScreen.php:1733
+#: src/Settings/SettingsScreen.php:1806
+msgid "Preview only (write nothing)"
+msgstr "僅試算 (不寫入任何資料)"
+
+#: src/Settings/SettingsScreen.php:1734
+msgid "Old entries will be replaced by one opening-balance row per member. Balances do not change, but the old rows cannot be recovered. Continue?"
+msgstr "舊紀錄將被換成每位會員一列的期初餘額。餘額不會改變,但舊紀錄無法復原。要繼續嗎?"
+
+#: src/Settings/SettingsScreen.php:1735
+msgid "Run"
+msgstr "執行"
+
+#: src/Settings/SettingsScreen.php:1750
+msgid "Compaction complete."
+msgstr "壓縮完成。"
+
+#: src/Settings/SettingsScreen.php:1751
+#: src/Settings/SettingsScreen.php:1917
+msgid "Preview only — nothing was written."
+msgstr "僅試算 —— 未寫入任何資料。"
+
+#. translators: 1: members affected; 2: entries compacted; 3: the cutoff datetime.
+#: src/Settings/SettingsScreen.php:1755
+#, php-format
+msgid "%1$s members, %2$s entries older than %3$s."
+msgstr "%1$s 位會員、%2$s 筆早於 %3$s 的紀錄。"
+
+#. translators: %s: number of members skipped.
+#: src/Settings/SettingsScreen.php:1766
+#, php-format
+msgid "%s members were skipped and left untouched."
+msgstr "%s 位會員已略過,資料未被動到。"
+
+#: src/Settings/SettingsScreen.php:1785
+msgid "Import points / store credit (CSV)"
+msgstr "匯入點數 / 儲值金 (CSV)"
+
+#: src/Settings/SettingsScreen.php:1788
+msgid "Seed existing balances when moving from another plugin or a spreadsheet. The first row must be a header; the \"user\" column accepts a user ID, e-mail or username, and the optional columns are points, credit, note and expires_at (YYYY-MM-DD)."
+msgstr "從其他外掛或試算表搬家時,可用來建立既有餘額。第一列必須是標題列;「user」欄可填使用者 ID、電子郵件或使用者名稱,選填欄位為 points、credit、note 與 expires_at (YYYY-MM-DD)。"
+
+#: src/Settings/SettingsScreen.php:1792
+msgid "Every row is booked once per batch code, so re-uploading the same file with the same batch code adds nothing a second time. Always run the preview first — it reports exactly what would happen and writes nothing."
+msgstr "每一列都以批次代號為單位只入帳一次,因此用同一個批次代號重新上傳同一個檔案不會再次入帳。請務必先執行試算 —— 它會完整回報將會發生什麼事,而且不寫入任何資料。"
+
+#: src/Settings/SettingsScreen.php:1798
+msgid "Batch code"
+msgstr "批次代號"
+
+#: src/Settings/SettingsScreen.php:1799
+msgid "A short code identifying this import, e.g. migration-2026. Reusing a code makes the import idempotent; a NEW code books the rows again."
+msgstr "用來識別這次匯入的短代號,例如 migration-2026。沿用相同代號可讓匯入具冪等性;使用「新的」代號則會再次入帳。"
+
+#: src/Settings/SettingsScreen.php:1808
+msgid "Upload CSV"
+msgstr "上傳 CSV"
+
+#: src/Settings/SettingsScreen.php:1825
+msgid "Webhook deliveries"
+msgstr "Webhook 送出紀錄"
+
+#: src/Settings/SettingsScreen.php:1828
+msgid "Nothing delivered yet."
+msgstr "尚未送出任何內容。"
+
+#: src/Settings/SettingsScreen.php:1831
+msgid "Event"
+msgstr "事件"
+
+#: src/Settings/SettingsScreen.php:1831
+msgid "Response"
+msgstr "回應"
+
+#: src/Settings/SettingsScreen.php:1860
+msgid "External AI (MCP) call log"
+msgstr "外部 AI (MCP) 呼叫紀錄"
+
+#: src/Settings/SettingsScreen.php:1863
+msgid "No external tool calls yet."
+msgstr "尚無外部工具呼叫。"
+
+#: src/Settings/SettingsScreen.php:1866
+msgid "Account"
+msgstr "帳號"
+
+#: src/Settings/SettingsScreen.php:1866
+msgid "Tool"
+msgstr "工具"
+
+#: src/Settings/SettingsScreen.php:1866
+msgid "Result"
+msgstr "結果"
+
+#: src/Settings/SettingsScreen.php:1866
+msgid "Arguments"
+msgstr "參數"
+
+#: src/Settings/SettingsScreen.php:1876
+msgid "Read"
+msgstr "讀取"
+
+#: src/Settings/SettingsScreen.php:1896
+msgid "The import failed."
+msgstr "匯入失敗。"
+
+#. translators: 1: rows read; 2: rows applied; 3: rows skipped as already imported; 4: rows rejected.
+#: src/Settings/SettingsScreen.php:1903
+#, php-format
+msgid "Read %1$s rows: %2$s to apply, %3$s already imported, %4$s rejected."
+msgstr "已讀取 %1$s 列:%2$s 列將寫入、%3$s 列先前已匯入、%4$s 列遭退回。"
+
+#. translators: 1: total points; 2: total store credit.
+#: src/Settings/SettingsScreen.php:1911
+#, php-format
+msgid "Totals: %1$s points and %2$s store credit."
+msgstr "合計:%1$s 點與 %2$s 儲值金。"
+
+#: src/Settings/SettingsScreen.php:1916
+msgid "Import complete."
+msgstr "匯入完成。"
+
+#: src/Settings/SettingsScreen.php:1940
+msgid "Export settings"
+msgstr "匯出設定"
+
+#: src/Settings/SettingsScreen.php:1941
+msgid "Download all current points settings as a JSON file, for backup or moving to another site."
+msgstr "把目前所有點數設定下載成一份 JSON 檔,用於備份或搬到另一個站台。"
+
+#: src/Settings/SettingsScreen.php:1942
+msgid "Download settings JSON"
+msgstr "下載設定 JSON"
+
+#: src/Settings/SettingsScreen.php:1946
+msgid "Import settings"
+msgstr "匯入設定"
+
+#: src/Settings/SettingsScreen.php:1947
+msgid "Upload a previously exported JSON file to restore settings. Only settings this plugin recognizes are applied; unknown items are automatically skipped; every change is recorded in the change log below."
+msgstr "上傳先前匯出的 JSON 檔以還原設定。只會套用本外掛已知的設定項,未知項目自動略過;每筆變更都會記入下方變更紀錄。"
+
+#: src/Settings/SettingsScreen.php:1949
+msgid "Are you sure you want to overwrite the current settings with the uploaded file?"
+msgstr "確定要以上傳檔覆蓋目前設定嗎?"
+
+#: src/Settings/SettingsScreen.php:1949
+msgid "Upload and apply"
+msgstr "上傳並套用"
+
+#: src/Settings/SettingsScreen.php:1959
+msgid "Settings change log"
+msgstr "設定變更紀錄"
+
+#: src/Settings/SettingsScreen.php:1961
+msgid "There is no change log yet."
+msgstr "目前沒有變更紀錄。"
+
+#: src/Settings/SettingsScreen.php:1964
+msgid "User"
+msgstr "使用者"
+
+#: src/Settings/SettingsScreen.php:1964
+msgid "Old value → new value"
+msgstr "舊值 → 新值"
+
+#. translators: 1: earned points, 2: unit.
+#: src/Support/AdminOrderInfo.php:53
+#, php-format
+msgid "Earn points +%1$s %2$s"
+msgstr "賺點 +%1$s %2$s"
+
+#. translators: 1: spent points, 2: unit.
+#: src/Support/AdminOrderInfo.php:61
+#, php-format
+msgid "Deduct points −%1$s %2$s"
+msgstr "扣點 −%1$s %2$s"
+
+#. translators: %s: signed store-credit amount.
+#: src/Support/AdminOrderInfo.php:69
+#, php-format
+msgid "Store credit %s"
+msgstr "儲值金 %s"
+
+#: src/Support/AdminOrderInfo.php:75
+msgid "Points activity:"
+msgstr "點數異動:"
+
+#: src/Support/BalanceImporter.php:86
+msgid "Please enter a batch code (it is what makes re-uploading the same file safe)."
+msgstr "請輸入批次代號 (它正是讓重新上傳同一個檔案不會出錯的關鍵)。"
+
+#: src/Support/BalanceImporter.php:90
+#: src/Support/BalanceImporter.php:96
+msgid "The uploaded file could not be read."
+msgstr "無法讀取上傳的檔案。"
+
+#: src/Support/BalanceImporter.php:114
+msgid "The first row must be a header naming the columns, and must include a \"user\" column."
+msgstr "第一列必須是標明各欄位的標題列,而且必須包含「user」欄。"
+
+#. translators: %s: the maximum number of rows one upload may contain.
+#: src/Support/BalanceImporter.php:123
+#, php-format
+msgid "Stopped at the %s-row limit; split the file and import the rest separately."
+msgstr "已在 %s 列的上限處停止;請將檔案分割後再匯入其餘部分。"
+
+#. translators: 1: CSV row number; 2: the reason the row was rejected.
+#: src/Support/BalanceImporter.php:136
+#, php-format
+msgid "Row %1$s: %2$s"
+msgstr "第 %1$s 列:%2$s"
+
+#: src/Support/BalanceImporter.php:183
+msgid "The file is empty."
+msgstr "檔案是空的。"
+
+#. translators: %s: the value in the CSV's user column that could not be matched.
+#: src/Support/BalanceImporter.php:234
+#, php-format
+msgid "no member matched \"%s\""
+msgstr "找不到符合「%s」的會員"
+
+#: src/Support/BalanceImporter.php:244
+msgid "the points value is not a number"
+msgstr "點數欄的值不是數字"
+
+#: src/Support/BalanceImporter.php:248
+msgid "the points value is out of the allowed range"
+msgstr "點數欄的值超出允許範圍"
+
+#: src/Support/BalanceImporter.php:256
+msgid "the store-credit value is not a number"
+msgstr "儲值金欄的值不是數字"
+
+#: src/Support/BalanceImporter.php:260
+msgid "the store-credit value is out of the allowed range"
+msgstr "儲值金欄的值超出允許範圍"
+
+#: src/Support/BalanceImporter.php:265
+msgid "neither points nor store credit was given"
+msgstr "點數與儲值金兩欄都沒有填寫"
+
+#: src/Support/BalanceImporter.php:272
+msgid "the expiry date is not in YYYY-MM-DD format"
+msgstr "到期日不是 YYYY-MM-DD 格式"
+
+#. translators: 1: site name; 2: site home URL.
+#: src/Support/EmailTemplate.php:49
+#, php-format
+msgid "%1$s · %2$s"
+msgstr "%1$s · %2$s"
+
+#: src/Support/Forecast.php:148
+msgid "Priced at the bottom quartile so about three quarters of members can already redeem it — a programme where nobody can afford anything is a programme nobody uses."
+msgstr "定在第一四分位,約四分之三的會員現在就換得起 —— 一個沒有人換得起任何東西的計畫,不會有人使用。"
+
+#: src/Support/Forecast.php:154
+msgid "Priced at the median balance: the everyday reward half of your members can reach right now."
+msgstr "定在餘額中位數:一半的會員現在就能換到的日常獎勵。"
+
+#: src/Support/Forecast.php:160
+msgid "Priced near the top decile — something to save towards, which is what keeps balances from being spent the moment they appear."
+msgstr "定在前 10% 附近 —— 值得存下去的目標,這正是讓餘額不會一到手就花光的原因。"
+
+#. translators: 1: points outstanding; 2: their monetary value.
+#: src/Support/Forecast.php:189
+#, php-format
+msgid "%1$s points are in circulation, worth about NT$%2$s if every member redeemed today."
+msgstr "目前流通中的點數為 %1$s,若所有會員今天全數兌換,約值 NT$%2$s。"
+
+#. translators: %s: points expiring within 30 days.
+#: src/Support/Forecast.php:201
+#, php-format
+msgid "%s points expire within 30 days — a reminder campaign now converts them into orders instead of into breakage."
+msgstr "有 %s 點將在 30 天內到期 —— 現在發動提醒活動,可以把它們變成訂單而不是耗損。"
+
+#. translators: 1: redemption rate; 2: breakage rate.
+#: src/Support/Forecast.php:212
+#, php-format
+msgid "%1$s%% of all points issued have been redeemed and %2$s%% expired unused."
+msgstr "所有已發出的點數中,%1$s%% 已被兌換、%2$s%% 過期未用。"
+
+#: src/Support/Forecast.php:221
+msgid "Redemption is under 20%: members are collecting but not spending. Usually the cheapest reward is still out of reach — check the entry-level suggestion below."
+msgstr "兌換率低於 20%:會員只收集不使用。通常是因為最便宜的獎勵仍然換不起 —— 請參考下方的入門價位建議。"
+
+#: src/Support/Forecast.php:229
+msgid "More points were redeemed than issued in the last 30 days — the outstanding liability is shrinking, which is healthy, but check that earning is still switched on."
+msgstr "近 30 天兌換的點數多於發出的點數 —— 未兌換負債正在下降,這是健康的,但請確認賺點功能仍然是開啟的。"
+
+#. translators: 1: integer points amount, thousands-grouped; 2: the (customisable) points unit, e.g.「點」.
+#: src/Support/Label.php:57
+#, php-format
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: src/Support/Migration.php:57
+msgid "Opening balance transferred in from moforcoupon store credit"
+msgstr "自 moforcoupon 儲值金轉入的期初餘額"
+
+#: src/Support/Retention.php:118
+msgid "Opening balance (older entries compacted)"
+msgstr "期初餘額 (已壓縮較早的紀錄)"
+
+#: src/Support/Retention.php:161
+msgid "Retention compaction repair"
+msgstr "保留壓縮修正"
+
+#: src/Support/SettingsPorter.php:75
+msgid "The file format does not match (not this plugin's settings export file)."
+msgstr "檔案格式不符(不是本外掛的設定匯出檔)。"
+
+#: src/Support/SettingsPorter.php:85
+msgid "The import file has no applicable settings."
+msgstr "匯入檔沒有可套用的設定。"
+
+#: src/Support/SiblingCredits.php:50
+msgid "Affiliate commission credited to store credit"
+msgstr "分潤佣金撥入儲值金"
+
+#: src/Support/Tiers.php:284
+msgid "Platinum"
+msgstr "白金"
+
+#: src/Support/UserLock.php:34
+msgid "Invalid user."
+msgstr "無效的使用者。"
+
+#: src/Support/UserLock.php:42
+msgid "The system is busy, please try again later."
+msgstr "系統忙碌中,請稍後再試一次。"

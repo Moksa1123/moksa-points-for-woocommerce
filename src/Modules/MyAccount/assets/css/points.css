@@ -1,0 +1,202 @@
+/*
+ * "我的點數" account-page styles. Parallel to moforcoupon's coupon-cards.css —
+ * shares the same border-radius / spacing / shadow tokens so the two plugins'
+ * account pages feel like one platform.
+ */
+
+.moforpoints-card {
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.06 );
+	padding: 18px 16px;
+	margin: 16px 0 24px;
+}
+
+.moforpoints-card--hero {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	background: linear-gradient( 135deg, #f8fafc 0%, #eef2ff 100% );
+}
+
+.moforpoints-card__metric {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 140px;
+}
+
+.moforpoints-card__metric-label {
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.moforpoints-card__metric-value {
+	font-size: 28px;
+	font-weight: 700;
+	color: #111827;
+	font-variant-numeric: tabular-nums;
+}
+
+.moforpoints-ratio {
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #f9fafb;
+	padding: 12px 18px;
+	margin: 0 0 24px;
+}
+
+.moforpoints-ratio__title {
+	margin: 4px 0 8px;
+	font-size: 15px;
+}
+
+.moforpoints-ratio__list {
+	margin: 0;
+	padding-left: 18px;
+	color: #374151;
+	font-size: 14px;
+	line-height: 1.8;
+}
+
+.moforpoints-history__title {
+	margin: 8px 0 12px;
+	font-size: 16px;
+}
+
+.moforpoints-history__empty {
+	padding: 16px;
+	color: #666;
+	font-style: italic;
+}
+
+.moforpoints-history.shop_table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.moforpoints-history th,
+.moforpoints-history td {
+	padding: 10px 8px;
+	border-bottom: 1px solid #f0f0f0;
+	text-align: left;
+	font-size: 14px;
+}
+
+.moforpoints-history__delta {
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+}
+
+.moforpoints-history__delta--up {
+	color: #059669;
+}
+
+.moforpoints-history__delta--down {
+	color: #b3261e;
+}
+
+.moforpoints-history__nav {
+	display: flex;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.moforpoints-history__nav .button {
+	text-decoration: none;
+}
+
+@media (max-width: 480px) {
+	.moforpoints-card--hero {
+		gap: 16px;
+	}
+
+	.moforpoints-card__metric-value {
+		font-size: 24px;
+	}
+}
+
+/* 點數商城 [moforpoints_mall] storefront grid. */
+.moforpoints-mall {
+	margin: 16px 0 24px;
+}
+
+.moforpoints-mall__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.moforpoints-mall__title {
+	margin: 0;
+	font-size: 18px;
+}
+
+.moforpoints-mall__balance {
+	margin: 0;
+	color: #6b7280;
+	font-size: 14px;
+}
+
+.moforpoints-mall__grid {
+	display: grid;
+	grid-template-columns: repeat( var( --moforpoints-mall-cols, 3 ), minmax( 0, 1fr ) );
+	gap: 16px;
+}
+
+.moforpoints-mall__card {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.06 );
+	padding: 16px;
+}
+
+.moforpoints-mall__card.is-disabled {
+	opacity: 0.6;
+}
+
+.moforpoints-mall__card-label {
+	font-size: 15px;
+	font-weight: 700;
+	color: #111827;
+}
+
+.moforpoints-mall__card-kind {
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.moforpoints-mall__card-cost {
+	font-size: 20px;
+	font-weight: 700;
+	color: #4338ca;
+	font-variant-numeric: tabular-nums;
+	margin-top: auto;
+}
+
+.moforpoints-mall__card .button,
+.moforpoints-mall__login {
+	width: 100%;
+	text-align: center;
+	text-decoration: none;
+}
+
+@media (max-width: 768px) {
+	.moforpoints-mall__grid {
+		grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	}
+}
+
+@media (max-width: 480px) {
+	.moforpoints-mall__grid {
+		grid-template-columns: 1fr;
+	}
+}
