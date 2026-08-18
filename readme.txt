@@ -18,7 +18,7 @@ Moksa Points for WooCommerce is the value engine of the Moksa platform: a single
 
 Every balance change is written once through a de-duplicated ledger entry keyed by a stable reference, so a retried checkout, a double-fired hook or a concurrent request can never mint or double-spend value. Redemption and checkout debits are guarded by a per-user lock, and refunds and cancellations proportionally reverse the points and credit they originally granted.
 
-Points is modular — enable only what you need from the plugin's own "Moksa Points → Settings" screen. On first install a **safe additive core** is enabled (the points ledger, the "My points" account page, and purchase / coupon earning); **value-moving modules that change checkout** (points & store-credit redemption, cashback, gift cards) and the **AI / Abilities / MCP** surface stay **off until you turn them on**. The plugin is HPOS and Block Checkout compatible and, on uninstall, removes only its own `moksafopoi_` prefixed data.
+Points is modular — enable only what you need from the plugin's own "Moksa Points → Settings" screen. On first install a **safe additive core** is enabled: the ledger, the "My points" account page with its tier / badges / leaderboard display, purchase and coupon earning, campaigns, and **WordPress Ability registration** (every ability is capability-checked against `manage_woocommerce`). Two groups stay **off until you turn them on**: anything that **moves value at checkout** (points and store-credit redemption, cashback, gift cards) and anything that **opens an outside interface** (the external MCP server, outbound webhooks, LINE notifications, the customer REST API). The in-dashboard AI assistant is bundled but does nothing until you configure a provider in WordPress's AI Client. The plugin is HPOS and Block Checkout compatible and, on uninstall, removes only its own `moksafopoi_` prefixed data.
 
 = Earning and spending =
 
@@ -56,7 +56,9 @@ Points is modular — enable only what you need from the plugin's own "Moksa Poi
 
 = Abilities, AI and MCP (optional) =
 
-Every read and value action is registered as a capability-checked WordPress Ability, reachable from the WordPress Abilities API, an in-dashboard AI assistant (WordPress 7.0 AI Client) and an optional self-built MCP server. These are off by default and every ability and REST route checks the current user's `manage_woocommerce` capability. Destructive abilities stay disabled over external MCP unless you separately opt in.
+Every read and value action is registered as a capability-checked WordPress Ability, reachable from the WordPress Abilities API, an in-dashboard AI assistant (WordPress 7.0 AI Client) and an optional self-built MCP server.
+
+Ability registration is **on** out of the box, so an agent working inside your dashboard can read and act on the programme; every ability and REST route checks the current user's `manage_woocommerce` capability, so it can never do more than the logged-in user could do by hand. The AI assistant stays inert until you configure a provider, and the **MCP server is off entirely**. Destructive abilities are never exposed to external MCP unless you separately opt in — and when they are, they additionally require an administrator-level capability, an hourly rate limit and an audit log of every call.
 
 == External services ==
 
@@ -72,7 +74,7 @@ Out of the box this plugin connects to nothing and makes no outbound HTTP reques
 
 1. Upload the plugin to `/wp-content/plugins/moksa-points-for-woocommerce`, or install it from the Plugins screen.
 2. Activate it. WooCommerce must be active.
-3. Open **Moksa Points → Settings** and switch on the modules you want. A safe earning core is enabled on first install; checkout-changing modules (points / store-credit redemption, cashback, gift cards) and the AI / MCP surface stay off until you enable them.
+3. Open **Moksa Points → Settings** and switch on the modules you want. A safe earning core is enabled on first install; modules that change checkout (points / store-credit redemption, cashback, gift cards) and modules that open an outside interface (external MCP, outbound webhooks, LINE notifications, the customer REST API) stay off until you enable them.
 
 == Frequently Asked Questions ==
 
@@ -90,7 +92,7 @@ Refunds and cancellations proportionally reverse the points and store credit the
 
 = Does it work without the AI features? =
 
-Yes. All points, wallet and reward features work on a standard WooCommerce store with no AI configuration. The AI assistant, Abilities and MCP are optional and off by default.
+Yes. All points, wallet and reward features work on a standard WooCommerce store with no AI configuration. Abilities are registered out of the box (each one capability-checked) so an agent *can* read the programme, but nothing reaches an AI service until you configure a provider in WordPress's AI Client, and the external MCP server is off entirely.
 
 == Changelog ==
 
@@ -101,7 +103,7 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Spending: redemption catalogue with stock and per-customer limits, checkout wallet (classic and block), buy-with-points, redeem codes, cashback, gift cards, points packs and member-to-member transfer.
 * Members: My Points page, tier ladder, quests, leaderboard, badges, a how-to-earn guide, a shareable achievement card and six editor blocks.
 * Operations: FIFO expiry with reminder e-mails, recurring campaign schedules, per-currency rates for multi-currency stores, CSV balance import, ledger compaction, outbound webhooks, LINE Messaging API notifications and a customer-scoped REST API.
-* Optional Abilities / AI / MCP exposure, off by default, with an hourly rate limit and an audit log on external tool calls.
+* Abilities registered by default, every one capability-checked; the AI assistant is inert until a provider is configured; external MCP is off, and when enabled it adds an administrator-level capability gate, an hourly rate limit and an audit log of every tool call.
 * Ships a complete Traditional Chinese (Taiwan) translation.
 
 == Upgrade Notice ==

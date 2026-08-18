@@ -4620,8 +4620,8 @@ msgid "AI and external access (MCP)"
 msgstr "AI 與對外開放(MCP)"
 
 #: src/Settings/SettingsScreen.php:613
-msgid "Open points features to external AI tools (Abilities / MCP). All off by default; enable when needed."
-msgstr "把點數功能開放給外部 AI 工具(Abilities / MCP)。預設全部關閉,需要時再開啟。"
+msgid "Open points features to AI tools. Ability registration is on by default and every ability is capability-checked, so an assistant can never do more than you could by hand. The external MCP server is off until you switch it on."
+msgstr "把點數功能開放給 AI 工具。Ability 註冊預設為開啟,且每一個 ability 都會檢查權限,因此助理能做的絕不會超過你自己動手能做的範圍。對外的 MCP 伺服器則預設關閉,要自行開啟。"
 
 #: src/Settings/SettingsScreen.php:615
 msgid "Read-only endpoints for a headless storefront or app: points/v1/me and points/v1/me/history. They always serve the logged-in customer only — there is no user_id parameter, so one member can never read another."

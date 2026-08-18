@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-10T03:50:04+00:00\n"
+"POT-Creation-Date: 2026-08-18T18:20:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: moksa-points-for-woocommerce\n"
@@ -4616,7 +4616,7 @@ msgid "AI and external access (MCP)"
 msgstr ""
 
 #: src/Settings/SettingsScreen.php:613
-msgid "Open points features to external AI tools (Abilities / MCP). All off by default; enable when needed."
+msgid "Open points features to AI tools. Ability registration is on by default and every ability is capability-checked, so an assistant can never do more than you could by hand. The external MCP server is off until you switch it on."
 msgstr ""
 
 #: src/Settings/SettingsScreen.php:615

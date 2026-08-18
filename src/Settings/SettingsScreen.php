@@ -610,7 +610,7 @@ final class SettingsScreen {
 			array(
 				'tab'    => 'advanced',
 				'title'  => __( 'AI and external access (MCP)', 'moksa-points-for-woocommerce' ),
-				'desc'   => __( 'Open points features to external AI tools (Abilities / MCP). All off by default; enable when needed.', 'moksa-points-for-woocommerce' ),
+				'desc'   => __( 'Open points features to AI tools. Ability registration is on by default and every ability is capability-checked, so an assistant can never do more than you could by hand. The external MCP server is off until you switch it on.', 'moksa-points-for-woocommerce' ),
 				'fields' => array(
 					self::toggle( 'moksafopoi_restapi_enabled', __( 'Customer REST API', 'moksa-points-for-woocommerce' ), __( 'Read-only endpoints for a headless storefront or app: points/v1/me and points/v1/me/history. They always serve the logged-in customer only — there is no user_id parameter, so one member can never read another.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_abilities_enabled', __( 'Points AI abilities (Abilities)', 'moksa-points-for-woocommerce' ), __( 'Register points features as WordPress AI abilities (Abilities) for use by AI assistants.', 'moksa-points-for-woocommerce' ) ),

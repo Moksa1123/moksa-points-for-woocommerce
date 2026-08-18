@@ -16,9 +16,11 @@ programme **readable by AI agents** through the WordPress Abilities API and an o
 - **Requires:** WordPress 7.0+ · PHP 8.2+ · WooCommerce 10.7+
 - **Version:** 1.0.0 · **License:** GPLv3 or later
 - **HPOS** and **Block Checkout** compatible
-- Every feature is a separate module. On install only a **safe additive core** is on; anything
-  that **moves value at checkout** (redemption, cashback, gift cards) and the whole
-  **AI / Abilities / MCP** surface stays **off until you switch it on**.
+- Every feature is a separate module. On install only a **safe additive core** is on — the ledger,
+  the "My points" page, purchase and coupon earning, campaigns, and **Ability registration**
+  (every ability capability-checked at `manage_woocommerce`). Anything that **moves value at
+  checkout** (redemption, cashback, gift cards) and anything that **opens an outside interface**
+  (external MCP, webhooks, LINE, the customer REST API) stays **off until you switch it on**.
 
 ---
 
@@ -73,11 +75,15 @@ never an estimate typed into a settings field.
 - Customer-scoped **REST API** for headless storefronts — no `user_id` parameter anywhere, so a
   member can only ever read themselves
 
-### Abilities, AI and MCP (optional, off by default)
+### Abilities, AI and MCP
 Every read and value action is a capability-checked WordPress Ability, reachable from the
 Abilities API, an in-dashboard AI assistant (WordPress 7.0 AI Client) and an optional MCP server.
-Destructive abilities stay hidden from external MCP unless you separately opt in; when they are
-exposed they run behind an administrator-level capability, an hourly rate limit and a full audit log.
+
+Ability registration is **on by default** — each one is checked against `manage_woocommerce`, so an
+agent can never do more than the logged-in user could do by hand. The AI assistant is bundled but
+inert until you configure a provider. The **external MCP server is off**; destructive abilities stay
+hidden from it unless you separately opt in, and even then they run behind an administrator-level
+capability, an hourly rate limit and a full audit log.
 
 ## Multilingual
 
