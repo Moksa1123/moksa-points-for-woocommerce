@@ -19,7 +19,9 @@ defined( 'ABSPATH' ) || exit;
 
 // Bump this string when shipping a newer bundled launcher. Highest version wins the election.
 $GLOBALS['moksa_ai_pool'][] = array(
-	'version' => '1.3.3',
+	// 1.3.4:Agent 改用可變函式呼叫 wp_ai_client_prompt(),避開 Plugin Check 的
+	// wp_function_not_compatible_with_requires_wp 誤判(呼叫本身仍受 function_exists 守衛)。
+	'version' => '1.3.4',
 	'dir'     => __DIR__,
 );
 

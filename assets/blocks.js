@@ -22,7 +22,7 @@
 		var spec = labels[ name ] || {};
 
 		blocks.registerBlockType( 'moksafopoi/' + name, {
-			apiVersion: 2,
+			apiVersion: 3,
 			title: spec.title || name,
 			description: spec.description || '',
 			category: 'widgets',

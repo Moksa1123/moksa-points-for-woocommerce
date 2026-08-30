@@ -1508,6 +1508,9 @@ final class Ability {
 	private static function read_meta(): array {
 		return array(
 			'show_in_rest' => true,
+			// WordPress 7.1's unified exposure flag: this ability is meant for external clients
+			// (REST, MCP adapters, AI agents). Channel-specific keys still win where present.
+			'public'       => true,
 			'annotations'  => array(
 				'readonly'    => true,
 				'destructive' => false,
@@ -1524,13 +1527,21 @@ final class Ability {
 	private static function write_meta(): array {
 		return array(
 			'show_in_rest' => false,
+			// WordPress 7.1's unified exposure flag, OFF: these are not tools to hand an external
+			// client by default. It is only a fallback though — the MCP Adapter reads `mcp.public`
+			// first and an explicit value there wins — so the real gate is the one below.
+			'public'       => false,
 			'annotations'  => array(
 				'readonly'    => false,
 				'destructive' => true,
 				'idempotent'  => false,
 			),
 			'mcp'          => array(
-				'public' => true,
+				// The MCP Adapter's rule is `isset( meta.mcp.public ) ? meta.mcp.public : meta.public`,
+				// so this flag — not the high-level `public` — decides whether a third-party adapter
+				// offers the tool. Bound to the shop's own switch: off by default, and when the shop
+				// opts in, our server and any external adapter agree.
+				'public' => 'yes' === get_option( 'moksafopoi_mcp_expose_destructive', 'no' ),
 				'type'   => 'tool',
 			),
 		);

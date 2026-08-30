@@ -72,7 +72,7 @@ final class RedeemCode {
 		}
 
 		// 1) Rate limit (anti brute-guess).
-		$tkey  = 'mfp_code_try_' . $user_id;
+		$tkey  = 'moksafopoi_code_try_' . $user_id;
 		$tries = (int) get_transient( $tkey );
 		if ( $tries >= self::RATE_LIMIT_TRIES ) {
 			return array( false, __( 'Too many attempts; please try again in 10 minutes.', 'moksa-points-for-woocommerce' ) );
@@ -181,7 +181,7 @@ final class RedeemCode {
 	/** Stash the result and bounce back to the account page. Never returns. */
 	private static function finish( int $user_id, array $result ): void {
 		set_transient(
-			'mfp_code_flash_' . $user_id,
+			'moksafopoi_code_flash_' . $user_id,
 			array(
 				'ok'      => (bool) $result[0],
 				'message' => (string) $result[1],
@@ -195,11 +195,11 @@ final class RedeemCode {
 	}
 
 	private static function render_flash( int $user_id ): void {
-		$flash = get_transient( 'mfp_code_flash_' . $user_id );
+		$flash = get_transient( 'moksafopoi_code_flash_' . $user_id );
 		if ( ! is_array( $flash ) ) {
 			return;
 		}
-		delete_transient( 'mfp_code_flash_' . $user_id );
+		delete_transient( 'moksafopoi_code_flash_' . $user_id );
 		$ok = (bool) ( $flash['ok'] ?? false );
 		echo '<div class="woocommerce-message' . ( $ok ? '' : ' woocommerce-error' ) . '" role="alert">'
 			. esc_html( (string) ( $flash['message'] ?? '' ) ) . '</div>';

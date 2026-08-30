@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\AdminMenu;
 
-use Moksafopoi\Settings\SettingsUi;
 use Moksafopoi\Support\Schema;
 
 defined( 'ABSPATH' ) || exit;
@@ -366,7 +365,7 @@ final class Dashboard {
 	public static function enqueue_admin( string $hook = '' ): void {
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 		if ( $screen && false !== strpos( (string) $screen->id, 'moksa-points-for-woocommerce' ) ) {
-			wp_add_inline_style( 'common', SettingsUi::css() );
+			wp_add_inline_style( 'common', \Moksa\Kit\SettingsUi::css() );
 		}
 	}
 

@@ -165,7 +165,12 @@ final class Server {
 			return $out;
 		}
 		$expose_destructive = 'yes' === get_option( 'moksafopoi_mcp_expose_destructive', 'no' );
-		foreach ( wp_get_abilities() as $ability ) {
+		// WordPress 7.1 can narrow the registry for us (a busy install registers a hundred or more
+		// abilities; only a handful are ours). The prefix check below still stays: the argument is 7.1-only and PHP
+		// silently ignores extra arguments to a user-defined function, so on 6.9 / 7.0 this call
+		// returns EVERY ability and without the check we would hand another plugin's abilities to
+		// our own MCP server.
+		foreach ( wp_get_abilities( array( 'namespace' => rtrim( self::ABILITY_PREFIX, '/' ) ) ) as $ability ) {
 			if ( ! is_object( $ability ) || ! method_exists( $ability, 'get_name' ) ) {
 				continue;
 			}
@@ -212,6 +217,26 @@ final class Server {
 		return $tools;
 	}
 
+
+	/**
+	 * Prepare a schema for an external client. WordPress 7.1 strips server-only keys
+	 * (sanitize_callback / validate_callback / arg_options) and normalises property-level
+	 * `required` into the JSON Schema array form; the 7.1 dev note asks MCP tools specifically to
+	 * run schemas through it before they leave the server. On 6.9 / 7.0 the schema is passed
+	 * through untouched.
+	 *
+	 * @param mixed $schema
+	 * @return mixed
+	 */
+	private static function for_client( $schema ) {
+		if ( ! is_array( $schema ) || array() === $schema ) {
+			return $schema;
+		}
+		return function_exists( 'wp_prepare_json_schema_for_client' )
+			? (array) wp_prepare_json_schema_for_client( $schema )
+			: $schema;
+	}
+
 	/**
 	 * @param object $ability WP_Ability.
 	 * @return array<string,mixed>
@@ -220,7 +245,7 @@ final class Server {
 		$name  = (string) $ability->get_name();
 		$meta  = (array) $ability->get_meta();
 		$ann   = isset( $meta['annotations'] ) && is_array( $meta['annotations'] ) ? $meta['annotations'] : array();
-		$input = $ability->get_input_schema();
+		$input = self::for_client( $ability->get_input_schema() );
 		$input = is_array( $input ) && ! empty( $input )
 			? $input
 			: array(
@@ -241,7 +266,7 @@ final class Server {
 			),
 		);
 
-		$out = $ability->get_output_schema();
+		$out = self::for_client( $ability->get_output_schema() );
 		if ( is_array( $out ) && ! empty( $out ) ) {
 			$wrap_key             = self::wrap_key( $out );
 			$tool['outputSchema'] = null === $wrap_key

@@ -69,6 +69,6 @@ final class Shortcodes {
 		if ( '' !== (string) $atts['max'] && $balance > (int) $atts['max'] ) {
 			return '';
 		}
-		return do_shortcode( $content );
+		return wp_kses_post( do_shortcode( $content ) );
 	}
 }

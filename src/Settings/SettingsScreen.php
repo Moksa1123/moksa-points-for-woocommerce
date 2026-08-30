@@ -1985,10 +1985,10 @@ final class SettingsScreen {
 			return;
 		}
 
-		wp_add_inline_style( 'common', SettingsUi::css() );
+		wp_add_inline_style( 'common', \Moksa\Kit\SettingsUi::css() );
 		wp_register_script( 'moksafopoi-settings-ui', false, array(), '1.0.0', true );
 		wp_enqueue_script( 'moksafopoi-settings-ui' );
-		wp_add_inline_script( 'moksafopoi-settings-ui', SettingsUi::js() );
+		wp_add_inline_script( 'moksafopoi-settings-ui', \Moksa\Kit\SettingsUi::js() );
 
 		// WooCommerce enhanced (select2) — powers the 限定可折抵分類 picker. WC auto-inits any
 		// .wc-enhanced-select in the DOM on ready, so no custom init is needed.

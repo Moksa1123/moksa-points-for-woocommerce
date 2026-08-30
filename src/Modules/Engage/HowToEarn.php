@@ -215,7 +215,7 @@ final class HowToEarn {
 	 */
 	public static function shortcode( $atts = array() ): string {
 		$atts = shortcode_atts( array( 'title' => 'yes' ), (array) $atts, 'moksafopoi_how_to_earn' );
-		return self::html( 'no' !== $atts['title'] );
+		return wp_kses_post( self::html( 'no' !== $atts['title'] ) );
 	}
 
 	/** Echo the guide under the「我的點數」hero. */

@@ -2,14 +2,20 @@
 
 declare( strict_types=1 );
 
-namespace Moksafopoi\Settings;
+namespace Moksa\Kit;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * 共用設定 UI 資產(design system)— 五支 Moksa 外掛共用同一份 shell CSS + 行為 JS,對齊 mo-ectools
- * 的 settings-shell / settings-polish 視覺語言(橘色 accent 標題、iOS toggle 模組卡、可收合 section-card)。
- * 以 inline 方式 enqueue,無新增檔案、無打包白名單問題。此檔在五支中內容一致,僅命名空間不同。
+ * 共用設定 UI 資產(design system)— the `mowp-` shell CSS + behaviour JS every Moksa plugin's settings
+ * screen is built on, aligned with mo-ectools' settings-shell / settings-polish visual language
+ * (orange accent headings, iOS-style module toggles, collapsible section cards).
+ *
+ * This file used to exist five times over, byte-identical apart from its namespace; it now lives here
+ * once, so a tweak to the design system reaches every plugin on the next kit sync instead of being
+ * hand-carried four times. Enqueued inline, so there is no asset file and no packaging whitelist.
+ *
+ * Context-free by design: no options, no textdomain, no plugin identity — just the two strings.
  */
 final class SettingsUi {
 

@@ -3,9 +3,9 @@
  * Plugin Name:        Moksa Points for WooCommerce
  * Plugin URI:         https://github.com/Moksa1123/moksa-points-for-woocommerce
  * Description:        The value engine for the Moksa platform: an idempotent points / store-credit ledger, earn rules, redeem, a checkout wallet, and Abilities/MCP. The single source of truth for customer balance — companion plugins read it, never store their own.
- * Version:            1.0.0
+ * Version:            1.0.1
  * Requires at least:  7.0
- * Tested up to:       7.0
+ * Tested up to:       7.1
  * Requires PHP:       8.2
  * Requires Plugins:   woocommerce
  * WC requires at least: 10.7
@@ -25,7 +25,7 @@ declare( strict_types=1 );
 defined( 'ABSPATH' ) || exit;
 
 /* Constants */
-const MOKSAFOPOI_VERSION    = '1.0.0';
+const MOKSAFOPOI_VERSION    = '1.0.1';
 const MOKSAFOPOI_DB_VERSION = '1';
 const MOKSAFOPOI_MIN_PHP    = '8.2';
 const MOKSAFOPOI_MIN_WP     = '7.0';
@@ -60,6 +60,14 @@ if ( is_readable( $moksafopoi_autoload ) ) {
 		}
 	);
 }
+
+/*
+ * Shared Moksa Kit (bundled library; single-instance version election across the suite).
+ * Infrastructure every Moksa plugin's settings screen needs - the `mowp-` design system, the settings
+ * change log, the settings export/import porter - carried once instead of five times. Always loaded:
+ * it registers an autoloader and nothing else, makes no request and touches no option by itself.
+ */
+require_once __DIR__ . '/lib/moksa-kit/moksa-kit.php';
 
 /* Shared Moksa AI launcher (bundled; single-instance version election across the suite). */
 require_once __DIR__ . '/lib/moksa-ai/moksa-ai.php';

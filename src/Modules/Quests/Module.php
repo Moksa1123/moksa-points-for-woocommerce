@@ -240,7 +240,7 @@ final class Module extends AbstractModule {
 	 */
 	public static function shortcode( $atts = array() ): string {
 		unset( $atts );
-		return self::html( get_current_user_id() );
+		return wp_kses_post( self::html( get_current_user_id() ) );
 	}
 
 	/** Echo the board on the「我的點數」page. */

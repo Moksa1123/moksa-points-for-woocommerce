@@ -2,11 +2,11 @@
 Contributors: moksa0923
 Tags: points, rewards, loyalty, store credit, woocommerce
 Requires at least: 7.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,12 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 
 == Changelog ==
 
+= 1.0.1 =
+* Daily check-in script is now enqueued through wp_enqueue_script() / wp_add_inline_script() instead of being printed inline.
+* Shortcode and block render callbacks pass their returned markup through wp_kses_post().
+* Redemption-code transients now carry the plugin prefix.
+* Translation files removed from the package; translations are served from translate.wordpress.org.
+
 = 1.0.0 =
 * Initial release.
 * Ledger: idempotent points and store-credit entries, per-user locks on every debit, proportional reversal on refund and cancellation, an admin browser with CSV export, and a liability / breakage forecast computed from the rows.
@@ -104,9 +110,12 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Members: My Points page, tier ladder, quests, leaderboard, badges, a how-to-earn guide, a shareable achievement card and six editor blocks.
 * Operations: FIFO expiry with reminder e-mails, recurring campaign schedules, per-currency rates for multi-currency stores, CSV balance import, ledger compaction, outbound webhooks, LINE Messaging API notifications and a customer-scoped REST API.
 * Abilities registered by default, every one capability-checked; the AI assistant is inert until a provider is configured; external MCP is off, and when enabled it adds an administrator-level capability gate, an hourly rate limit and an audit log of every tool call.
-* Ships a complete Traditional Chinese (Taiwan) translation.
+* Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Hardening pass: scripts are enqueued, block and shortcode output is escaped, and transient keys are prefixed.
 
 = 1.0.0 =
 Initial release.

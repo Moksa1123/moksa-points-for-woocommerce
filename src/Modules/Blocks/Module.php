@@ -125,7 +125,10 @@ final class Module extends AbstractModule {
 			register_block_type(
 				'moksafopoi/' . $name,
 				array(
-					'api_version'     => 2,
+					// Block API v3 (v2 and lower are deprecated as of WordPress 6.9 and log a console
+					// warning in 7.1, where the editor canvas is always an iframe). These blocks only
+					// render a placeholder built with useBlockProps, so they were v3-ready already.
+					'api_version'     => 3,
 					'title'           => $spec['title'],
 					'description'     => $spec['description'],
 					'category'        => 'widgets',
@@ -138,7 +141,7 @@ final class Module extends AbstractModule {
 						if ( ! shortcode_exists( $spec['shortcode'] ) ) {
 							return '';
 						}
-						return (string) do_shortcode( '[' . $spec['shortcode'] . ']' );
+						return wp_kses_post( (string) do_shortcode( '[' . $spec['shortcode'] . ']' ) );
 					},
 				)
 			);

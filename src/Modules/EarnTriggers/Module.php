@@ -50,6 +50,7 @@ final class Module extends AbstractModule {
 		// 可重複的觸發(需頻率節流):每日簽到 + 生日(掛既有每日 heartbeat)。
 		add_shortcode( 'moksafopoi_checkin', array( self::class, 'shortcode_checkin' ) );
 		add_action( 'wp_ajax_moksafopoi_checkin', array( self::class, 'ajax_checkin' ) );
+		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_checkin_script' ) );
 		add_action( 'moksafopoi_daily', array( self::class, 'on_daily_birthday' ) );
 		add_action( 'moksafopoi_daily', array( self::class, 'on_daily_anniversary' ) );
 	}
@@ -164,6 +165,25 @@ final class Module extends AbstractModule {
 
 	public const CHECKIN_NONCE = 'moksafopoi_checkin';
 
+	/** Register and enqueue the check-in handler script. */
+	public static function enqueue_checkin_script(): void {
+		$bonus = (int) get_option( 'moksafopoi_checkin_bonus', 0 );
+		if ( $bonus <= 0 || ! is_user_logged_in() ) {
+			return;
+		}
+		wp_enqueue_script(
+			'moksafopoi-checkin',
+			false,
+			array(),
+			MOKSAFOPOI_VERSION,
+			array( 'in_footer' => true )
+		);
+		wp_add_inline_script(
+			'moksafopoi-checkin',
+			'(function(){document.addEventListener("click",function(e){var b=e.target.closest(".moksafopoi-checkin-btn");if(!b)return;b.disabled=true;var fd=new FormData();fd.append("action","moksafopoi_checkin");fd.append("nonce",b.getAttribute("data-nonce"));fetch(b.getAttribute("data-ajaxurl"),{method:"POST",credentials:"same-origin",body:fd}).then(function(r){return r.json();}).then(function(res){if(res&&res.success){document.getElementById("moksafopoi-checkin").innerHTML=res.data.html;}else{window.alert((res&&res.data&&res.data.message)||"Error");b.disabled=false;}}).catch(function(){b.disabled=false;});});})();'
+		);
+	}
+
 	/** 每日簽到 shortcode: a button that awards the check-in bonus once per UTC day (throttled). */
 	public static function shortcode_checkin( $atts = array() ): string {
 		$bonus = (int) get_option( 'moksafopoi_checkin_bonus', 0 );
@@ -184,20 +204,9 @@ final class Module extends AbstractModule {
 					/* translators: %s: check-in bonus points. */
 					esc_html__( 'Check in daily to earn %s point(s)', 'moksa-points-for-woocommerce' ),
 					esc_html( number_format( $bonus ) )
-				) . '</button>'
-				. self::checkin_script();
+				) . '</button>';
 		}
 		return '<p class="moksafopoi-checkin-done">' . esc_html__( 'Already checked in today, come back tomorrow!', 'moksa-points-for-woocommerce' ) . '</p>';
-	}
-
-	/** Tiny inline handler (printed once with the widget). */
-	private static function checkin_script(): string {
-		static $printed = false;
-		if ( $printed ) {
-			return '';
-		}
-		$printed = true;
-		return '<script>(function(){document.addEventListener("click",function(e){var b=e.target.closest(".moksafopoi-checkin-btn");if(!b)return;b.disabled=true;var fd=new FormData();fd.append("action","moksafopoi_checkin");fd.append("nonce",b.getAttribute("data-nonce"));fetch(b.getAttribute("data-ajaxurl"),{method:"POST",credentials:"same-origin",body:fd}).then(function(r){return r.json();}).then(function(res){if(res&&res.success){document.getElementById("moksafopoi-checkin").innerHTML=res.data.html;}else{window.alert((res&&res.data&&res.data.message)||"Error");b.disabled=false;}}).catch(function(){b.disabled=false;});});})();</script>';
 	}
 
 	/** AJAX: award the daily check-in bonus once per UTC day. Idempotent (date-keyed ledger ref). */
