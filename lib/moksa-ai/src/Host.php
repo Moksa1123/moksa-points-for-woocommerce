@@ -36,6 +36,10 @@ final class Host {
 	}
 
 	public static function enqueue(): void {
+		// 外掛更新等 iframe 頁也會跑 admin_enqueue_scripts，不擋會在框內多一顆按鈕。
+		if ( defined( 'IFRAME_REQUEST' ) && IFRAME_REQUEST ) {
+			return;
+		}
 		// 判斷延到這裡才做：各外掛註冊 abilities 的時機不一致，在 boot 當下判斷是賭 hook 順序。
 		if ( ! Registry::has_agent() || ! current_user_can( Registry::capability() ) ) {
 			return;

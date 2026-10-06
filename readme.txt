@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,12 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 
 == Changelog ==
 
+= 1.0.2 =
+* Fix: the block-editor script for the six points blocks was missing from the 1.0.1 package. It is included again.
+* Fix: on the WordPress plugin-update screen the AI assistant button appeared a second time inside the update progress frame. It is no longer loaded inside admin iframes.
+* Fix: attributes in the AI assistant panel are now escaped as attributes, not only as text.
+* Settings screens use a wider layout (up to 1500px).
+
 = 1.0.1 =
 * Daily check-in script is now enqueued through wp_enqueue_script() / wp_add_inline_script() instead of being printed inline.
 * Shortcode and block render callbacks pass their returned markup through wp_kses_post().
@@ -113,6 +119,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Restores the missing block-editor script for the points blocks, plus small fixes to the AI assistant button and a wider settings layout.
 
 = 1.0.1 =
 Hardening pass: scripts are enqueued, block and shortcode output is escaped, and transient keys are prefixed.

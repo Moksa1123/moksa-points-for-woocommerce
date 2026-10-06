@@ -22,7 +22,16 @@ final class SettingsUi {
 	/** The shared shell/design-system CSS (class prefix `mowp-`). */
 	public static function css(): string {
 		return <<<'CSS'
-.mowp-shell{max-width:1000px}
+/* The shell was pinned at 1000px, which on the 1920px screens most shop owners actually use left
+   roughly 740px of empty page to the right of every table and every editor. It now takes the room
+   it is given, up to a ceiling: past ~1500px a wide table stops being easier to read and starts
+   being a long walk from the first column to the last.
+
+   Width is given to the things that use it - tables, editors, panels. Running text does NOT get it:
+   a 1500px line of prose is genuinely hard to read, so `.mowp-intro p` keeps its own measure below,
+   and so does the description under a field. */
+.mowp-shell{max-width:1500px}
+.mowp-shell .description,.mowp-shell p.description{max-width:820px}
 .mowp-shell *{box-sizing:border-box}
 .mowp-shell .mowp-intro{position:relative;margin:6px 0 22px;padding:0 0 14px}
 .mowp-shell .mowp-intro h1,.mowp-shell .mowp-intro h2{position:relative;display:inline-block;margin:0 0 6px;padding:0;font-size:20px;font-weight:700;color:#0f172a;line-height:1.3}
