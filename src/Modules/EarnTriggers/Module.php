@@ -277,16 +277,30 @@ final class Module extends AbstractModule {
 			return;
 		}
 
-		global $wpdb;
-		// Match today's month-day against user_registered; bounded, runs once a day.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- daily cron; core users table.
-		$ids = (array) $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->users}
-				WHERE DATE_FORMAT(user_registered, '%%m-%%d') = %s AND YEAR(user_registered) < %d
-				ORDER BY ID ASC LIMIT 2000",
-				gmdate( 'm-d' ),
-				(int) gmdate( 'Y' )
+		// Members registered on today's month-day in an earlier year; bounded, runs once a day. Same set as
+		// the former SQL (DATE_FORMAT(user_registered,'%m-%d') = today AND YEAR(user_registered) < this year,
+		// whole users table, ID order, max 2000) expressed through core's user query.
+		$now = time();
+		$ids = get_users(
+			array(
+				'blog_id'     => 0,
+				'fields'      => 'ID',
+				'number'      => 2000,
+				'orderby'     => 'ID',
+				'order'       => 'ASC',
+				'count_total' => false,
+				'date_query'  => array(
+					array(
+						'column' => 'user_registered',
+						'month'  => (int) gmdate( 'n', $now ),
+						'day'    => (int) gmdate( 'j', $now ),
+					),
+					array(
+						'column'    => 'user_registered',
+						'before'    => gmdate( 'Y', $now ) . '-01-01 00:00:00',
+						'inclusive' => false,
+					),
+				),
 			)
 		);
 

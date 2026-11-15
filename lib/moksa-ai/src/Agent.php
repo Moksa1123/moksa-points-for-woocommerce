@@ -53,18 +53,18 @@ final class Agent {
 
 		$history = self::seed_history( $prior );
 		$current = $user_text;
-		$models  = self::MODELS; // 本地可變副本：卡在會回空內容的 provider 時可換家。
+		$models  = self::MODELS; // 本地可變副本：卡在會回空內容的 provider 時可換家.
 
 		for ( $turn = 0; $turn < self::MAX_TURNS; $turn++ ) {
 			// 逐家 model failover：某家失敗（常見 Gemini 回空 content.parts、或 connector 失效）
-			// 就換下一家，而不是整個請求失敗。using_model_preference 本身不會自動換家。
+			// 就換下一家，而不是整個請求失敗。using_model_preference 本身不會自動換家.
 			$result   = null;
 			$last_err = '';
 			foreach ( $models as $model ) {
 				// wp_ai_client_prompt() 是 WordPress 7.0 才進核心的 AI Client 入口。本檔在最上方已用
 				// function_exists() 守住(6.9 站台不會走到這裡),但 Plugin Check 的靜態相容性掃描看不到
 				// 那道守衛,會把「直接呼叫」判成需要 7.0 的 ERROR。改用可變函式呼叫:行為完全相同,
-				// 靜態掃描不再誤判,外掛也維持 Requires at least: 6.9。
+				// 靜態掃描不再誤判,外掛也維持 Requires at least: 6.9.
 				$prompt  = 'wp_ai_client_prompt';
 				$builder = $prompt( $current )
 					->using_system_instruction( $system )
@@ -105,7 +105,7 @@ final class Agent {
 				$current   = new \WordPress\AiClient\Messages\DTO\UserMessage(
 					array( new \WordPress\AiClient\Messages\DTO\MessagePart( 'Answer my question in text now, briefly, using what the tools already returned.' ) )
 				);
-				// 空內容又沒有工具呼叫：把這家移到隊尾，下個 turn 換別家先試。
+				// 空內容又沒有工具呼叫：把這家移到隊尾，下個 turn 換別家先試.
 				$models[] = array_shift( $models );
 				continue;
 			}

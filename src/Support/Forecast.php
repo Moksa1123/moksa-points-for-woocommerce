@@ -47,46 +47,37 @@ final class Forecast {
 			}
 		}
 
-		global $wpdb;
-		$table = Schema::ledger_table();
-		$now   = time();
+		$now = time();
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); values bound via $wpdb->prepare(); the whole snapshot is cached below.
-		$issued = (int) $wpdb->get_var( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE points_delta > 0" );
+		$issued = LedgerStore::issued_since( LedgerStore::MIN_DATETIME );
 
 		// Redemptions vs expiries are both negative rows; separating them is what makes breakage real
 		// rather than a guess.
-		$expired = (int) $wpdb->get_var( "SELECT COALESCE(SUM(-points_delta),0) FROM {$table} WHERE points_delta < 0 AND type = 'expire'" );
-		$spent   = (int) $wpdb->get_var( "SELECT COALESCE(SUM(-points_delta),0) FROM {$table} WHERE points_delta < 0 AND type <> 'expire'" );
+		$expired = LedgerStore::expired_total();
+		$spent   = LedgerStore::spent_since( LedgerStore::MIN_DATETIME );
 
-		$balances = (array) $wpdb->get_col(
-			"SELECT SUM(points_delta) AS bal FROM {$table} GROUP BY user_id HAVING bal > 0 ORDER BY bal ASC"
-		);
+		$balances = LedgerStore::positive_balances();
 
 		$since30 = gmdate( 'Y-m-d H:i:s', $now - 30 * DAY_IN_SECONDS );
 		$since90 = gmdate( 'Y-m-d H:i:s', $now - 90 * DAY_IN_SECONDS );
 
-		$issued_30   = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE points_delta > 0 AND created_at >= %s", $since30 ) );
-		$redeemed_30 = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(-points_delta),0) FROM {$table} WHERE points_delta < 0 AND type <> 'expire' AND created_at >= %s", $since30 ) );
-		$issued_90   = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE points_delta > 0 AND created_at >= %s", $since90 ) );
-		$redeemed_90 = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(-points_delta),0) FROM {$table} WHERE points_delta < 0 AND type <> 'expire' AND created_at >= %s", $since90 ) );
+		$issued_30   = LedgerStore::issued_since( $since30 );
+		$redeemed_30 = LedgerStore::spent_since( $since30 );
+		$issued_90   = LedgerStore::issued_since( $since90 );
+		$redeemed_90 = LedgerStore::spent_since( $since90 );
 
 		// Points still live (not yet spent or expired) that carry an expiry date inside the window.
 		// The zero-date guard is the same one the expiry engine uses: a row with '0000-00-00' means
 		// "never expires", NOT "expired in 1970".
 		$expiring = array();
-		foreach ( array( 'd30' => 30, 'd60' => 60, 'd90' => 90 ) as $key => $days ) {
+		foreach ( array(
+			'd30' => 30,
+			'd60' => 60,
+			'd90' => 90,
+		) as $key => $days ) {
 			$until           = gmdate( 'Y-m-d H:i:s', $now + $days * DAY_IN_SECONDS );
-			$expiring[ $key ] = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COALESCE(SUM(points_delta),0) FROM {$table}
-					WHERE points_delta > 0 AND expires_at IS NOT NULL AND expires_at > %s AND expires_at <= %s",
-					gmdate( 'Y-m-d H:i:s', $now ),
-					$until
-				)
-			);
+			$expiring[ $key ] = LedgerStore::expiring_between( gmdate( 'Y-m-d H:i:s', $now ), $until );
 		}
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		$balances    = array_map( 'intval', $balances );
 		$outstanding = array_sum( $balances );

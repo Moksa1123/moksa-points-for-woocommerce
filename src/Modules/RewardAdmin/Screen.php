@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\RewardAdmin;
 
+use Moksafopoi\Support\Input;
+use Moksafopoi\Support\RedirectNotice;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -20,8 +23,9 @@ final class Screen {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only routing of the admin view.
-		$view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'list';
+		// 唯讀：只決定顯示列表還是編輯表單；寫入另有 nonce。
+		$view = sanitize_key( Input::get( 'view' ) );
+		$view = '' === $view ? 'list' : $view;
 
 		echo '<div class="wrap"><div class="mowp-shell" data-ns="moksa-points-for-woocommerce">';
 		echo '<div class="mowp-intro">';
@@ -47,12 +51,11 @@ final class Screen {
 
 	/** Success / error flash, driven by the redirect query arg the handler sets. */
 	private static function notice(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flash flag.
-		if ( ! isset( $_GET['moksafopoi_msg'] ) ) {
+		$msg = RedirectNotice::get( 'moksafopoi_msg' );
+		if ( null === $msg ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flash flag.
-		$msg = sanitize_key( wp_unslash( $_GET['moksafopoi_msg'] ) );
+		$msg = sanitize_key( $msg );
 
 		$map = array(
 			'saved'   => __( 'Redemption item saved.', 'moksa-points-for-woocommerce' ),
@@ -152,8 +155,8 @@ final class Screen {
 	}
 
 	private static function render_form(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only prefill of the edit form; the write is nonce-checked on submit.
-		$id     = isset( $_GET['id'] ) ? absint( wp_unslash( $_GET['id'] ) ) : 0;
+		// 唯讀：只用來預填編輯表單；送出時另有 nonce。
+		$id     = absint( Input::get( 'id' ) );
 		$reward = $id > 0 ? Rewards::find( $id ) : null;
 
 		$payload     = $reward ? self::decode_payload( (string) ( $reward['payload'] ?? '' ) ) : array();
@@ -317,13 +320,13 @@ final class Screen {
 				break;
 		}
 
-		wp_safe_redirect( add_query_arg( 'moksafopoi_msg', $msg, Module::page_url() ) );
+		wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_msg' => $msg ), Module::page_url() ) );
 		exit;
 	}
 
 	/** Sanitise the submitted form and persist it. */
 	private static function save_from_post( int $id ): void {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- this state-changing save runs only from Screen::handle(), which verifies the nonce (check_admin_referer( Module::NONCE )) and the manage_woocommerce capability before delegating here; every value below is unslashed + sanitised.
+		check_admin_referer( Module::NONCE ); // handle() 已驗過；這支函式自己也驗一次。
 		$label = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
 
 		// Kind is constrained to the supported set (coupon, product, code).
@@ -333,7 +336,7 @@ final class Screen {
 		$cost = isset( $_POST['cost_points'] ) ? absint( wp_unslash( $_POST['cost_points'] ) ) : 0;
 
 		// Stock: -1 (unlimited) or any non-negative integer.
-		$stock_raw = isset( $_POST['stock'] ) ? (int) wp_unslash( $_POST['stock'] ) : -1; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cast to int below.
+		$stock_raw = isset( $_POST['stock'] ) ? intval( sanitize_text_field( wp_unslash( $_POST['stock'] ) ) ) : -1;
 		$stock     = $stock_raw < 0 ? -1 : $stock_raw;
 
 		$active = isset( $_POST['active'] ) ? 1 : 0;
@@ -362,7 +365,7 @@ final class Screen {
 				)
 			);
 		} elseif ( 'cart_discount' === $kind ) {
-			$amount  = isset( $_POST['payload_amount'] ) ? round( (float) wp_unslash( $_POST['payload_amount'] ), 2 ) : 0.0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cast to float.
+			$amount  = isset( $_POST['payload_amount'] ) ? round( (float) sanitize_text_field( wp_unslash( $_POST['payload_amount'] ) ), 2 ) : 0.0;
 			$payload = wp_json_encode( array( 'amount' => max( 0, $amount ) ) );
 		} else {
 			$template    = isset( $_POST['payload_template'] ) ? sanitize_text_field( wp_unslash( $_POST['payload_template'] ) ) : '';
@@ -397,7 +400,6 @@ final class Screen {
 				'active'      => $active,
 			)
 		);
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/** Build a nonce-protected admin-post link for a state-changing row action. */

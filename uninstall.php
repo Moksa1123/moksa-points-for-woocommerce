@@ -1,13 +1,21 @@
 <?php
 /**
- * Uninstall cleanup. Removes ONLY this plugin's own state (prefix `moksafopoi_` /
- * `_moksafopoi_`) and drops its custom tables. Each plugin sweeps only its own prefix,
- * so a sibling's `_moformember_*` / `_moforcoupon_*` data on a shared object is never
- * touched. Runs only on a real uninstall.
+ * Uninstall cleanup. Removes ONLY this plugin's own state and drops its custom tables, through
+ * WordPress APIs (options API, metadata API) — no LIKE sweeps. Each plugin cleans only its own keys,
+ * so a sibling's `_moformember_*` / `_moforcoupon_*` data on a shared object is never touched. Runs
+ * only on a real uninstall.
+ *
+ * - Options: every option the plugin wrote is recorded by Support\OptionRegistry; as a safety net the
+ *   autoloaded options with our prefix and the known autoload-off ones are swept too.
+ * - Meta: every post / user / term meta key is listed in Support\MetaKeys and deleted for all objects.
+ * - Redemption catalog: every RewardStore post (wp_delete_post) — before the post meta sweep.
+ * - Referral-code index: every term of the private taxonomy (wp_delete_term).
+ * - Tables: the ledger (Support\LedgerStore) and the old reward / rule tables (Support\LegacyStorage).
+ * - Transients: the fixed-name caches are deleted; per-user ones expire on their own.
  *
  * MULTISITE: every site in the network gets the same sweep. WordPress calls this file ONCE for a
- * network uninstall, so a single-site sweep would leave every other site's tables and options behind
- * — orphaned rows that no UI can ever reach again. User meta is network-wide and is cleaned once.
+ * network uninstall, so a single-site sweep would leave every other site's tables and options behind.
+ * User meta is network-wide and is cleaned once.
  *
  * @package Moksafopoi
  */
@@ -16,52 +24,77 @@ declare( strict_types=1 );
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
-global $wpdb;
+// uninstall.php runs without the plugin's autoloader: load the few classes used here directly.
+foreach ( array( 'OptionRegistry', 'MetaKeys', 'LedgerStore', 'LegacyStorage', 'RewardStore', 'RefCodeIndex' ) as $moksafopoi_class ) {
+	require_once __DIR__ . '/src/Support/' . $moksafopoi_class . '.php';
+}
 
 /**
- * Sweep the state of ONE site: prefixed options, post meta, term meta, and the custom tables.
- * Table and option names are all built from `$wpdb->prefix` plus fixed literals, so switching sites
- * (which repoints `$wpdb->prefix`) is what makes this correct on every site of a network.
+ * Sweep the state of ONE site: options, post meta, term meta, the custom tables and fixed transients.
+ * Table names come from `$wpdb->prefix`, so switching sites (which repoints the prefix) makes this
+ * correct on every site of a network.
  */
 function moksafopoi_uninstall_site(): void {
-	global $wpdb;
-
-	// 1) Options (and any transients) with our prefix.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
-			$wpdb->esc_like( 'moksafopoi_' ) . '%',
-			$wpdb->esc_like( '_transient_moksafopoi_' ) . '%',
-			$wpdb->esc_like( '_transient_timeout_moksafopoi_' ) . '%'
-		)
-	);
-
-	// 2) Post meta with our prefix (per-product earn overrides / buy-with-points price / gift-card
-	// and points-pack flags).
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
-			$wpdb->esc_like( '_moksafopoi_' ) . '%'
-		)
-	);
-
-	// 3) Term meta with our prefix (the per-category earn multiplier on product_cat terms).
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->termmeta} WHERE meta_key LIKE %s",
-			$wpdb->esc_like( '_moksafopoi_' ) . '%'
-		)
-	);
-
-	// 4) Drop the custom tables (every table Schema::install creates).
-	foreach ( array( 'ledger', 'rules', 'rewards' ) as $moksafopoi_suffix ) {
-		$moksafopoi_table = $wpdb->prefix . 'moksafopoi_' . $moksafopoi_suffix;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal custom table name ($wpdb->prefix . 'moksafopoi_' . a fixed suffix literal), not user input; DROP is intentional uninstall cleanup.
-		$wpdb->query( "DROP TABLE IF EXISTS `{$moksafopoi_table}`" );
+	// 1) Options.
+	$moksafopoi_options = \Moksafopoi\Support\OptionRegistry::names();
+	foreach ( array_keys( wp_load_alloptions() ) as $moksafopoi_name ) {
+		if ( is_string( $moksafopoi_name ) && \Moksafopoi\Support\OptionRegistry::ours( $moksafopoi_name ) ) {
+			$moksafopoi_options[] = $moksafopoi_name;
+		}
 	}
+	$moksafopoi_options = array_merge( $moksafopoi_options, \Moksafopoi\Support\OptionRegistry::known_unautoloaded() );
+	foreach ( array_unique( $moksafopoi_options ) as $moksafopoi_name ) {
+		delete_option( $moksafopoi_name );
+	}
+	delete_option( \Moksafopoi\Support\OptionRegistry::OPTION );
+
+	// 2) Redemption catalog posts and the referral-code index terms (core APIs; types registered just
+	//    for this so the APIs accept them).
+	\Moksafopoi\Support\RewardStore::register();
+	do {
+		$moksafopoi_posts = get_posts(
+			array(
+				'post_type'      => \Moksafopoi\Support\RewardStore::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => 100,
+				'fields'         => 'ids',
+			)
+		);
+		foreach ( $moksafopoi_posts as $moksafopoi_post_id ) {
+			wp_delete_post( (int) $moksafopoi_post_id, true );
+		}
+		$moksafopoi_more = 100 === count( $moksafopoi_posts );
+	} while ( $moksafopoi_more );
+	\Moksafopoi\Support\RefCodeIndex::register();
+	do {
+		$moksafopoi_terms = get_terms(
+			array(
+				'taxonomy'   => \Moksafopoi\Support\RefCodeIndex::TAXONOMY,
+				'hide_empty' => false,
+				'fields'     => 'ids',
+				'number'     => 500,
+			)
+		);
+		$moksafopoi_terms = is_array( $moksafopoi_terms ) ? $moksafopoi_terms : array();
+		foreach ( $moksafopoi_terms as $moksafopoi_term_id ) {
+			wp_delete_term( (int) $moksafopoi_term_id, \Moksafopoi\Support\RefCodeIndex::TAXONOMY );
+		}
+		$moksafopoi_more = 500 === count( $moksafopoi_terms );
+	} while ( $moksafopoi_more );
+
+	// 3) Post meta (products; orders on sites without HPOS) and term meta (product categories).
+	foreach ( \Moksafopoi\Support\MetaKeys::ALL as $moksafopoi_key ) {
+		delete_metadata( 'post', 0, $moksafopoi_key, '', true );
+		delete_metadata( 'term', 0, $moksafopoi_key, '', true );
+	}
+
+	// 4) Fixed-name caches.
+	delete_transient( 'moksafopoi_dash_report' );
+	delete_transient( 'moksafopoi_forecast' );
+
+	// 5) Custom tables.
+	\Moksafopoi\Support\LedgerStore::drop_table();
+	\Moksafopoi\Support\LegacyStorage::drop_tables();
 }
 
 if ( is_multisite() ) {
@@ -81,26 +114,14 @@ if ( is_multisite() ) {
 			restore_current_blog();
 		}
 		++$moksafopoi_paged;
-	} while ( count( $moksafopoi_sites ) === 200 );
-
-	// Network-wide options live in sitemeta, not in any site's options table.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE %s",
-			$wpdb->esc_like( 'moksafopoi_' ) . '%'
-		)
-	);
+		$moksafopoi_more = 200 === count( $moksafopoi_sites );
+	} while ( $moksafopoi_more );
 } else {
 	moksafopoi_uninstall_site();
 }
 
-// User meta is shared across a whole network, so it is swept exactly once either way
+// User meta is shared across a whole network, so it is deleted exactly once either way
 // (badges, referral codes, quest progress, expiry-reminder fingerprints, cached balances…).
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-$wpdb->query(
-	$wpdb->prepare(
-		"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
-		$wpdb->esc_like( '_moksafopoi_' ) . '%'
-	)
-);
+foreach ( \Moksafopoi\Support\MetaKeys::ALL as $moksafopoi_key ) {
+	delete_metadata( 'user', 0, $moksafopoi_key, '', true );
+}

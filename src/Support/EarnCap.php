@@ -76,30 +76,17 @@ final class EarnCap {
 	 * that counts against the ceiling. Read from the ledger so it is always correct after refunds.
 	 */
 	public static function earned_this_period( int $user_id ): int {
-		global $wpdb;
 		if ( $user_id <= 0 || ! self::active() ) {
 			return 0;
 		}
-		$table    = Schema::ledger_table();
-		$since    = EarnThrottle::period_start( 'total' === self::period() ? 'all' : self::period() );
-		$excluded = self::excluded_sources();
+		$since = EarnThrottle::period_start( 'total' === self::period() ? 'all' : self::period() );
 
-		$where  = "user_id = %d AND type = 'earn' AND points_delta > 0";
-		$params = array( $user_id );
-		if ( null !== $since ) {
-			$where   .= ' AND created_at >= %s';
-			$params[] = $since;
+		// Per-source totals, minus the sources the cap ignores (same result as the former NOT IN clause).
+		$by_source = LedgerStore::earned_by_source_since( $user_id, null !== $since ? $since : LedgerStore::MIN_DATETIME );
+		foreach ( self::excluded_sources() as $source ) {
+			unset( $by_source[ (string) $source ] );
 		}
-		if ( array() !== $excluded ) {
-			$placeholders = implode( ',', array_fill( 0, count( $excluded ), '%s' ) );
-			$where       .= " AND source NOT IN ({$placeholders})";
-			foreach ( $excluded as $s ) {
-				$params[] = $s;
-			}
-		}
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); $where is static SQL with %d/%s placeholders, all user values bound via $wpdb->prepare( ..., $params ).
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE {$where}", $params ) );
+		return (int) array_sum( $by_source );
 	}
 
 	/** Points still earnable this period (PHP_INT_MAX when the cap is off). */
@@ -122,5 +109,4 @@ final class EarnCap {
 		$room = self::remaining( $user_id );
 		return $incoming <= $room ? $incoming : $room;
 	}
-
 }

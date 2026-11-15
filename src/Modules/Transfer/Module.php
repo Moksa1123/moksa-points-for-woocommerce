@@ -73,7 +73,7 @@ final class Module extends AbstractModule {
 		set_transient( $rl_key, $attempts + 1, self::RL_WINDOW );
 
 		$recipient_raw = isset( $_POST['mfp_transfer_recipient'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['mfp_transfer_recipient'] ) ) : '';
-		$points        = isset( $_POST['mfp_transfer_points'] ) ? (int) wp_unslash( $_POST['mfp_transfer_points'] ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cast to int.
+		$points        = isset( $_POST['mfp_transfer_points'] ) ? intval( sanitize_text_field( wp_unslash( $_POST['mfp_transfer_points'] ) ) ) : 0;
 		$note          = isset( $_POST['mfp_transfer_note'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['mfp_transfer_note'] ) ) : '';
 
 		$to     = Service::resolve_recipient( $recipient_raw );
@@ -137,7 +137,10 @@ final class Module extends AbstractModule {
 	private static function flash( int $user_id, bool $ok, string $message ): void {
 		set_transient(
 			self::FLASH_PREFIX . $user_id,
-			array( 'ok' => $ok, 'message' => $message ),
+			array(
+				'ok' => $ok,
+				'message' => $message,
+			),
 			MINUTE_IN_SECONDS
 		);
 	}

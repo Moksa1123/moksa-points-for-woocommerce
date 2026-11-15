@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\MyAccount;
 
+use Moksafopoi\Support\RewardStore;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\Schema;
 
@@ -96,27 +97,23 @@ final class RedeemCode {
 			return array( false, __( 'This code\'s redemption period has ended.', 'moksa-points-for-woocommerce' ) );
 		}
 
-		global $wpdb;
-		$table = Schema::rewards_table();
-		$id    = (int) $row['id'];
+		$id = (int) $row['id'];
 
-		// 2) Global cap — atomic decrement; 0 rows hit = sold out. -1 (unlimited) skips this.
+		// 2) Global cap — reserve one unit under the reward's lock; false = sold out. -1 (unlimited) skips this.
 		$capped = (int) $row['stock'] >= 0;
-		if ( $capped ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare().
-			$took = (int) $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock - 1 WHERE id = %d AND stock > 0", $id ) );
-			if ( $took <= 0 ) {
-				return array( false, __( 'This code has been fully redeemed.', 'moksa-points-for-woocommerce' ) );
-			}
+		if ( $capped && ! RewardStore::take_stock( $id ) ) {
+			return array( false, __( 'This code has been fully redeemed.', 'moksa-points-for-woocommerce' ) );
 		}
 
-		// 3) Per-user once — the UNIQUE ledger ref makes a second redemption a no-op.
+		// 3) Per-user once — the UNIQUE ledger ref makes a second redemption a no-op. The ref keeps the
+		// code's original id after the catalog moved to a CPT (RewardStore::ref_key), so a member who
+		// redeemed it before the move still cannot redeem it again.
 		$credited = Ledger::record_once(
 			$user_id,
 			$points,
 			'earn',
 			'redeem_code',
-			'code_' . $id . '_' . $user_id,
+			'code_' . RewardStore::ref_key( $row ) . '_' . $user_id,
 			array(
 				'note' => sprintf(
 					/* translators: %s: the redeem code. */
@@ -129,8 +126,7 @@ final class RedeemCode {
 		if ( ! $credited ) {
 			// Replay (already redeemed) or earn refused (cap / exclusion) — hand the stock unit back.
 			if ( $capped ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); values bound via $wpdb->prepare().
-				$wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock + 1 WHERE id = %d AND stock >= 0", $id ) );
+				RewardStore::give_back_stock( $id );
 			}
 			return array( false, __( 'You have already redeemed this code, or points cannot be credited to this account right now.', 'moksa-points-for-woocommerce' ) );
 		}
@@ -149,17 +145,9 @@ final class RedeemCode {
 
 	/** Look up an ACTIVE code row by its payload code (case-insensitive; codes stored uppercase). */
 	private static function find_code( string $code ): ?array {
-		global $wpdb;
-		$table = Schema::rewards_table();
 		// Bounded scan: code rows are few (an operator hand-creates them). JSON payload match is
 		// verified in PHP, so a substring collision can't leak a different code.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); interpolated part is static SQL, value bound via $wpdb->prepare().
-		$rows = (array) $wpdb->get_results(
-			$wpdb->prepare( "SELECT * FROM {$table} WHERE kind = %s AND active = 1 ORDER BY id DESC LIMIT 200", 'code' ),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		foreach ( $rows as $row ) {
+		foreach ( RewardStore::active_codes() as $row ) {
 			$payload = json_decode( (string) $row['payload'], true );
 			if ( is_array( $payload ) && strtoupper( (string) ( $payload['code'] ?? '' ) ) === $code ) {
 				return $row;
@@ -170,10 +158,7 @@ final class RedeemCode {
 
 	/** Any active kind='code' row? (Gates the whole card so stores without codes see nothing.) */
 	private static function any_active_code(): bool {
-		global $wpdb;
-		$table = Schema::rewards_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); values bound via $wpdb->prepare().
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE kind = %s AND active = 1", 'code' ) ) > 0;
+		return RewardStore::any_active_code();
 	}
 
 	/* ------------------------------------------------------------------ flash */

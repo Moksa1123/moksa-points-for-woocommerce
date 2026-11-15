@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Leaderboard;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Modules\AbstractModule;
 use Moksafopoi\Support\Schema;
 
@@ -122,44 +123,33 @@ final class Module extends AbstractModule {
 	 * @return array<int,array{user_id:int,earned:int}>
 	 */
 	public static function top_earners( int $limit, string $period = 'all', array $exclude_roles = array(), array $exclude_ids = array() ): array {
-		global $wpdb;
-
 		$limit = self::clamp_limit( $limit );
-		$table = Schema::ledger_table();
 
-		[ $where, $params ] = self::period_where( self::sanitize_period( $period ) );
+		[ $start, $end ] = self::period_range( self::sanitize_period( $period ) );
 
+		// Excluded members are dropped in PHP: asking for limit + |excluded| rows is always enough to
+		// fill the board after removing them (same result as the former NOT IN clause).
 		$excluded = self::excluded_ids( $exclude_roles, $exclude_ids );
-		if ( array() !== $excluded ) {
-			$placeholders = implode( ',', array_fill( 0, count( $excluded ), '%d' ) );
-			$where       .= " AND user_id NOT IN ({$placeholders})";
-			foreach ( $excluded as $eid ) {
-				$params[] = $eid;
-			}
-		}
-		$params[] = $limit;
+		$rows     = LedgerStore::top_earners( $start, $end, $limit + count( $excluded ) );
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated parts are static SQL, user values bound via $wpdb->prepare( ..., $params ); LIMIT bounded.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT user_id, SUM(points_delta) AS earned FROM {$table} WHERE {$where}
-					GROUP BY user_id ORDER BY earned DESC, user_id ASC LIMIT %d",
-				$params
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		if ( ! is_array( $rows ) ) {
+		if ( null === $rows ) {
 			return array(); // NULL on db error → empty board, never fatal.
 		}
 
-		$out = array();
+		$skip = array_flip( $excluded );
+		$out  = array();
 		foreach ( $rows as $row ) {
+			$uid = (int) ( $row['user_id'] ?? 0 );
+			if ( isset( $skip[ $uid ] ) ) {
+				continue;
+			}
 			$out[] = array(
-				'user_id' => (int) ( $row['user_id'] ?? 0 ),
+				'user_id' => $uid,
 				'earned'  => (int) ( $row['earned'] ?? 0 ),
 			);
+			if ( count( $out ) >= $limit ) {
+				break;
+			}
 		}
 		return $out;
 	}
@@ -169,40 +159,20 @@ final class Module extends AbstractModule {
 	 * or are logged out. Computed with a single bounded aggregate + COUNT — no full-table fetch.
 	 */
 	public static function rank_for_user( int $user_id, string $period = 'all' ): int {
-		global $wpdb;
-
 		if ( $user_id <= 0 ) {
 			return 0;
 		}
 
-		$table = Schema::ledger_table();
-
-		[ $where, $params ] = self::period_where( self::sanitize_period( $period ) );
+		[ $start, $end ] = self::period_range( self::sanitize_period( $period ) );
 
 		// My earned total in-period.
-		$mine_params = array_merge( array( $user_id ), $params );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated parts are static SQL, user values bound via $wpdb->prepare( ..., $mine_params ).
-		$mine = (int) $wpdb->get_var(
-			$wpdb->prepare( "SELECT SUM(points_delta) FROM {$table} WHERE user_id = %d AND {$where}", $mine_params )
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$mine = LedgerStore::earned_between( $user_id, $start, $end );
 		if ( $mine <= 0 ) {
 			return 0;
 		}
 
 		// Number of members strictly ahead of me; my rank is that + 1.
-		$ahead_params = array_merge( $params, array( $mine ) );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated parts are static SQL, user values bound via $wpdb->prepare( ..., $ahead_params ); aggregated subquery.
-		$ahead = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM ( SELECT user_id FROM {$table} WHERE {$where}
-					GROUP BY user_id HAVING SUM(points_delta) > %d ) t",
-				$ahead_params
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		return $ahead + 1;
+		return LedgerStore::count_ahead( $start, $end, $mine ) + 1;
 	}
 
 	/* ------------------------------------------------------------------ helpers */
@@ -219,24 +189,17 @@ final class Module extends AbstractModule {
 	}
 
 	/**
-	 * Build the shared WHERE fragment + bound params for a period (points_delta > 0 + created_at window).
-	 * Datetime bounds are UTC to match the ledger's GMT created_at.
+	 * [start, end) datetimes for a period, with open sides replaced by LedgerStore's min / max bounds so
+	 * the ledger query can use one fixed SQL (created_at is never NULL, so this equals "no bound").
 	 *
-	 * @return array{0:string,1:array<int,mixed>} [where, params]
+	 * @return array{0:string,1:string}
 	 */
-	private static function period_where( string $period ): array {
+	private static function period_range( string $period ): array {
 		[ $start, $end ] = self::period_bounds( $period );
-		$where  = 'points_delta > 0';
-		$params = array();
-		if ( null !== $start ) {
-			$where   .= ' AND created_at >= %s';
-			$params[] = $start;
-		}
-		if ( null !== $end ) {
-			$where   .= ' AND created_at < %s';
-			$params[] = $end;
-		}
-		return array( $where, $params );
+		return array(
+			null !== $start ? $start : LedgerStore::MIN_DATETIME,
+			null !== $end ? $end : LedgerStore::MAX_DATETIME,
+		);
 	}
 
 	/**
@@ -290,13 +253,29 @@ final class Module extends AbstractModule {
 			);
 			$out = array_merge( $out, array_map( 'intval', (array) $users ) );
 		}
-		return array_values( array_unique( array_filter( $out, static function ( $v ) { return $v > 0; } ) ) );
+		return array_values(
+			array_unique(
+				array_filter(
+					$out,
+					static function ( $v ) {
+						return $v > 0;
+					}
+				)
+			)
+		);
 	}
 
 	/** Split a comma / space separated attribute into trimmed non-empty tokens. */
 	private static function split_csv( string $raw ): array {
 		$parts = preg_split( '/[\s,]+/', trim( $raw ) ) ?: array();
-		return array_values( array_filter( array_map( 'trim', $parts ), static function ( $v ) { return '' !== $v; } ) );
+		return array_values(
+			array_filter(
+				array_map( 'trim', $parts ),
+				static function ( $v ) {
+					return '' !== $v;
+				}
+			)
+		);
 	}
 
 	/** The board title for a period. */

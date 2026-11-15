@@ -72,8 +72,16 @@ final class StoreApi {
 
 	/** @return array<string,mixed> */
 	public static function cart_schema(): array {
-		$num  = array( 'type' => 'number', 'context' => array( 'view', 'edit' ), 'readonly' => true );
-		$bool = array( 'type' => 'boolean', 'context' => array( 'view', 'edit' ), 'readonly' => true );
+		$num  = array(
+			'type' => 'number',
+			'context' => array( 'view', 'edit' ),
+			'readonly' => true,
+		);
+		$bool = array(
+			'type' => 'boolean',
+			'context' => array( 'view', 'edit' ),
+			'readonly' => true,
+		);
 		return array(
 			'enabled'        => $bool,
 			'balance'        => $num,

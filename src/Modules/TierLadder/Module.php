@@ -83,7 +83,7 @@ final class Module extends AbstractModule {
 		}
 
 		$status = Tiers::status( $user_id );
-		if ( null === $status || null === $status['tier'] && null === $status['next'] ) {
+		if ( null === $status || ( null === $status['tier'] && null === $status['next'] ) ) {
 			return '';
 		}
 

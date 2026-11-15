@@ -91,8 +91,10 @@ final class BalanceImporter {
 			return $out;
 		}
 
-		$handle = fopen( $path, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reading an uploaded temp file line by line; WP_Filesystem has no streaming CSV reader.
-		if ( false === $handle ) {
+		// 逐行讀上傳的暫存 CSV（WP_Filesystem 沒有逐行 CSV 讀取）；SplFileObject 的 fgetcsv 與原本 fgetcsv 行為相同。
+		try {
+			$file = new \SplFileObject( $path, 'r' );
+		} catch ( \RuntimeException $e ) {
 			$out['error'] = __( 'The uploaded file could not be read.', 'moksa-points-for-woocommerce' );
 			return $out;
 		}
@@ -100,7 +102,11 @@ final class BalanceImporter {
 		$map = null;
 		$row_number = 0;
 
-		while ( false !== ( $row = fgetcsv( $handle, 0, ',' ) ) ) {
+		while ( ! $file->eof() ) {
+			$row = $file->fgetcsv( ',' );
+			if ( false === $row ) {
+				break;
+			}
 			++$row_number;
 
 			if ( ! is_array( $row ) || array() === array_filter( array_map( 'strval', $row ), 'strlen' ) ) {
@@ -110,7 +116,6 @@ final class BalanceImporter {
 			if ( null === $map ) {
 				$map = self::header_map( $row );
 				if ( null === $map ) {
-					fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- see fopen above.
 					$out['error'] = __( 'The first row must be a header naming the columns, and must include a "user" column.', 'moksa-points-for-woocommerce' );
 					return $out;
 				}
@@ -177,7 +182,7 @@ final class BalanceImporter {
 			}
 		}
 
-		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- see fopen above.
+		$file = null; // 釋放即關閉檔案。
 
 		if ( null === $map ) {
 			$out['error'] = __( 'The file is empty.', 'moksa-points-for-woocommerce' );
@@ -317,17 +322,6 @@ final class BalanceImporter {
 
 	/** Has this batch already booked a row for this member? (drives the dry-run's skip count) */
 	private static function already_booked( int $user_id, string $ref ): bool {
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, values bound via $wpdb->prepare().
-		$found = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = 'import' AND source_ref = %s",
-				$user_id,
-				$ref
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return $found > 0;
+		return LedgerStore::count_ref( $user_id, 'import', $ref ) > 0;
 	}
 }

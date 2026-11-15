@@ -11,6 +11,7 @@ use Moksafopoi\Support\GatewayPoints;
 use Moksafopoi\Support\Multipliers;
 use Moksafopoi\Support\SettingsAudit;
 use Moksafopoi\Support\Rates;
+use Moksafopoi\Support\RedirectNotice;
 use Moksafopoi\Support\Retention;
 use Moksafopoi\Support\SettingsPorter;
 use Moksafopoi\Modules\Quests\Quests;
@@ -202,13 +203,33 @@ final class SettingsScreen {
 					self::toggle( 'moksafopoi_email_earned_enabled', __( 'Earn points notification email', 'moksa-points-for-woocommerce' ), __( 'Sent when a member earns points.', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_email_earned_subject', __( 'Earn email subject', 'moksa-points-for-woocommerce' ), __( 'Leave empty to use the default. The variables above are available.', 'moksa-points-for-woocommerce' ), '' ),
 					self::textarea( 'moksafopoi_email_earned_body', __( 'Earn email body', 'moksa-points-for-woocommerce' ), __( 'Leave empty to use the default; one paragraph per line. The variables above are available.', 'moksa-points-for-woocommerce' ), '' ),
-					self::select( 'moksafopoi_email_earned_recipient', __( 'Earn email recipient', 'moksa-points-for-woocommerce' ), __( 'Send to member / admin / both.', 'moksa-points-for-woocommerce' ), 'user', array( 'user' => __( 'Member', 'moksa-points-for-woocommerce' ), 'admin' => __( 'Admin', 'moksa-points-for-woocommerce' ), 'both' => __( 'Both', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_email_earned_recipient',
+						__( 'Earn email recipient', 'moksa-points-for-woocommerce' ),
+						__( 'Send to member / admin / both.', 'moksa-points-for-woocommerce' ),
+						'user',
+						array(
+							'user' => __( 'Member', 'moksa-points-for-woocommerce' ),
+							'admin' => __( 'Admin', 'moksa-points-for-woocommerce' ),
+							'both' => __( 'Both', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::number( 'moksafopoi_email_earned_min', __( 'Earn email threshold (points)', 'moksa-points-for-woocommerce' ), __( 'Send only when points earned reach this value (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::number( 'moksafopoi_email_earned_throttle', __( 'Earn email throttle (seconds)', 'moksa-points-for-woocommerce' ), __( 'Minimum interval between two earn emails to the same member (0 = send every time).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::toggle( 'moksafopoi_email_redeemed_enabled', __( 'Redeem points notification email', 'moksa-points-for-woocommerce' ), __( 'Sent when a member uses / redeems points.', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_email_redeemed_subject', __( 'Redeem email subject', 'moksa-points-for-woocommerce' ), __( 'Leave empty to use the default. The variables above are available.', 'moksa-points-for-woocommerce' ), '' ),
 					self::textarea( 'moksafopoi_email_redeemed_body', __( 'Redeem email body', 'moksa-points-for-woocommerce' ), __( 'Leave empty to use the default; one paragraph per line. The variables above are available.', 'moksa-points-for-woocommerce' ), '' ),
-					self::select( 'moksafopoi_email_redeemed_recipient', __( 'Redeem email recipient', 'moksa-points-for-woocommerce' ), __( 'Send to member / admin / both.', 'moksa-points-for-woocommerce' ), 'user', array( 'user' => __( 'Member', 'moksa-points-for-woocommerce' ), 'admin' => __( 'Admin', 'moksa-points-for-woocommerce' ), 'both' => __( 'Both', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_email_redeemed_recipient',
+						__( 'Redeem email recipient', 'moksa-points-for-woocommerce' ),
+						__( 'Send to member / admin / both.', 'moksa-points-for-woocommerce' ),
+						'user',
+						array(
+							'user' => __( 'Member', 'moksa-points-for-woocommerce' ),
+							'admin' => __( 'Admin', 'moksa-points-for-woocommerce' ),
+							'both' => __( 'Both', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::number( 'moksafopoi_email_redeemed_min', __( 'Redeem email threshold (points)', 'moksa-points-for-woocommerce' ), __( 'Send only when points used reach this value (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::number( 'moksafopoi_email_redeemed_throttle', __( 'Redeem email throttle (seconds)', 'moksa-points-for-woocommerce' ), __( 'Minimum interval between two redeem emails to the same member (0 = send every time).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 				),
@@ -275,7 +296,19 @@ final class SettingsScreen {
 					self::color( 'moksafopoi_disp_single_bg_color', __( 'Background color', 'moksa-points-for-woocommerce' ), __( 'Background color of the product page message (leave blank = transparent).', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = transparent', 'moksa-points-for-woocommerce' ) ),
 					self::color( 'moksafopoi_disp_single_border_color', __( 'Border color', 'moksa-points-for-woocommerce' ), __( 'Message border color (leave blank = no border). Setting a border or background automatically adds padding and turns it into a label style.', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = no border', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_disp_single_icon', __( 'Leading icon', 'moksa-points-for-woocommerce' ), __( 'A small icon shown at the start of the message (you can paste an emoji, e.g. 🎁 ⭐ 💰; up to 8 characters).', 'moksa-points-for-woocommerce' ), '', '🎁' ),
-					self::select( 'moksafopoi_disp_single_visible_to', __( 'Audience', 'moksa-points-for-woocommerce' ), __( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ), 'all', array( 'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ), 'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ), 'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ), 'members' => __( 'Members only', 'moksa-points-for-woocommerce' ), 'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_disp_single_visible_to',
+						__( 'Audience', 'moksa-points-for-woocommerce' ),
+						__( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ),
+						'all',
+						array(
+							'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ),
+							'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ),
+							'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ),
+							'members' => __( 'Members only', 'moksa-points-for-woocommerce' ),
+							'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::select(
 						'moksafopoi_disp_single_position',
 						__( 'Display position', 'moksa-points-for-woocommerce' ),
@@ -318,7 +351,19 @@ final class SettingsScreen {
 					self::color( 'moksafopoi_disp_loop_bg_color', __( 'Background color', 'moksa-points-for-woocommerce' ), __( 'Background color of the listing message (leave blank = transparent).', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = transparent', 'moksa-points-for-woocommerce' ) ),
 					self::color( 'moksafopoi_disp_loop_border_color', __( 'Border color', 'moksa-points-for-woocommerce' ), __( 'Message border color (leave blank = no border). Setting a border or background automatically adds padding and turns it into a label style.', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = no border', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_disp_loop_icon', __( 'Leading icon', 'moksa-points-for-woocommerce' ), __( 'A small icon shown at the start of the message (you can paste an emoji, e.g. 🎁 ⭐ 💰; up to 8 characters).', 'moksa-points-for-woocommerce' ), '', '🎁' ),
-					self::select( 'moksafopoi_disp_loop_visible_to', __( 'Audience', 'moksa-points-for-woocommerce' ), __( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ), 'all', array( 'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ), 'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ), 'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ), 'members' => __( 'Members only', 'moksa-points-for-woocommerce' ), 'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_disp_loop_visible_to',
+						__( 'Audience', 'moksa-points-for-woocommerce' ),
+						__( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ),
+						'all',
+						array(
+							'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ),
+							'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ),
+							'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ),
+							'members' => __( 'Members only', 'moksa-points-for-woocommerce' ),
+							'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::select(
 						'moksafopoi_disp_loop_position',
 						__( 'Display position', 'moksa-points-for-woocommerce' ),
@@ -349,7 +394,19 @@ final class SettingsScreen {
 					self::color( 'moksafopoi_disp_cart_bg_color', __( 'Background color', 'moksa-points-for-woocommerce' ), __( 'Background color of the cart message (leave blank = transparent).', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = transparent', 'moksa-points-for-woocommerce' ) ),
 					self::color( 'moksafopoi_disp_cart_border_color', __( 'Border color', 'moksa-points-for-woocommerce' ), __( 'Message border color (leave blank = no border). Setting a border or background automatically adds padding and turns it into a label style.', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = no border', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_disp_cart_icon', __( 'Leading icon', 'moksa-points-for-woocommerce' ), __( 'A small icon shown at the start of the message (you can paste an emoji, e.g. 🎁 ⭐ 💰; up to 8 characters).', 'moksa-points-for-woocommerce' ), '', '🎁' ),
-					self::select( 'moksafopoi_disp_cart_visible_to', __( 'Audience', 'moksa-points-for-woocommerce' ), __( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ), 'all', array( 'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ), 'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ), 'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ), 'members' => __( 'Members only', 'moksa-points-for-woocommerce' ), 'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_disp_cart_visible_to',
+						__( 'Audience', 'moksa-points-for-woocommerce' ),
+						__( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ),
+						'all',
+						array(
+							'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ),
+							'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ),
+							'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ),
+							'members' => __( 'Members only', 'moksa-points-for-woocommerce' ),
+							'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::select(
 						'moksafopoi_disp_cart_position',
 						__( 'Display position', 'moksa-points-for-woocommerce' ),
@@ -379,7 +436,19 @@ final class SettingsScreen {
 					self::color( 'moksafopoi_disp_account_bg_color', __( 'Background color', 'moksa-points-for-woocommerce' ), __( 'Background color of the My Account message (leave blank = transparent).', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = transparent', 'moksa-points-for-woocommerce' ) ),
 					self::color( 'moksafopoi_disp_account_border_color', __( 'Border color', 'moksa-points-for-woocommerce' ), __( 'Message border color (leave blank = no border). Setting a border or background automatically adds padding and turns it into a label style.', 'moksa-points-for-woocommerce' ), '', __( 'Leave blank = no border', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_disp_account_icon', __( 'Leading icon', 'moksa-points-for-woocommerce' ), __( 'A small icon shown at the start of the message (you can paste an emoji, e.g. 🎁 ⭐ 💰; up to 8 characters).', 'moksa-points-for-woocommerce' ), '', '🎁' ),
-					self::select( 'moksafopoi_disp_account_visible_to', __( 'Audience', 'moksa-points-for-woocommerce' ), __( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ), 'all', array( 'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ), 'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ), 'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ), 'members' => __( 'Members only', 'moksa-points-for-woocommerce' ), 'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_disp_account_visible_to',
+						__( 'Audience', 'moksa-points-for-woocommerce' ),
+						__( 'Who this message is shown to. "Members only / non-members only" requires the membership plugin; when it is not installed, they are treated as logged in / logged out respectively.', 'moksa-points-for-woocommerce' ),
+						'all',
+						array(
+							'all' => __( 'Everyone', 'moksa-points-for-woocommerce' ),
+							'logged_in' => __( 'Logged-in users only', 'moksa-points-for-woocommerce' ),
+							'guests' => __( 'Guests only (not logged in)', 'moksa-points-for-woocommerce' ),
+							'members' => __( 'Members only', 'moksa-points-for-woocommerce' ),
+							'non_members' => __( 'Non-members only', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::select(
 						'moksafopoi_disp_account_position',
 						__( 'Display position', 'moksa-points-for-woocommerce' ),
@@ -547,7 +616,16 @@ final class SettingsScreen {
 				'desc'   => __( 'Cashback of spending into store credit, and the ratio cap for using store credit at checkout. Requires the "Cashback" / "Wallet checkout redemption" module to be enabled.', 'moksa-points-for-woocommerce' ),
 				'fields' => array(
 					self::number( 'moksafopoi_cashback_rate', __( 'Cashback %', 'moksa-points-for-woocommerce' ), __( 'What percentage of the order amount is returned as store credit (0 = no cashback).', 'moksa-points-for-woocommerce' ), 0, '0', '0.1' ),
-					self::select( 'moksafopoi_cashback_basis', __( 'Cashback calculation base', 'moksa-points-for-woocommerce' ), __( 'Calculate cashback based on the product subtotal (excluding tax) or the order total.', 'moksa-points-for-woocommerce' ), 'subtotal', array( 'subtotal' => __( 'Product subtotal (excluding tax)', 'moksa-points-for-woocommerce' ), 'total' => __( 'Order total', 'moksa-points-for-woocommerce' ) ) ),
+					self::select(
+						'moksafopoi_cashback_basis',
+						__( 'Cashback calculation base', 'moksa-points-for-woocommerce' ),
+						__( 'Calculate cashback based on the product subtotal (excluding tax) or the order total.', 'moksa-points-for-woocommerce' ),
+						'subtotal',
+						array(
+							'subtotal' => __( 'Product subtotal (excluding tax)', 'moksa-points-for-woocommerce' ),
+							'total' => __( 'Order total', 'moksa-points-for-woocommerce' ),
+						)
+					),
 					self::number( 'moksafopoi_cashback_min_spend', __( 'Cashback threshold (NT$)', 'moksa-points-for-woocommerce' ), __( 'Cashback applies only when the order base reaches this amount (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::number( 'moksafopoi_cashback_max', __( 'Cashback cap per order (NT$)', 'moksa-points-for-woocommerce' ), __( 'The maximum store credit returned for a single order (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::number( 'moksafopoi_wallet_max_percent', __( 'Store credit max cart offset %', 'moksa-points-for-woocommerce' ), __( 'The maximum percentage of the redeemable subtotal that store credit can offset at checkout (default 100).', 'moksa-points-for-woocommerce' ), 100, '0', '1' ),
@@ -663,7 +741,10 @@ final class SettingsScreen {
 				if ( '' === $val ) {
 					$val = (string) ( $field['default'] ?? '' );
 				}
-				return array( 'ok' => true, 'value' => $val );
+				return array(
+					'ok' => true,
+					'value' => $val,
+				);
 
 			case 'textarea':
 				$val     = wp_kses_post( is_scalar( $raw ) ? (string) $raw : '' );
@@ -671,7 +752,10 @@ final class SettingsScreen {
 				if ( '' === trim( $val ) && '' !== $default ) {
 					$val = $default;
 				}
-				return array( 'ok' => true, 'value' => $val );
+				return array(
+					'ok' => true,
+					'value' => $val,
+				);
 
 			case 'number':
 				if ( ! is_scalar( $raw ) || ! is_numeric( (string) $raw ) ) {
@@ -679,7 +763,10 @@ final class SettingsScreen {
 				}
 				$num = max( 0.0, (float) $raw );
 				$val = ( floor( $num ) === $num ) ? (string) (int) $num : (string) $num;
-				return array( 'ok' => true, 'value' => $val );
+				return array(
+					'ok' => true,
+					'value' => $val,
+				);
 
 			case 'select':
 				$choices = (array) ( $field['choices'] ?? array() );
@@ -687,38 +774,68 @@ final class SettingsScreen {
 				if ( ! isset( $choices[ $val ] ) ) {
 					$val = (string) ( $field['default'] ?? '' );
 				}
-				return array( 'ok' => true, 'value' => $val );
+				return array(
+					'ok' => true,
+					'value' => $val,
+				);
 
 			case 'color':
 				$default = (string) ( $field['default'] ?? '' );
 				$raw_s   = is_scalar( $raw ) ? (string) $raw : '';
 				if ( '' === $raw_s ) {
-					return array( 'ok' => true, 'value' => $default );
+					return array(
+						'ok' => true,
+						'value' => $default,
+					);
 				}
 				$hex = sanitize_hex_color( $raw_s );
-				return array( 'ok' => true, 'value' => ( is_string( $hex ) && '' !== $hex ) ? $hex : $default );
+				return array(
+					'ok' => true,
+					'value' => ( is_string( $hex ) && '' !== $hex ) ? $hex : $default,
+				);
 
 			case 'role_map':
-				return array( 'ok' => true, 'value' => self::import_role_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_role_map( $raw ),
+				);
 
 			case 'tier_map':
-				return array( 'ok' => true, 'value' => self::import_tier_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_tier_map( $raw ),
+				);
 
 			case 'ladder_map':
-				return array( 'ok' => true, 'value' => self::import_ladder_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_ladder_map( $raw ),
+				);
 
 			case 'quest_map':
-				return array( 'ok' => true, 'value' => self::import_quest_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_quest_map( $raw ),
+				);
 
 			case 'gateway_map':
-				return array( 'ok' => true, 'value' => self::import_gateway_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_gateway_map( $raw ),
+				);
 
 			case 'currency_map':
-				return array( 'ok' => true, 'value' => self::import_currency_map( $raw ) );
+				return array(
+					'ok' => true,
+					'value' => self::import_currency_map( $raw ),
+				);
 
 			default: // toggle
 				$truthy = ( true === $raw ) || in_array( is_scalar( $raw ) ? strtolower( (string) $raw ) : '', array( 'yes', '1', 'true', 'on' ), true );
-				return array( 'ok' => true, 'value' => $truthy ? 'yes' : 'no' );
+				return array(
+					'ok' => true,
+					'value' => $truthy ? 'yes' : 'no',
+				);
 		}
 	}
 
@@ -760,7 +877,10 @@ final class SettingsScreen {
 			if ( $min <= 0.0 ) {
 				continue;
 			}
-			$list[] = array( 'min' => $min, 'mult' => $mult );
+			$list[] = array(
+				'min' => $min,
+				'mult' => $mult,
+			);
 		}
 		return array() === $list ? '' : (string) wp_json_encode( $list );
 	}
@@ -803,18 +923,19 @@ final class SettingsScreen {
 
 		echo '<div class="wrap moksafopoi-settings-screen">';
 
-		if ( isset( $_GET['moksafopoi_saved'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( null !== RedirectNotice::get( 'moksafopoi_saved' ) ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'moksa-points-for-woocommerce' ) . '</p></div>';
 		}
 
-		if ( isset( $_GET['moksafopoi_imported'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$applied = (int) $_GET['moksafopoi_imported']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$skipped = isset( $_GET['moksafopoi_skipped'] ) ? (int) $_GET['moksafopoi_skipped'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$imported = RedirectNotice::get( 'moksafopoi_imported' );
+		if ( null !== $imported ) {
+			$applied = absint( $imported );
+			$skipped = absint( (string) RedirectNotice::get( 'moksafopoi_skipped' ) );
 			echo '<div class="notice notice-success is-dismissible"><p>'
 				. esc_html( sprintf( /* translators: 1: applied count, 2: skipped count. */ __( 'Imported %1$d setting(s) (skipped %2$d).', 'moksa-points-for-woocommerce' ), $applied, $skipped ) )
 				. '</p></div>';
 		}
-		if ( isset( $_GET['moksafopoi_import_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( null !== RedirectNotice::get( 'moksafopoi_import_error' ) ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Settings import failed: the file is invalid or the format does not match.', 'moksa-points-for-woocommerce' ) . '</p></div>';
 		}
 
@@ -861,8 +982,7 @@ final class SettingsScreen {
 		// live on other sub-pages are never misread as "off".
 		$first = true;
 		foreach ( $tabs as $slug => $label ) {
-			$style = $first ? '' : ' style="display:none"';
-			echo '<div class="mowp-pane" data-pane="' . esc_attr( $slug ) . '"' . $style . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $style is a fixed literal.
+			echo '<div class="mowp-pane" data-pane="' . esc_attr( $slug ) . '"' . ( $first ? '' : ' style="display:none"' ) . '>';
 			foreach ( $by_tab[ $slug ] as $group ) {
 				self::render_group_card( $group );
 			}
@@ -984,7 +1104,7 @@ final class SettingsScreen {
 
 				switch ( $type ) {
 					case 'text':
-						$raw   = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked above.
+						$raw   = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						$value = '' === $raw ? (string) ( $field['default'] ?? '' ) : $raw;
 						update_option( $id, $value );
 						break;
@@ -993,14 +1113,14 @@ final class SettingsScreen {
 						// Message templates (顯示客製化): keep newlines + basic markup, strip anything unsafe.
 						// An empty submit restores the field default (so a blank box re-seeds the canned copy),
 						// EXCEPT when the default is itself blank (an opt-in field that may legitimately be empty).
-						$raw     = isset( $_POST[ $id ] ) ? wp_kses_post( wp_unslash( (string) $_POST[ $id ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked above; wp_kses_post is the sanitizer for this rich field.
+						$raw     = isset( $_POST[ $id ] ) ? wp_kses_post( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						$default = (string) ( $field['default'] ?? '' );
 						$value   = ( '' === trim( $raw ) && '' !== $default ) ? $default : $raw;
 						update_option( $id, $value );
 						break;
 
 					case 'number':
-						$raw = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked above.
+						$raw = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						if ( '' === $raw ) {
 							$raw = (string) ( $field['default'] ?? 0 );
 						}
@@ -1011,7 +1131,7 @@ final class SettingsScreen {
 						break;
 
 					case 'select':
-						$raw     = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked above.
+						$raw     = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						$choices = (array) ( $field['choices'] ?? array() );
 						$value   = isset( $choices[ $raw ] ) ? $raw : (string) ( $field['default'] ?? '' );
 						update_option( $id, $value );
@@ -1022,7 +1142,7 @@ final class SettingsScreen {
 						// anything that is not a valid #rgb / #rrggbb string, so a tampered POST can never store
 						// arbitrary CSS. An empty submit is allowed ONLY when the field's default is itself empty
 						// (a背景色 that may legitimately be transparent); otherwise it falls back to the default.
-						$raw     = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce checked above.
+						$raw     = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						$default = (string) ( $field['default'] ?? '' );
 						if ( '' === $raw ) {
 							$value = $default; // Empty allowed → '' when the default is '' (transparent), else default colour.
@@ -1036,37 +1156,25 @@ final class SettingsScreen {
 					case 'term_select':
 						// Multi-picker posts an array of term ids; store the same comma-separated ID
 						// string the plain textbox used, so downstream readers are unchanged.
-						$arr   = isset( $_POST[ $id ] ) ? (array) wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked above; each element is absint()'d on the next line.
+						$arr   = isset( $_POST[ $id ] ) ? array_map( 'absint', (array) wp_unslash( $_POST[ $id ] ) ) : array();
 						$ids   = array_values( array_unique( array_filter( array_map( 'absint', $arr ) ) ) );
 						update_option( $id, implode( ',', $ids ) );
 						break;
 
 					case 'role_map':
-						self::save_role_map( $id );
-						break;
-
 					case 'ladder_map':
-						self::save_ladder_map( $id );
-						break;
-
 					case 'quest_map':
-						self::save_quest_map( $id );
-						break;
-
 					case 'gateway_map':
-						self::save_gateway_map( $id );
-						break;
-
 					case 'currency_map':
-						self::save_currency_map( $id );
-						break;
-
 					case 'tier_map':
-						self::save_tier_map( $id );
+						// 表格型欄位送的是陣列：在這裡（nonce 已驗過）讀一次，每一格先 sanitize_text_field，
+						// 各 save_* 再依欄位做更嚴格的清理（sanitize_key、數字夾範圍）。
+						$rows = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? map_deep( wp_unslash( $_POST[ $id ] ), 'sanitize_text_field' ) : array();
+						self::save_map( $type, $id, $rows );
 						break;
 
 					default: // toggle — plain yes/no.
-						$value = isset( $_POST[ $id ] ) && 'yes' === $_POST[ $id ] ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- compared to a literal; nonce checked above.
+						$value = isset( $_POST[ $id ] ) && 'yes' === sanitize_key( wp_unslash( $_POST[ $id ] ) ) ? 'yes' : 'no';
 						update_option( $id, $value );
 						break;
 				}
@@ -1079,8 +1187,37 @@ final class SettingsScreen {
 				SettingsAudit::record( $audit_key, $audit_before[ $audit_key ] ?? null, $audit_new, 'ui' );
 			}
 		}
-		wp_safe_redirect( add_query_arg( 'moksafopoi_saved', '1', self::page_url( $scope ) ) );
+		wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_saved' => '1' ), self::page_url( $scope ) ) );
 		exit;
+	}
+
+	/**
+	 * Hand one table-type field to its saver. $rows is already unslashed and sanitize_text_field'd
+	 * by {@see handle()}, which verified the nonce; each saver tightens it further per column.
+	 *
+	 * @param array<int|string,mixed> $rows
+	 */
+	private static function save_map( string $type, string $id, array $rows ): void {
+		switch ( $type ) {
+			case 'role_map':
+				self::save_role_map( $id, $rows );
+				break;
+			case 'ladder_map':
+				self::save_ladder_map( $id, $rows );
+				break;
+			case 'quest_map':
+				self::save_quest_map( $id, $rows );
+				break;
+			case 'gateway_map':
+				self::save_gateway_map( $id, $rows );
+				break;
+			case 'currency_map':
+				self::save_currency_map( $id, $rows );
+				break;
+			case 'tier_map':
+				self::save_tier_map( $id, $rows );
+				break;
+		}
 	}
 
 	/**
@@ -1088,8 +1225,7 @@ final class SettingsScreen {
 	 * clamped to (0..MAX]. The neutral 1.0 is dropped so the stored map stays lean. Nonce verified
 	 * by the caller ({@see handle()}).
 	 */
-	private static function save_role_map( string $id ): void {
-		$raw = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized below.
+	private static function save_role_map( string $id, array $raw ): void {
 		$valid = function_exists( 'wp_roles' ) ? array_keys( wp_roles()->roles ) : array();
 		$map   = array();
 		foreach ( (array) $raw as $role => $value ) {
@@ -1110,8 +1246,7 @@ final class SettingsScreen {
 	 * Save the spend-tier rows as a JSON list of {min,mult}. Rows with min<=0 are dropped; mult is
 	 * clamped to (0..MAX]. Nonce verified by the caller ({@see handle()}).
 	 */
-	private static function save_tier_map( string $id ): void {
-		$raw  = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized below.
+	private static function save_tier_map( string $id, array $raw ): void {
 		$list = array();
 		foreach ( (array) $raw as $row ) {
 			if ( ! is_array( $row ) ) {
@@ -1193,7 +1328,12 @@ final class SettingsScreen {
 			}
 			echo '<select id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '[]" multiple class="wc-enhanced-select" style="width:100%;max-width:640px" '
 				. 'data-placeholder="' . esc_attr__( 'Select categories (multiple allowed)…', 'moksa-points-for-woocommerce' ) . '">';
-			$terms = get_terms( array( 'taxonomy' => $tax, 'hide_empty' => false ) );
+			$terms = get_terms(
+				array(
+					'taxonomy' => $tax,
+					'hide_empty' => false,
+				)
+			);
 			if ( ! is_wp_error( $terms ) ) {
 				foreach ( $terms as $term ) {
 					if ( ! $term instanceof \WP_Term ) {
@@ -1233,9 +1373,9 @@ final class SettingsScreen {
 				$value   = (string) get_option( $id, $default );
 				$swatch  = sanitize_hex_color( '' !== $value ? $value : $default );
 				// An unset optional colour (empty value + empty default) shows a neutral grey well, not
-			// black — a black swatch reads as「已選黑色」when nothing is actually set. The named hex box
-			// below stays blank, so save still stores「空 = 透明 / 沿用佈景主題」.
-			$swatch  = ( is_string( $swatch ) && '' !== $swatch ) ? $swatch : '#c9ced6';
+				// black — a black swatch reads as「已選黑色」when nothing is actually set. The named hex box
+				// below stays blank, so save still stores「空 = 透明 / 沿用佈景主題」.
+				$swatch  = ( is_string( $swatch ) && '' !== $swatch ) ? $swatch : '#c9ced6';
 				echo '<span style="display:inline-flex;gap:8px;align-items:center">';
 				echo '<input type="color" id="' . esc_attr( $id ) . '_picker" value="' . esc_attr( $swatch ) . '" data-target="' . esc_attr( $id ) . '" class="moksafopoi-color-picker">';
 				echo '<input type="text" id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr( (string) ( $field['placeholder'] ?? '#000000' ) ) . '" class="moksafopoi-color-hex" style="max-width:120px">';
@@ -1290,7 +1430,8 @@ final class SettingsScreen {
 		echo '<table class="widefat striped" style="max-width:420px"><thead><tr>';
 		echo '<th>' . esc_html__( 'Amount reached (NT$)', 'moksa-points-for-woocommerce' ) . '</th>';
 		echo '<th>' . esc_html__( 'Multiplier', 'moksa-points-for-woocommerce' ) . '</th></tr></thead><tbody>';
-		for ( $i = 0; $i < max( 1, $rows ); $i++ ) {
+		$row_count = max( 1, $rows );
+		for ( $i = 0; $i < $row_count; $i++ ) {
 			$min  = isset( $tiers[ $i ]['min'] ) ? (float) $tiers[ $i ]['min'] : 0.0;
 			$mult = isset( $tiers[ $i ]['mult'] ) ? (float) $tiers[ $i ]['mult'] : 1.0;
 			echo '<tr><td>';
@@ -1332,9 +1473,8 @@ final class SettingsScreen {
 	}
 
 	/** Sanitise + persist the submitted tier ladder (rows without a name are dropped). */
-	private static function save_ladder_map( string $id ): void {
-		$raw  = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized below.
-		update_option( $id, self::normalise_ladder_rows( (array) $raw ) );
+	private static function save_ladder_map( string $id, array $raw ): void {
+		update_option( $id, self::normalise_ladder_rows( $raw ) );
 	}
 
 	/**
@@ -1416,9 +1556,8 @@ final class SettingsScreen {
 	}
 
 	/** Sanitise + persist the submitted quest list (rows without a name are dropped). */
-	private static function save_quest_map( string $id ): void {
-		$raw = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized below.
-		Quests::save_all( self::normalise_quest_rows( (array) $raw ) );
+	private static function save_quest_map( string $id, array $raw ): void {
+		Quests::save_all( self::normalise_quest_rows( $raw ) );
 	}
 
 	/**
@@ -1508,9 +1647,8 @@ final class SettingsScreen {
 	}
 
 	/** Sanitise + persist the submitted payment-method multipliers. */
-	private static function save_gateway_map( string $id ): void {
-		$raw = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized in GatewayPoints::save().
-		GatewayPoints::save( (array) $raw );
+	private static function save_gateway_map( string $id, array $raw ): void {
+		GatewayPoints::save( $raw );
 	}
 
 	/**
@@ -1569,9 +1707,8 @@ final class SettingsScreen {
 	}
 
 	/** Sanitise + persist the submitted per-currency rates. */
-	private static function save_currency_map( string $id ): void {
-		$raw = isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ? wp_unslash( $_POST[ $id ] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in handle(); each value sanitized in Rates::save().
-		Rates::save( (array) $raw );
+	private static function save_currency_map( string $id, array $raw ): void {
+		Rates::save( $raw );
 	}
 
 	/**
@@ -1606,13 +1743,10 @@ final class SettingsScreen {
 		}
 		check_admin_referer( 'moksafopoi_export_settings' );
 
-		$json = SettingsPorter::export_json();
 		nocache_headers();
-		header( 'Content-Type: application/json; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="' . SettingsPorter::export_filename() . '"' );
-		header( 'Content-Length: ' . strlen( $json ) );
-		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw JSON file download, not HTML.
-		exit;
+		// wp_send_json 送出 application/json 並結束請求；旗標與 SettingsPorter::export_json() 相同（易讀、不轉義中文與斜線）。
+		wp_send_json( SettingsPorter::export_payload(), 200, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 	}
 
 	/**
@@ -1620,27 +1754,41 @@ final class SettingsScreen {
 	 * capability are verified. Reads the uploaded temp file, decodes, and delegates to SettingsPorter,
 	 * then redirects back with a result notice. Only known keys are written (see SettingsPorter).
 	 */
+	/**
+	 * Read an uploaded temp file (already checked with is_uploaded_file). '' when unreadable or empty;
+	 * SettingsPorter::decode_upload() then rejects it and enforces the size cap.
+	 */
+	private static function read_upload( string $path ): string {
+		try {
+			$file = new \SplFileObject( $path, 'r' );
+			$size = (int) $file->getSize();
+			return $size > 0 ? (string) $file->fread( $size ) : '';
+		} catch ( \RuntimeException $e ) {
+			return '';
+		}
+	}
+
 	private static function handle_import(): void {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- reached only from handle(), which verifies the nonce (check_admin_referer( self::NONCE )) and the manage_woocommerce capability before delegating here; the upload path is validated with is_uploaded_file().
+		// handle() 已驗過；這裡再驗一次，讓這支函式自己也成立（也讓 PHPCS 看得到）。
+		check_admin_referer( self::NONCE );
 		if ( empty( $_FILES['moksafopoi_import_file']['tmp_name'] ) || ! is_uploaded_file( sanitize_text_field( wp_unslash( (string) $_FILES['moksafopoi_import_file']['tmp_name'] ) ) ) ) {
-			wp_safe_redirect( add_query_arg( 'moksafopoi_import_error', 'nofile', self::page_url( 'tools' ) ) );
+			wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_import_error' => 'nofile' ), self::page_url( 'tools' ) ) );
 			exit;
 		}
 		$tmp      = sanitize_text_field( wp_unslash( (string) $_FILES['moksafopoi_import_file']['tmp_name'] ) );
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-		$contents = (string) file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading an uploaded temp file, not a remote URL.
+		$contents = self::read_upload( $tmp );
 		$payload  = SettingsPorter::decode_upload( $contents );
 		if ( null === $payload ) {
-			wp_safe_redirect( add_query_arg( 'moksafopoi_import_error', 'parse', self::page_url( 'tools' ) ) );
+			wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_import_error' => 'parse' ), self::page_url( 'tools' ) ) );
 			exit;
 		}
 		$res = SettingsPorter::import_payload( $payload );
 		if ( true !== ( $res['ok'] ?? false ) ) {
-			wp_safe_redirect( add_query_arg( 'moksafopoi_import_error', 'format', self::page_url( 'tools' ) ) );
+			wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_import_error' => 'format' ), self::page_url( 'tools' ) ) );
 			exit;
 		}
 		wp_safe_redirect(
-			add_query_arg(
+			RedirectNotice::url(
 				array(
 					'moksafopoi_imported' => (int) $res['applied'],
 					'moksafopoi_skipped'  => (int) $res['skipped'],
@@ -1657,13 +1805,13 @@ final class SettingsScreen {
 	 * transient for the current operator, and redirects back to 工具.
 	 */
 	private static function handle_balance_import(): void {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- reached only from handle(), which verifies check_admin_referer( self::NONCE ) and the manage_woocommerce capability first; the upload path is validated with is_uploaded_file().
+		// handle() 已驗過；這裡再驗一次，讓這支函式自己也成立（也讓 PHPCS 看得到）。
+		check_admin_referer( self::NONCE );
 		$batch   = isset( $_POST['moksafopoi_balance_batch'] ) ? sanitize_key( wp_unslash( (string) $_POST['moksafopoi_balance_batch'] ) ) : '';
 		$dry_run = isset( $_POST['moksafopoi_balance_dry_run'] );
 		$tmp     = isset( $_FILES['moksafopoi_balance_file']['tmp_name'] )
 			? sanitize_text_field( wp_unslash( (string) $_FILES['moksafopoi_balance_file']['tmp_name'] ) )
 			: '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
 			$result = array(
@@ -1684,10 +1832,10 @@ final class SettingsScreen {
 	 * 帳本彙總 handler. Called from {@see handle()} after the nonce + capability check.
 	 */
 	private static function handle_retention(): void {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- reached only from handle(), which verifies check_admin_referer( self::NONCE ) and the manage_woocommerce capability first.
+		// handle() 已驗過；這裡再驗一次，讓這支函式自己也成立（也讓 PHPCS 看得到）。
+		check_admin_referer( self::NONCE );
 		$days    = isset( $_POST['moksafopoi_retention_days'] ) ? absint( wp_unslash( $_POST['moksafopoi_retention_days'] ) ) : 0;
 		$dry_run = isset( $_POST['moksafopoi_retention_dry_run'] );
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		$result = Retention::run( $days, $dry_run );
 		set_transient( self::retention_report_key(), $result, 5 * MINUTE_IN_SECONDS );

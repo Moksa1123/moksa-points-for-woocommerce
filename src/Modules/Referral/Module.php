@@ -4,10 +4,14 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Referral;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
+use Moksafopoi\Support\Input;
 use Moksafopoi\Modules\AbstractModule;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\EarnThrottle;
+use Moksafopoi\Support\LegacyStorage;
+use Moksafopoi\Support\RefCodeIndex;
 use Moksafopoi\Support\Schema;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 final class Module extends AbstractModule {
 
 	public const COOKIE          = 'moksafopoi_ref';
-	private const META_CODE      = '_moksafopoi_ref_code';
+	public const META_CODE       = '_moksafopoi_ref_code';
 	private const META_REFERRED  = '_moksafopoi_referred_by';
 	private const META_REWARDED  = '_moksafopoi_referral_rewarded';
 	private const META_REVERSED  = '_moksafopoi_referral_reversed';
@@ -86,17 +90,7 @@ final class Module extends AbstractModule {
 			return;
 		}
 
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$granted = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d AND source = 'referral' AND source_ref = %s AND points_delta > 0",
-				$referrer,
-				'referral_' . $friend_id
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$granted = LedgerStore::granted_for_ref( $referrer, 'referral', 'referral_' . $friend_id );
 		if ( $granted > 0 ) {
 			Ledger::record_once(
 				$referrer,
@@ -131,6 +125,7 @@ final class Module extends AbstractModule {
 			$code = strtolower( wp_generate_password( 8, false ) );
 		} while ( null !== self::resolve_code( $code ) );
 		update_user_meta( $user_id, self::META_CODE, $code );
+		RefCodeIndex::index( $user_id, $code );
 		return $code;
 	}
 
@@ -140,15 +135,16 @@ final class Module extends AbstractModule {
 		if ( '' === $code ) {
 			return null;
 		}
-		$users = get_users(
-			array(
-				'meta_key'   => self::META_CODE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- indexed usermeta lookup, admin-scale.
-				'meta_value' => $code,           // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see above.
-				'fields'     => 'ID',
-				'number'     => 1,
-			)
-		);
-		return ! empty( $users ) ? (int) $users[0] : null;
+		$owner = RefCodeIndex::lookup( $code );
+		if ( null !== $owner || RefCodeIndex::ready() ) {
+			return $owner;
+		}
+		// Index still being back-filled: fall back to the user-meta lookup and index what it finds.
+		$owner = LegacyStorage::user_by_ref_code_meta( self::META_CODE, $code );
+		if ( null !== $owner ) {
+			RefCodeIndex::index( $owner, $code );
+		}
+		return $owner;
 	}
 
 	/** The full referral URL for a member. */
@@ -164,8 +160,8 @@ final class Module extends AbstractModule {
 		if ( is_admin() ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a public landing param, not a state change.
-		$raw = isset( $_GET['mfp_ref'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['mfp_ref'] ) ) : '';
+		// 公開的推薦連結參數，只用來種 cookie，不改任何資料。
+		$raw = sanitize_text_field( Input::get( 'mfp_ref' ) );
 		$code = strtolower( trim( $raw ) );
 		if ( '' === $code || is_user_logged_in() ) {
 			return;
@@ -231,9 +227,9 @@ final class Module extends AbstractModule {
 
 			// Block mutual (A<->B) referral farming: if this buyer is the referrer's OWN referrer,
 			// the pair are referring each other, so neither side may be rewarded.
-			if ( (int) get_user_meta( $referrer, self::META_REFERRED, true ) === $friend_id ) {
-				return;
-			}
+		if ( (int) get_user_meta( $referrer, self::META_REFERRED, true ) === $friend_id ) {
+			return;
+		}
 
 		// Qualifying order threshold — on the amount actually paid (post-discount), so a large coupon
 		// cannot make a near-zero order "qualify" (F6).
@@ -263,7 +259,10 @@ final class Module extends AbstractModule {
 				array(
 					'order_id' => $order_id,
 					'note'     => __( 'Referral reward', 'moksa-points-for-woocommerce' ),
-					'meta'     => array( 'friend_id' => $friend_id, 'order_id' => $order_id ),
+					'meta'     => array(
+						'friend_id' => $friend_id,
+						'order_id' => $order_id,
+					),
 				)
 			) || $did;
 		}
@@ -277,7 +276,10 @@ final class Module extends AbstractModule {
 				array(
 					'order_id' => $order_id,
 					'note'     => __( 'Referred friend reward', 'moksa-points-for-woocommerce' ),
-					'meta'     => array( 'referrer_id' => $referrer, 'order_id' => $order_id ),
+					'meta'     => array(
+						'referrer_id' => $referrer,
+						'order_id' => $order_id,
+					),
 				)
 			) || $did;
 		}
@@ -293,10 +295,7 @@ final class Module extends AbstractModule {
 		if ( $user_id <= 0 ) {
 			return 0;
 		}
-		global $wpdb;
-		$table = \Moksafopoi\Support\Schema::ledger_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); values bound via $wpdb->prepare().
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = %s AND points_delta > 0", $user_id, 'referral' ) );
+		return LedgerStore::count_positive_since( $user_id, 'referral', LedgerStore::MIN_DATETIME );
 	}
 
 	/* ------------------------------------------------------------------ shortcode */

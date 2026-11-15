@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,17 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 
 == Changelog ==
 
+= 1.0.5 =
+* Storage: the redemption catalog moves from its own database table to a private post type. Existing rewards are copied automatically on update, row by row, and verified field by field; per-customer redemption limits and redeem-once codes carry on unchanged. The old table is kept, so downgrading still works, and if it changes afterwards the admin is asked whether to import it again.
+* Storage: referral codes are looked up through an index instead of scanning user meta (built in the background on existing sites).
+* Storage: all ledger queries now go through one class with fully prepared SQL; the unused earn-rules table is no longer created.
+* Security: request input and admin actions are verified without suppressing coding-standard checks (nonce-signed result notices, re-verified product-save and sub-action nonces); output that mixes markup is passed through wp_kses.
+* Fix: ledger compaction could restore points spent (or remove points earned) by a member at the same moment; it now replaces exactly the rows it summed, under a lock, and keeps redemption rows.
+* Fix: editing a reward through an old (pre-migration) id could overwrite an unrelated post with that ID.
+* Fix: the automatic refund of a failed points transfer could be capped or refused by the earn rules.
+* Fix: text fields in the ledger CSV export are protected against spreadsheet formula injection.
+* Uninstall removes everything through the WordPress options / metadata APIs.
+
 = 1.0.4 =
 * Fix: when several customers redeemed the last units of a limited reward at the same moment, all of them could succeed (the stock check ran outside any lock and stock was taken only after the reward was issued). One unit is now reserved atomically before points are spent, and handed back if the redemption fails.
 * Fix: a redemption that failed and was refunded no longer counts toward the per-customer redemption limit.
@@ -127,6 +138,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+Moves the redemption catalog to a post type (copied and verified automatically on update) and fixes ledger compaction, transfer refunds and the CSV export. Back up before updating, as with any update that moves data.
 
 = 1.0.4 =
 Fixes overselling of limited rewards under concurrent redemptions, refunded redemptions counting toward per-customer limits, and coupon rewards with the WordPress.org coupon plugin. Update recommended.

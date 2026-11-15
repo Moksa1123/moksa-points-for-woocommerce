@@ -25,9 +25,10 @@ defined( 'ABSPATH' ) || exit;
 
 // Bump this string when shipping a newer bundled kit. Highest version wins the election.
 $GLOBALS['moksa_kit_pool'][] = array(
-	// 1.0.0:SettingsUi(設計系統 CSS/JS)、SettingsAudit(設定變更環形記錄)、
-	//       SettingsPorter(設定匯出 / 匯入)三項從五支外掛抽出。
-	'version' => '1.0.0',
+	// 1.0.0:SettingsUi(設計系統 CSS/JS)、SettingsAudit(設定變更環形記錄)、SettingsPorter(設定匯出 / 匯入)三項從五支外掛抽出.
+	// 1.0.1:後台版面 .mowp-shell 從 1000px 放寬到 1500px，欄位說明限 820px（09-04 副本改動回補母版）.
+	// 1.0.2:參數 $class／$new 改名 $class_name／$new_value（保留字）；各外掛都用位置參數呼叫，行為不變.
+	'version' => '1.0.2',
 	'dir'     => __DIR__,
 );
 
@@ -66,17 +67,17 @@ if ( ! function_exists( 'moksa_kit_dir' ) ) {
 	 * very different points in a request (admin_enqueue_scripts, a settings save, an import), and a
 	 * consumer must never have to care whether some other plugin has loaded yet.
 	 *
-	 * @param string $class Fully-qualified class name being autoloaded.
+	 * @param string $class_name Fully-qualified class name being autoloaded.
 	 */
-	function moksa_kit_autoload( string $class ): void {
-		if ( 0 !== strpos( $class, 'Moksa\\Kit\\' ) ) {
+	function moksa_kit_autoload( string $class_name ): void {
+		if ( 0 !== strpos( $class_name, 'Moksa\\Kit\\' ) ) {
 			return;
 		}
 		$dir = moksa_kit_dir();
 		if ( '' === $dir ) {
 			return;
 		}
-		$relative = str_replace( '\\', '/', substr( $class, strlen( 'Moksa\\Kit\\' ) ) );
+		$relative = str_replace( '\\', '/', substr( $class_name, strlen( 'Moksa\\Kit\\' ) ) );
 		// Defensive: never let a crafted class name walk out of the kit directory.
 		if ( '' === $relative || false !== strpos( $relative, '..' ) ) {
 			return;

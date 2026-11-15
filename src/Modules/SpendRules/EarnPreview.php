@@ -74,9 +74,10 @@ final class EarnPreview {
 
 	/** Echo the「購買可得約 X <unit>」line for the current product (escaped; silent when N/A). */
 	public static function render(): void {
-		global $product;
+		// 讀 WooCommerce 迴圈的全域 $product（只讀不寫），沒有就照目前文章查。
+		$product = $GLOBALS['product'] ?? null;
 		if ( ! $product instanceof \WC_Product ) {
-			$product = wc_get_product( get_the_ID() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $product is WooCommerce's core loop global (must keep this exact name); canonical wc_get_product() fallback, not a plugin global.
+			$product = wc_get_product( get_the_ID() );
 		}
 		if ( ! $product instanceof \WC_Product ) {
 			return;
@@ -100,7 +101,7 @@ final class EarnPreview {
 			return;
 		}
 
-		echo '<p class="moksafopoi-earn-preview moksafopoi-disp moksafopoi-disp--single"' . DisplayMessage::style_attr( 'single' ) . '>' . DisplayMessage::icon( 'single' ) . $html . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- style_attr() is esc_attr()'d; render() returns wp_kses_post()'d HTML with each value esc_html()'d.
+		echo wp_kses_post( '<p class="moksafopoi-earn-preview moksafopoi-disp moksafopoi-disp--single"' . DisplayMessage::style_attr( 'single' ) . '>' . DisplayMessage::icon( 'single' ) . $html . '</p>' );
 	}
 
 	/** Default single-product teaser template (operator may override via moksafopoi_disp_single_msg). */

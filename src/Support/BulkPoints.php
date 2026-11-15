@@ -59,7 +59,7 @@ final class BulkPoints {
 		$changed = 0;
 		foreach ( $user_ids as $uid ) {
 			if ( 0 !== self::apply_one( (int) $uid, $delta, $note, $batch_id ) ) {
-				$changed++;
+				++$changed;
 			}
 		}
 		return $changed;

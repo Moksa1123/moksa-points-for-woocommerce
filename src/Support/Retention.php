@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Support;
 
+use Moksafopoi\Modules\Ledger\Ledger;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -14,8 +16,9 @@ defined( 'ABSPATH' ) || exit;
  *
  *   • **Balances are preserved exactly.** Each member's compacted rows are replaced by ONE row whose
  *     points/credit deltas equal their sum. Recompute the balance before and after and you get the
- *     same number — that is the invariant, and {@see run()} verifies it per member before deleting
- *     anything.
+ *     same number. {@see run()} sums one exact batch, writes the opening row, then deletes only that
+ *     batch (ids up to its highest id), so rows written meanwhile are untouched.
+ *   • **Redemption rows are kept.** Their refs carry per-member redemption limits and redeem-once codes.
  *   • **A hard floor of one year.** Deleting a row also deletes the UNIQUE idempotency key that stops
  *     a replayed webhook re-awarding it. Recent history is exactly where replays happen, so no
  *     cutoff younger than {@see MIN_AGE_DAYS} is accepted, whatever the caller asks for.
@@ -42,11 +45,8 @@ final class Retention {
 	 * @return array{ok:bool,error?:string,cutoff:string,users:int,rows:int,points:int,credit:float,skipped_users:int,dry_run:bool}
 	 */
 	public static function run( int $days, bool $dry_run = true ): array {
-		global $wpdb;
-
 		$days   = max( self::MIN_AGE_DAYS, $days );
 		$cutoff = gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS );
-		$table  = Schema::ledger_table();
 
 		$out = array(
 			'ok'            => true,
@@ -59,116 +59,94 @@ final class Retention {
 			'dry_run'       => $dry_run,
 		);
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); every value bound via $wpdb->prepare(). This is an explicit, operator-triggered maintenance sweep, so caching does not apply.
-		$candidates = (array) $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT user_id, COUNT(*) AS rows_count,
-					COALESCE(SUM(points_delta),0) AS points_sum,
-					COALESCE(SUM(amount_delta),0) AS credit_sum
-				FROM {$table}
-				WHERE created_at < %s
-					AND ( expires_at IS NULL OR expires_at < %s OR expires_at < '1971-01-01 00:00:00' )
-					AND type <> 'opening'
-				GROUP BY user_id
-				HAVING rows_count > 1
-				LIMIT %d",
-				$cutoff,
-				gmdate( 'Y-m-d H:i:s' ),
-				self::MAX_USERS
-			),
-			ARRAY_A
-		);
+		$now        = gmdate( 'Y-m-d H:i:s' );
+		$candidates = LedgerStore::retention_candidates( $cutoff, $now, self::MAX_USERS );
 
-		foreach ( $candidates as $row ) {
-			$user_id = (int) $row['user_id'];
-			$rows    = (int) $row['rows_count'];
-			$points  = (int) $row['points_sum'];
-			$credit  = (float) $row['credit_sum'];
-
-			if ( $user_id <= 0 ) {
-				continue;
+		// One compaction at a time (two overlapping runs could each sum and delete the same batch).
+		if ( ! $dry_run ) {
+			if ( ! class_exists( 'WP_Upgrader', false ) ) {
+				require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 			}
-
-			$out['users']  += 1;
-			$out['rows']   += $rows;
-			$out['points'] += $points;
-			$out['credit'] += $credit;
-
-			if ( $dry_run ) {
-				continue;
+			if ( ! \WP_Upgrader::create_lock( 'moksafopoi_retention', 15 * MINUTE_IN_SECONDS ) ) {
+				$out['ok']    = false;
+				$out['error'] = __( 'Another compaction is already running. Please try again in a few minutes.', 'moksa-points-for-woocommerce' );
+				return $out;
 			}
+		}
 
-			// Balance before, so the invariant can be checked rather than assumed.
-			$before_points = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d", $user_id ) );
-			$before_credit = (float) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(amount_delta),0) FROM {$table} WHERE user_id = %d", $user_id ) );
+		try {
 
-			$inserted = $wpdb->insert(
-				$table,
-				array(
-					'user_id'         => $user_id,
-					'points_delta'    => $points,
-					'amount_delta'    => $credit,
-					// balance_after is a NOT NULL snapshot column; a compacted row has no meaningful
-					// "balance at the time", so it stores the running total the compaction leaves behind.
-					'balance_after'   => $points,
-					'type'            => 'opening',
-					'source'          => 'retention',
-					'source_ref'      => 'retention:' . gmdate( 'Ymd', strtotime( $cutoff ) ) . ':' . $user_id,
-					'idempotency_key' => sha1( 'retention:' . $cutoff . ':' . $user_id ),
-					'note'            => __( 'Opening balance (older entries compacted)', 'moksa-points-for-woocommerce' ),
-					'created_at'      => $cutoff,
-				),
-				array( '%d', '%d', '%f', '%d', '%s', '%s', '%s', '%s', '%s', '%s' )
-			);
+			foreach ( $candidates as $row ) {
+				$user_id = (int) $row['user_id'];
+				$rows    = (int) $row['rows_count'];
+				$points  = (int) $row['points_sum'];
+				$credit  = (float) $row['credit_sum'];
 
-			if ( ! $inserted ) {
-				++$out['skipped_users'];
-				--$out['users'];
-				continue; // Could not write the replacement → do NOT delete the originals.
-			}
-			$opening_id = (int) $wpdb->insert_id;
+				if ( $user_id <= 0 ) {
+					continue;
+				}
 
-			$deleted = $wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$table}
-					WHERE user_id = %d AND created_at < %s AND id <> %d
-						AND ( expires_at IS NULL OR expires_at < %s OR expires_at < '1971-01-01 00:00:00' )
-						AND type <> 'opening'",
-					$user_id,
-					$cutoff,
-					$opening_id,
-					gmdate( 'Y-m-d H:i:s' )
-				)
-			);
+				$out['users']  += 1;
+				$out['rows']   += $rows;
+				$out['points'] += $points;
+				$out['credit'] += $credit;
 
-			$after_points = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d", $user_id ) );
-			$after_credit = (float) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(amount_delta),0) FROM {$table} WHERE user_id = %d", $user_id ) );
+				if ( $dry_run ) {
+					continue;
+				}
 
-			if ( $before_points !== $after_points || abs( $before_credit - $after_credit ) > 0.001 ) {
-				// The invariant broke: put the difference back rather than leave a member short. This
-				// should be unreachable, which is exactly why it is checked.
-				$wpdb->insert(
-					$table,
+				// Replace exactly ONE batch: sum it, write the opening row with that sum, then delete that same
+				// batch (same conditions, ids up to its highest id). A spend or earn written by this member in
+				// the meantime is newer than the cutoff and has a higher id, so it is neither summed nor deleted
+				// — the balance cannot move. (The former "compare total balance before and after, repair the
+				// difference" approach turned a concurrent spend into free points.)
+				$batch = LedgerStore::retention_batch( $user_id, $cutoff, $now );
+				if ( $batch['rows'] <= 1 ) {
+					--$out['users'];
+					continue;
+				}
+
+				$opening_id = LedgerStore::insert_row(
 					array(
 						'user_id'         => $user_id,
-						'points_delta'    => $before_points - $after_points,
-						'amount_delta'    => $before_credit - $after_credit,
-						'balance_after'   => $before_points,
-						'type'            => 'adjust',
-						'source'          => 'retention_repair',
-						'source_ref'      => 'retention_repair:' . $user_id . ':' . time(),
-						'idempotency_key' => sha1( 'retention_repair:' . $user_id . ':' . microtime( true ) ),
-						'note'            => __( 'Retention compaction repair', 'moksa-points-for-woocommerce' ),
-						'created_at'      => gmdate( 'Y-m-d H:i:s' ),
+						'points_delta'    => $batch['p'],
+						'amount_delta'    => $batch['c'],
+						// balance_after is a NOT NULL snapshot column; a compacted row has no meaningful
+						// "balance at the time", so it stores the total of the rows it replaces.
+						'balance_after'   => $batch['p'],
+						'type'            => 'opening',
+						'source'          => 'retention',
+						'source_ref'      => 'retention:' . gmdate( 'Ymd', strtotime( $cutoff ) ) . ':' . $user_id,
+						'idempotency_key' => sha1( 'retention:' . $cutoff . ':' . $user_id ),
+						'note'            => __( 'Opening balance (older entries compacted)', 'moksa-points-for-woocommerce' ),
+						'created_at'      => $cutoff,
 					),
 					array( '%d', '%d', '%f', '%d', '%s', '%s', '%s', '%s', '%s', '%s' )
 				);
-				++$out['skipped_users'];
-			}
 
-			unset( $deleted );
+				if ( $opening_id <= 0 ) {
+					++$out['skipped_users'];
+					--$out['users'];
+					continue; // Could not write the replacement → do NOT delete the originals.
+				}
+
+				$deleted = LedgerStore::delete_compacted( $user_id, $cutoff, $now, $batch['max_id'] );
+				if ( $deleted !== $batch['rows'] ) {
+					// Cannot happen while the run lock is held; recorded rather than "repaired" with guessed points.
+					++$out['skipped_users'];
+					$out['mismatch'][] = array(
+						'user_id' => $user_id,
+						'summed'  => $batch['rows'],
+						'deleted' => $deleted,
+					);
+				}
+				Ledger::recompute( $user_id );
+			}
+		} finally {
+			if ( ! $dry_run ) {
+				\WP_Upgrader::release_lock( 'moksafopoi_retention' );
+			}
 		}
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		return $out;
 	}

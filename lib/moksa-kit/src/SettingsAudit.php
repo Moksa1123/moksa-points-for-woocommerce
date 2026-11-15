@@ -34,17 +34,17 @@ final class SettingsAudit {
 	 * @param string $option Option name holding this plugin's ring buffer.
 	 * @param string $key    Option key that changed.
 	 * @param mixed  $old    Value before the change.
-	 * @param mixed  $new    Value after the change.
+	 * @param mixed  $new_value Value after the change.
 	 * @param string $source One of 'ui' | 'import' | 'ability' (free-form, sanitised to a key).
 	 */
-	public static function record( string $option, string $key, $old, $new, string $source = 'ui' ): void {
+	public static function record( string $option, string $key, $old, $new_value, string $source = 'ui' ): void {
 		$option = sanitize_key( $option );
 		$key    = sanitize_key( $key );
 		if ( '' === $option || '' === $key ) {
 			return;
 		}
 		$old_s = self::stringify( $old );
-		$new_s = self::stringify( $new );
+		$new_s = self::stringify( $new_value );
 		if ( $old_s === $new_s ) {
 			return; // unchanged — nothing to log.
 		}

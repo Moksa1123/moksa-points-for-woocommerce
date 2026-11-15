@@ -91,5 +91,4 @@ final class Module extends AbstractModule {
 	public static function page_url(): string {
 		return admin_url( 'admin.php?page=' . self::PAGE );
 	}
-
 }

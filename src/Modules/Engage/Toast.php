@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Engage;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Support\Label;
 use Moksafopoi\Support\Schema;
 
@@ -65,13 +66,6 @@ final class Toast {
 
 	/** Total positive points the ledger booked for this order (0 when nothing was awarded). */
 	private static function earned_for_order( int $order_id ): int {
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, order id bound via $wpdb->prepare().
-		$earned = (int) $wpdb->get_var(
-			$wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE order_id = %d AND points_delta > 0", $order_id )
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return $earned;
+		return LedgerStore::earned_for_order( $order_id );
 	}
 }

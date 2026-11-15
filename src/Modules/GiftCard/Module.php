@@ -128,17 +128,20 @@ final class Module extends AbstractModule {
 	}
 
 	public static function save_product_fields( int $post_id ): void {
-		// Nonce is verified by WooCommerce's product save flow before this fires.
-		$is_card = isset( $_POST[ self::PRODUCT_FLAG ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- presence-only checkbox, verified by WC product save.
+		// WooCommerce 存商品前已驗過自己的 nonce；這裡再驗一次，驗不過就不寫（fail closed）。
+		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' ) ) {
+			return;
+		}
+		$is_card = isset( $_POST[ self::PRODUCT_FLAG ] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, self::PRODUCT_FLAG, $is_card );
 
-		$amount = isset( $_POST[ self::PRODUCT_AMOUNT ] ) ? (float) wp_unslash( $_POST[ self::PRODUCT_AMOUNT ] ) : 0.0; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- verified by WC product save; value is cast to float (numeric sanitisation).
+		$amount = isset( $_POST[ self::PRODUCT_AMOUNT ] ) ? (float) sanitize_text_field( wp_unslash( $_POST[ self::PRODUCT_AMOUNT ] ) ) : 0.0;
 		update_post_meta( $post_id, self::PRODUCT_AMOUNT, max( 0.0, $amount ) );
 
-		$is_pack = isset( $_POST[ self::PACK_FLAG ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- presence-only checkbox, verified by WC product save.
+		$is_pack = isset( $_POST[ self::PACK_FLAG ] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, self::PACK_FLAG, $is_pack );
 
-		$points = isset( $_POST[ self::PACK_POINTS ] ) ? (int) wp_unslash( $_POST[ self::PACK_POINTS ] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- verified by WC product save; value is cast to int (numeric sanitisation).
+		$points = isset( $_POST[ self::PACK_POINTS ] ) ? intval( sanitize_text_field( wp_unslash( $_POST[ self::PACK_POINTS ] ) ) ) : 0;
 		update_post_meta( $post_id, self::PACK_POINTS, min( self::MAX_PACK_POINTS, max( 0, $points ) ) );
 	}
 

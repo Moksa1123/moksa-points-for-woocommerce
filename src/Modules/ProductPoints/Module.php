@@ -100,14 +100,15 @@ final class Module extends AbstractModule {
 	}
 
 	public static function save( int $post_id ): void {
-		// WooCommerce verifies its own product-data nonce before firing this hook; re-check the
-		// capability defensively.
 		if ( ! current_user_can( 'edit_product', $post_id ) ) {
 			return;
 		}
-
-		$override_raw = isset( $_POST[ ProductPoints::META_EARN_OVERRIDE ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce handled by WC product save.
-			? sanitize_text_field( wp_unslash( (string) $_POST[ ProductPoints::META_EARN_OVERRIDE ] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce handled by WC product save.
+		// WooCommerce 存商品前已驗過自己的 nonce；這裡再驗一次，驗不過就不寫（fail closed）。
+		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' ) ) {
+			return;
+		}
+		$override_raw = isset( $_POST[ ProductPoints::META_EARN_OVERRIDE ] )
+			? sanitize_text_field( wp_unslash( (string) $_POST[ ProductPoints::META_EARN_OVERRIDE ] ) )
 			: '';
 		if ( '' === $override_raw ) {
 			delete_post_meta( $post_id, ProductPoints::META_EARN_OVERRIDE );
@@ -115,10 +116,10 @@ final class Module extends AbstractModule {
 			update_post_meta( $post_id, ProductPoints::META_EARN_OVERRIDE, (string) max( 0, (int) $override_raw ) );
 		}
 
-		$no_earn = isset( $_POST[ ProductPoints::META_NO_EARN ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce handled by WC product save.
+		$no_earn = isset( $_POST[ ProductPoints::META_NO_EARN ] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, ProductPoints::META_NO_EARN, $no_earn );
 
-		$no_redeem = isset( $_POST[ ProductPoints::META_NO_REDEEM ] ) ? 'yes' : 'no'; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce handled by WC product save.
+		$no_redeem = isset( $_POST[ ProductPoints::META_NO_REDEEM ] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, ProductPoints::META_NO_REDEEM, $no_redeem );
 	}
 }

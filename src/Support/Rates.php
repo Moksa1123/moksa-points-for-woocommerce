@@ -176,13 +176,16 @@ final class Rates {
 			return 1.0;
 		}
 
-		// Aelia Currency Switcher exposes its rates through its OWN filter, so the hook name is
-		// deliberately theirs, not ours — and it is only consulted when their plugin is loaded.
-		if ( class_exists( 'WC_Aelia_CurrencySwitcher' ) ) {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party hook owned by Aelia Currency Switcher; we are the caller, not the author.
-			$rate = apply_filters( 'wc_aelia_cs_convert', null, 1, $currency, $base );
-			if ( is_numeric( $rate ) && (float) $rate > 0 ) {
-				return (float) $rate;
+		// Aelia Currency Switcher: ask its singleton to convert 1 unit of $currency into the base currency
+		// (convert( amount, from, to )). Called directly instead of through Aelia's own filter, whose name
+		// is not ours to use; only when the plugin and the method are actually there.
+		if ( class_exists( 'WC_Aelia_CurrencySwitcher' ) && method_exists( 'WC_Aelia_CurrencySwitcher', 'instance' ) ) {
+			$aelia = \WC_Aelia_CurrencySwitcher::instance();
+			if ( is_object( $aelia ) && method_exists( $aelia, 'convert' ) ) {
+				$rate = $aelia->convert( 1, $currency, $base );
+				if ( is_numeric( $rate ) && (float) $rate > 0 ) {
+					return (float) $rate;
+				}
 			}
 		}
 

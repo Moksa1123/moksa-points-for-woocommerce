@@ -4,7 +4,10 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\MyAccount;
 
+use Moksafopoi\Support\RewardStore;
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
+use Moksafopoi\Support\Input;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -172,35 +175,15 @@ final class Endpoint {
 			return; // Expiry disabled or nothing to expire.
 		}
 
-		global $wpdb;
-		$table = \Moksafopoi\Support\Schema::ledger_table();
-		$now   = gmdate( 'Y-m-d H:i:s' );
+		$now = gmdate( 'Y-m-d H:i:s' );
 
 		// Soonest future expiry for this member + how many points expire on (or before) that date.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$next = (string) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT MIN(expires_at) FROM {$table} WHERE user_id = %d AND expires_at IS NOT NULL AND expires_at > %s AND points_delta > 0",
-				$user_id,
-				$now
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$next = LedgerStore::next_expiry( $user_id, $now );
 		if ( '' === $next ) {
 			return;
 		}
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$expiring = (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d AND expires_at IS NOT NULL AND expires_at > %s AND expires_at <= %s AND points_delta > 0",
-				$user_id,
-				$now,
-				$next
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$expiring = min( $points, $expiring );
+		$expiring = min( $points, LedgerStore::expiring_for_user( $user_id, $now, $next ) );
 		if ( $expiring <= 0 ) {
 			return;
 		}
@@ -321,13 +304,8 @@ final class Endpoint {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private static function active_rewards(): array {
-		global $wpdb;
-		$table = \Moksafopoi\Support\Schema::rewards_table();
 		// kind='code' rows are入 lane(輸入代碼領點), never listed as spendable rewards.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); fully static SQL, no user input.
-		$rows = $wpdb->get_results( "SELECT id, label, kind, cost_points, stock FROM {$table} WHERE active = 1 AND kind <> 'code' AND ( stock = -1 OR stock > 0 ) ORDER BY cost_points ASC LIMIT 50", ARRAY_A );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return is_array( $rows ) ? $rows : array();
+		return RewardStore::spendable_for_account();
 	}
 
 	/**
@@ -338,12 +316,12 @@ final class Endpoint {
 	 */
 	public static function handle_redeem(): void {
 		$user_id   = get_current_user_id();
-		$reward_id = isset( $_POST['reward_id'] ) ? (int) $_POST['reward_id'] : 0;
+		$reward_id = isset( $_POST['reward_id'] ) ? absint( wp_unslash( $_POST['reward_id'] ) ) : 0;
 
 		// Where to send the member afterwards: the originating mall page (when posted with a safe
 		// same-host redirect_to) or the account endpoint. wp_safe_redirect blocks off-host targets.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- read only to choose a same-host return URL; the state-changing redeem below is nonce-checked.
-		$redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : '';
+		// 只用來決定導回哪裡（wp_safe_redirect 擋站外）；扣點的動作在下面另驗 nonce。
+		$redirect_to = esc_url_raw( Input::post( 'redirect_to' ) );
 		$fallback    = wc_get_account_endpoint_url( self::SLUG );
 		$redirect    = '' !== $redirect_to ? $redirect_to : $fallback;
 
@@ -479,9 +457,8 @@ final class Endpoint {
 	}
 
 	private static function current_page(): int {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only paging of the viewer's OWN ledger; no state change, value is sanitized to a positive int.
-		$raw = isset( $_GET['mp_page'] ) ? absint( wp_unslash( $_GET['mp_page'] ) ) : 1;
-		return max( 1, $raw );
+		// 唯讀：只翻自己的點數紀錄頁碼。
+		return max( 1, absint( Input::get( 'mp_page' ) ) );
 	}
 
 	/** Load the account-page card CSS only on the account page (filemtime cache-bust). */

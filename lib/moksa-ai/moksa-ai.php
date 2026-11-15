@@ -19,8 +19,12 @@ defined( 'ABSPATH' ) || exit;
 
 // Bump this string when shipping a newer bundled launcher. Highest version wins the election.
 $GLOBALS['moksa_ai_pool'][] = array(
-	// 1.3.5:更新外掛等 iframe 頁不再載入對話按鈕。
-	'version' => '1.3.5',
+	// 1.3.5:更新外掛等 iframe 頁不再載入對話按鈕.
+	// 1.3.6:確認 token 刪除成功才執行，同時確認只會執行一次.
+	// 1.3.7:schema 提示改用 wp_trigger_error()，拿掉 PHPCS 忽略註解；註解結尾改半形句點.
+	// 1.3.8:SchemaCompat 屬性補 @var 註解（只動註解）.
+	// 1.3.9:SchemaCompat 只對交給 Moksa AI 的 ability 發提示（不再對 woocommerce/* 等別人的 ability 發 notice）；型別照常一律收斂.
+	'version' => '1.3.9',
 	'dir'     => __DIR__,
 );
 

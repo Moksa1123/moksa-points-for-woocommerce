@@ -49,10 +49,19 @@ final class Plugin {
 		}
 		$this->booted = true;
 
+		// Always-on: record every option we write, so uninstall can delete them through the options API.
+		Support\OptionRegistry::boot();
+
 		if ( ! Compatibility\Requirements::met() ) {
 			Compatibility\Requirements::register_admin_notice();
 			return;
 		}
+
+		// Always-on storage: the redemption catalog CPT (+ one-time move from the old table) and the
+		// referral-code index. Registered on init like any post type / taxonomy.
+		add_action( 'init', array( Support\RewardStore::class, 'register' ), 5 );
+		Support\RewardMigration::boot();
+		Support\RefCodeIndex::boot();
 
 		add_action( 'woocommerce_init', array( $this, 'on_woocommerce_init' ) );
 		add_filter( 'plugin_action_links_' . MOKSAFOPOI_PLUGIN_BASENAME, array( $this, 'plugin_action_links' ) );

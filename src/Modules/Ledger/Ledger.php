@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Ledger;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Support\EarnCap;
 use Moksafopoi\Support\Schema;
 
@@ -32,8 +33,6 @@ final class Ledger {
 	 * @return bool True when a NEW row was written; false when it was already recorded.
 	 */
 	public static function record_once( int $user_id, int $points_delta, string $type, string $source, string $source_ref, array $args = array() ): bool {
-		global $wpdb;
-
 		$amount_delta = isset( $args['amount_delta'] ) ? (float) $args['amount_delta'] : 0.0;
 		if ( $user_id <= 0 || ( 0 === $points_delta && 0.0 === $amount_delta ) ) {
 			return false;
@@ -59,41 +58,32 @@ final class Ledger {
 		$bucket = (string) ( $args['bucket'] ?? '' );
 		$idem   = sha1( $source . ':' . $source_ref . ':' . $user_id . ':' . $bucket );
 
-		$table = Schema::ledger_table();
-
 		// The running `balance_after` snapshot must be read + written atomically per user, or two
 		// concurrent writes can both read the same cached base and stamp an incorrect running balance
 		// on the ledger-browser column (the authoritative balance is always recomputed below — this only
 		// keeps the informational per-row column exact). Serialise the snapshot + INSERT with the per-user
-		// advisory lock. It is re-entrant with any caller-held UserLock (transfer / redeem already lock);
+		// lock. It is re-entrant with any caller-held UserLock (transfer / redeem already lock);
 		// on contention we fall back to an unlocked insert so a write is never blocked (best-effort snapshot).
-		$do_insert = static function () use ( &$wpdb, $table, $user_id, $points_delta, $amount_delta, $type, $source, $source_ref, $idem, $args ): int {
-			$balance_after = self::points( $user_id ) + $points_delta;
-			// INSERT IGNORE: rows_affected === 0 means the UNIQUE idempotency_key already exists.
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-			$wpdb->query(
-				$wpdb->prepare(
-					"INSERT IGNORE INTO {$table}
-						(user_id, points_delta, amount_delta, balance_after, type, source, source_ref, idempotency_key, order_id, note, meta, created_by, created_at, expires_at)
-						VALUES (%d, %d, %f, %d, %s, %s, %s, %s, %d, %s, %s, %d, %s, %s)",
-					$user_id,
-					$points_delta,
-					$amount_delta,
-					$balance_after,
-					$type,
-					$source,
-					$source_ref,
-					$idem,
-					(int) ( $args['order_id'] ?? 0 ),
-					(string) ( $args['note'] ?? '' ),
-					isset( $args['meta'] ) ? (string) wp_json_encode( $args['meta'] ) : null,
-					(int) ( $args['created_by'] ?? 0 ),
-					gmdate( 'Y-m-d H:i:s' ),
-					isset( $args['expires_at'] ) ? $args['expires_at'] : null
+		$do_insert = static function () use ( $user_id, $points_delta, $amount_delta, $type, $source, $source_ref, $idem, $args ): int {
+			// INSERT IGNORE: 0 rows affected means the UNIQUE idempotency_key already exists.
+			return LedgerStore::insert_ignore(
+				array(
+					'user_id'         => $user_id,
+					'points_delta'    => $points_delta,
+					'amount_delta'    => $amount_delta,
+					'balance_after'   => self::points( $user_id ) + $points_delta,
+					'type'            => $type,
+					'source'          => $source,
+					'source_ref'      => $source_ref,
+					'idempotency_key' => $idem,
+					'order_id'        => (int) ( $args['order_id'] ?? 0 ),
+					'note'            => (string) ( $args['note'] ?? '' ),
+					'meta'            => isset( $args['meta'] ) ? (string) wp_json_encode( $args['meta'] ) : null,
+					'created_by'      => (int) ( $args['created_by'] ?? 0 ),
+					'created_at'      => gmdate( 'Y-m-d H:i:s' ),
+					'expires_at'      => isset( $args['expires_at'] ) ? $args['expires_at'] : null,
 				)
 			);
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-			return (int) $wpdb->rows_affected;
 		};
 
 		$locked = \Moksafopoi\Support\UserLock::with( $user_id, $do_insert );
@@ -135,16 +125,9 @@ final class Ledger {
 	 * @return array{points:int,credit:float}
 	 */
 	public static function recompute( int $user_id ): array {
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user id bound via $wpdb->prepare().
-		$row = $wpdb->get_row(
-			$wpdb->prepare( "SELECT COALESCE(SUM(points_delta),0) AS p, COALESCE(SUM(amount_delta),0) AS c FROM {$table} WHERE user_id = %d", $user_id ),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$points = (int) ( $row['p'] ?? 0 );
-		$credit = (float) ( $row['c'] ?? 0 );
+		$sums   = LedgerStore::sums_for_user( $user_id );
+		$points = $sums['p'];
+		$credit = $sums['c'];
 		update_user_meta( $user_id, self::META_POINTS, $points );
 		update_user_meta( $user_id, self::META_CREDIT, $credit );
 		return array(
@@ -159,20 +142,7 @@ final class Ledger {
 	 * @return array<int,array<string,mixed>>
 	 */
 	public static function history( int $user_id, int $limit = 50, int $offset = 0 ): array {
-		global $wpdb;
-		$table = Schema::ledger_table();
 		$limit = max( 1, min( 200, $limit ) );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT id, points_delta, amount_delta, balance_after, type, source, note, created_at FROM {$table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
-				$user_id,
-				$limit,
-				max( 0, $offset )
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return is_array( $rows ) ? $rows : array();
+		return LedgerStore::history( $user_id, $limit, max( 0, $offset ) );
 	}
 }

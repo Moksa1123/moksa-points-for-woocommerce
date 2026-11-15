@@ -33,7 +33,7 @@ final class Launcher {
 		require_once __DIR__ . '/SchemaCompat.php';
 
 		// 要在任何 ability 註冊之前掛上（註冊發生在 init 之後，這裡是 plugins_loaded:50）。
-		// 晚了的話就攔不到，整包工具會被 Gemini 退掉。
+		// 晚了的話就攔不到，整包工具會被 Gemini 退掉.
 		SchemaCompat::init();
 
 		Host::init( $dir );

@@ -165,29 +165,7 @@ final class Tiers {
 		if ( $user_id <= 0 ) {
 			return 0;
 		}
-		global $wpdb;
-		$table = Schema::ledger_table();
-
-		if ( 'yes' === get_option( 'moksafopoi_topup_counts_toward_tier', 'no' ) ) {
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); user id bound via $wpdb->prepare().
-			$all = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d AND points_delta > 0",
-					$user_id
-				)
-			);
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-			return (int) $all;
-		}
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); user id bound via $wpdb->prepare().
-		$sum = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE user_id = %d AND points_delta > 0 AND type <> 'topup'",
-				$user_id
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return (int) $sum;
+		return LedgerStore::earned_total( $user_id, 'yes' === get_option( 'moksafopoi_topup_counts_toward_tier', 'no' ) );
 	}
 
 	/**

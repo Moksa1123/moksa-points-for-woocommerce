@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Campaign;
 
+use Moksafopoi\Support\Input;
+use Moksafopoi\Support\RedirectNotice;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -23,8 +26,9 @@ final class Screen {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only routing of the admin view.
-		$view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'list';
+		// 唯讀：只決定顯示列表還是編輯表單；寫入另有 nonce。
+		$view = sanitize_key( Input::get( 'view' ) );
+		$view = '' === $view ? 'list' : $view;
 
 		echo '<div class="wrap"><div class="mowp-shell" data-ns="moksa-points-for-woocommerce">';
 		echo '<div class="mowp-intro">';
@@ -50,12 +54,11 @@ final class Screen {
 
 	/** Success flash, driven by the redirect query arg the handler sets. */
 	private static function notice(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flash flag.
-		if ( ! isset( $_GET['moksafopoi_msg'] ) ) {
+		$msg = RedirectNotice::get( 'moksafopoi_msg' );
+		if ( null === $msg ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only flash flag.
-		$msg = sanitize_key( wp_unslash( $_GET['moksafopoi_msg'] ) );
+		$msg = sanitize_key( $msg );
 
 		$map = array(
 			'saved'   => __( 'Campaign saved.', 'moksa-points-for-woocommerce' ),
@@ -142,8 +145,8 @@ final class Screen {
 	}
 
 	private static function render_form(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only prefill of the edit form; the write is nonce-checked on submit.
-		$id       = isset( $_GET['id'] ) ? sanitize_key( wp_unslash( $_GET['id'] ) ) : '';
+		// 唯讀：只用來預填編輯表單；送出時另有 nonce。
+		$id       = sanitize_key( Input::get( 'id' ) );
 		$campaign = '' !== $id ? Campaigns::find( $id ) : null;
 
 		$name      = $campaign ? (string) $campaign['name'] : '';
@@ -321,7 +324,7 @@ final class Screen {
 				break;
 		}
 
-		wp_safe_redirect( add_query_arg( 'moksafopoi_msg', $msg, Module::page_url() ) );
+		wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_msg' => $msg ), Module::page_url() ) );
 		exit;
 	}
 
@@ -330,7 +333,7 @@ final class Screen {
 		// The sole caller, handle(), gates on capability and check_admin_referer( Module::NONCE )
 		// before dispatching here; this method only reads the already-authorised, already-unslashed
 		// + sanitised POST payload.
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce + capability verified in handle() before this runs.
+		check_admin_referer( Module::NONCE ); // handle() 已驗過；這支函式自己也驗一次。
 		$name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
 
 		$start_raw = isset( $_POST['start'] ) ? sanitize_text_field( wp_unslash( $_POST['start'] ) ) : '';
@@ -360,7 +363,6 @@ final class Screen {
 
 		$time_start = isset( $_POST['time_start'] ) ? sanitize_text_field( wp_unslash( $_POST['time_start'] ) ) : '';
 		$time_end   = isset( $_POST['time_end'] ) ? sanitize_text_field( wp_unslash( $_POST['time_end'] ) ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		Campaigns::save(
 			$id,

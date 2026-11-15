@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Redeem;
 
+use Moksafopoi\Support\RewardStore;
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\Schema;
@@ -63,18 +65,18 @@ final class Service {
 				// Per-user redemption limit (stored in the reward payload; 0 = unlimited). Counted inside
 				// the per-user lock so concurrent redemptions cannot both slip past the cap.
 				$per_user = isset( $payload['per_user_limit'] ) ? (int) $payload['per_user_limit'] : 0;
-				if ( $per_user > 0 && self::count_user_redemptions( $user_id, (int) $reward['id'] ) >= $per_user ) {
+				if ( $per_user > 0 && self::count_user_redemptions( $user_id, $reward ) >= $per_user ) {
 					return new \WP_Error( 'moksafopoi_reward_limit', __( 'You have reached the redemption limit for this reward.', 'moksa-points-for-woocommerce' ) );
 				}
 
-				// Reserve one unit BEFORE spending. The per-user lock above does not stop two different
-				// members from taking the last unit at the same time; the atomic decrement does. Handed back
-				// if anything below fails. Unlimited rewards (-1) are not decremented.
-				if ( ! self::reserve_stock( $reward ) ) {
+				// Reserve one unit BEFORE spending: the per-user lock above does not stop two different
+				// members from taking the last unit at the same time, the reward's own lock does.
+				// Unlimited rewards (-1) always succeed. Handed back if anything below fails.
+				if ( ! RewardStore::take_stock( (int) $reward['id'] ) ) {
 					return new \WP_Error( 'moksafopoi_reward_out', __( 'This redemption item is sold out.', 'moksa-points-for-woocommerce' ) );
 				}
 
-				$ref = 'reward:' . (int) $reward['id'] . ':' . wp_generate_uuid4();
+				$ref = 'reward:' . RewardStore::ref_key( $reward ) . ':' . wp_generate_uuid4();
 
 				// Deduct first (idempotent on the unique ref); refund if fulfilment fails.
 				$deducted = Ledger::record_once(
@@ -93,7 +95,7 @@ final class Service {
 					)
 				);
 				if ( ! $deducted ) {
-					self::give_back_stock( $reward );
+					RewardStore::give_back_stock( (int) $reward['id'] );
 					return new \WP_Error( 'moksafopoi_deduct_failed', __( 'Failed to deduct points, please try again later.', 'moksa-points-for-woocommerce' ) );
 				}
 
@@ -107,11 +109,20 @@ final class Service {
 						$ref,
 						array( 'note' => __( 'Redemption failed, points have been refunded.', 'moksa-points-for-woocommerce' ) )
 					);
-					self::give_back_stock( $reward );
+					RewardStore::give_back_stock( (int) $reward['id'] );
 					return $result;
 				}
 
-				do_action( 'moksafopoi_points_redeemed', $user_id, $cost, $kind, array( 'reward_id' => (int) $reward['id'], 'result' => $result ) );
+				do_action(
+					'moksafopoi_points_redeemed',
+					$user_id,
+					$cost,
+					$kind,
+					array(
+						'reward_id' => (int) $reward['id'],
+						'result' => $result,
+					)
+				);
 
 				return array_merge(
 					array(
@@ -195,7 +206,10 @@ final class Service {
 			if ( ! $ok ) {
 				return new \WP_Error( 'moksafopoi_credit_failed', __( 'Failed to grant the store credit, please try again later.', 'moksa-points-for-woocommerce' ) );
 			}
-			return array( 'kind' => 'cart_discount', 'amount' => $amount );
+			return array(
+				'kind' => 'cart_discount',
+				'amount' => $amount,
+			);
 		}
 
 		return new \WP_Error( 'moksafopoi_unknown_reward', __( 'Unsupported redemption type.', 'moksa-points-for-woocommerce' ) );
@@ -322,55 +336,19 @@ final class Service {
 
 	/** @return array<string,mixed>|null */
 	/** Count how many times a user has already redeemed a specific reward (matched via the ledger ref prefix). */
-	private static function count_user_redemptions( int $user_id, int $reward_id ): int {
-		global $wpdb;
-		$table = Schema::ledger_table();
-		$like  = 'reward:' . $reward_id . ':%';
-		// A redemption whose fulfilment failed was refunded under the same ref (source redeem_refund); it does not count.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); the user id + LIKE value are bound via $wpdb->prepare().
-		$count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ( SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND type = 'redeem' AND source_ref LIKE %s ) - ( SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = 'redeem_refund' AND source_ref LIKE %s )", $user_id, $like, $user_id, $like ) );
-		return max( 0, $count );
+	/**
+	 * How many times this member redeemed this reward. Refs use RewardStore::ref_key(), so a reward
+	 * migrated from the old table keeps counting the redemptions made before the move.
+	 *
+	 * @param array<string,mixed> $reward
+	 */
+	private static function count_user_redemptions( int $user_id, array $reward ): int {
+		$like = 'reward:' . RewardStore::ref_key( $reward ) . ':%';
+		// A redemption whose fulfilment failed was refunded under the same ref; it does not count.
+		return max( 0, LedgerStore::count_redeems_like( $user_id, $like ) - LedgerStore::count_source_like( $user_id, 'redeem_refund', $like ) );
 	}
 
 	private static function get_reward( int $id ): ?array {
-		if ( $id <= 0 ) {
-			return null;
-		}
-		global $wpdb;
-		$table = Schema::rewards_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare().
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ), ARRAY_A );
-		return is_array( $row ) ? $row : null;
-	}
-
-	/**
-	 * Take one unit of a capped reward with a single atomic UPDATE (0 rows = sold out). Unlimited rewards
-	 * (-1) always succeed and are not touched.
-	 *
-	 * @param array<string,mixed> $reward
-	 */
-	private static function reserve_stock( array $reward ): bool {
-		if ( -1 === (int) $reward['stock'] ) {
-			return true;
-		}
-		global $wpdb;
-		$table = Schema::rewards_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare(). Never decrements below 0.
-		return 1 === (int) $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock - 1 WHERE id = %d AND stock > 0", (int) $reward['id'] ) );
-	}
-
-	/**
-	 * Hand a reserved unit back after a failed redemption (never touches unlimited -1 rewards).
-	 *
-	 * @param array<string,mixed> $reward
-	 */
-	private static function give_back_stock( array $reward ): void {
-		if ( -1 === (int) $reward['stock'] ) {
-			return;
-		}
-		global $wpdb;
-		$table = Schema::rewards_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare().
-		$wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock + 1 WHERE id = %d AND stock >= 0", (int) $reward['id'] ) );
+		return RewardStore::find( $id );
 	}
 }

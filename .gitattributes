@@ -1,0 +1,14 @@
+# Source ships with LF endings. Without this a Windows checkout rewrites every
+# file to CRLF, which then travels into the release tarball and trips
+# Generic.Files.LineEndings across the whole codebase.
+* text=auto eol=lf
+
+# Binary / already-encoded assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.mo binary
+*.tar.gz binary
+*.zip binary

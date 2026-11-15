@@ -4,6 +4,10 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\PointsAdmin;
 
+use Moksafopoi\Support\LedgerStore;
+use Moksafopoi\Support\Input;
+use Moksafopoi\Support\RedirectNotice;
+
 use Moksafopoi\Api;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\Schema;
@@ -139,16 +143,14 @@ final class LedgerBrowser {
 	 * @return array{user:string,type:string,source:string,from:string,to:string,paged:int}
 	 */
 	private static function current_filters(): array {
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only filter routing.
 		return array(
-			'user'   => isset( $_GET['fuser'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['fuser'] ) ) : '',
-			'type'   => isset( $_GET['ftype'] ) ? sanitize_key( wp_unslash( (string) $_GET['ftype'] ) ) : '',
-			'source' => isset( $_GET['fsource'] ) ? sanitize_key( wp_unslash( (string) $_GET['fsource'] ) ) : '',
-			'from'   => isset( $_GET['ffrom'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['ffrom'] ) ) : '',
-			'to'     => isset( $_GET['fto'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['fto'] ) ) : '',
-			'paged'  => isset( $_GET['paged'] ) ? max( 1, (int) $_GET['paged'] ) : 1,
+			'user'   => sanitize_text_field( Input::get( 'fuser' ) ),
+			'type'   => sanitize_key( Input::get( 'ftype' ) ),
+			'source' => sanitize_key( Input::get( 'fsource' ) ),
+			'from'   => sanitize_text_field( Input::get( 'ffrom' ) ),
+			'to'     => sanitize_text_field( Input::get( 'fto' ) ),
+			'paged'  => max( 1, absint( Input::get( 'paged' ) ) ),
 		);
-		// phpcs:enable
 	}
 
 	/**
@@ -212,15 +214,11 @@ final class LedgerBrowser {
 	 */
 	private static function distinct( string $column ): array {
 		static $cache = array();
+		$column = 'type' === $column ? 'type' : 'source';
 		if ( isset( $cache[ $column ] ) ) {
 			return $cache[ $column ];
 		}
-		global $wpdb;
-		$table  = Schema::ledger_table();
-		$column = 'type' === $column ? 'type' : 'source';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table; $column is one of two hard-coded literals ('type'/'source'), table name from Schema::ledger_table(); no user input.
-		$vals             = $wpdb->get_col( "SELECT DISTINCT {$column} FROM {$table} ORDER BY {$column} ASC LIMIT 50" );
-		$cache[ $column ] = array_values( array_filter( array_map( 'strval', (array) $vals ) ) );
+		$cache[ $column ] = array_values( array_filter( array_map( 'strval', LedgerStore::distinct_values( $column ) ) ) );
 		return $cache[ $column ];
 	}
 
@@ -240,39 +238,39 @@ final class LedgerBrowser {
 	}
 
 	/**
-	 * Build the prepared WHERE fragment for the current filters. Shared by the browser query
-	 * and the CSV export so the download always matches what the screen shows.
+	 * Turn the GET filters into LedgerStore's optional-filter shape (user_id -1 / '' = no filter).
+	 * type / source must be a value that actually exists in the ledger; dates must be Y-m-d.
 	 *
 	 * @param array{user:string,type:string,source:string,from:string,to:string,paged:int} $f
-	 * @return array{0:string,1:array<int,int|string>} where-SQL (leading ' WHERE …') + params
+	 * @return array{user_id:int,type:string,source:string,from:string,to:string}
 	 */
-	private static function build_where( array $f ): array {
-		$where  = ' WHERE 1=1';
-		$params = array();
+	private static function store_filters( array $f ): array {
+		$out = array(
+			'user_id' => -1,
+			'type'    => '',
+			'source'  => '',
+			'from'    => '',
+			'to'      => '',
+		);
 
 		$uid = self::resolve_user( $f['user'] );
 		if ( $uid >= 0 ) {
-			$where   .= ' AND user_id = %d';
-			$params[] = $uid;
+			$out['user_id'] = $uid;
 		}
 		if ( '' !== $f['type'] && in_array( $f['type'], self::distinct( 'type' ), true ) ) {
-			$where   .= ' AND type = %s';
-			$params[] = $f['type'];
+			$out['type'] = $f['type'];
 		}
 		if ( '' !== $f['source'] && in_array( $f['source'], self::distinct( 'source' ), true ) ) {
-			$where   .= ' AND source = %s';
-			$params[] = $f['source'];
+			$out['source'] = $f['source'];
 		}
 		if ( '' !== $f['from'] && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $f['from'] ) ) {
-			$where   .= ' AND created_at >= %s';
-			$params[] = $f['from'] . ' 00:00:00';
+			$out['from'] = $f['from'] . ' 00:00:00';
 		}
 		if ( '' !== $f['to'] && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $f['to'] ) ) {
-			$where   .= ' AND created_at <= %s';
-			$params[] = $f['to'] . ' 23:59:59';
+			$out['to'] = $f['to'] . ' 23:59:59';
 		}
 
-		return array( $where, $params );
+		return $out;
 	}
 
 	/**
@@ -280,22 +278,11 @@ final class LedgerBrowser {
 	 * @return array{0:array<int,array<string,mixed>>,1:int} rows + total count
 	 */
 	private static function query( array $f ): array {
-		global $wpdb;
-		$table = Schema::ledger_table();
+		$filters = self::store_filters( $f );
+		$offset  = ( $f['paged'] - 1 ) * self::PER_PAGE;
 
-		list( $where, $params ) = self::build_where( $f );
-
-		$offset = ( $f['paged'] - 1 ) * self::PER_PAGE;
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is built from literals with %d/%s placeholders and prepared below; table name is internal (Schema::ledger_table()).
-		$count_sql = "SELECT COUNT(*) FROM {$table}{$where}";
-		$total     = (int) ( array() === $params ? $wpdb->get_var( $count_sql ) : $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ) );
-
-		$rows_sql = "SELECT id, user_id, points_delta, amount_delta, balance_after, type, source, source_ref, order_id, note, created_at FROM {$table}{$where} ORDER BY id DESC LIMIT %d OFFSET %d";
-		$params[] = self::PER_PAGE;
-		$params[] = $offset;
-		$rows     = (array) $wpdb->get_results( $wpdb->prepare( $rows_sql, $params ), ARRAY_A );
-		// phpcs:enable
+		$total = LedgerStore::browse_count( $filters );
+		$rows  = LedgerStore::browse_rows( $filters, self::PER_PAGE, $offset );
 
 		return array( $rows, $total );
 	}
@@ -348,49 +335,40 @@ final class LedgerBrowser {
 		}
 		check_admin_referer( self::EXPORT_ACTION );
 
-		global $wpdb;
-		$table = Schema::ledger_table();
-
-		$f                      = self::current_filters();
-		list( $where, $params ) = self::build_where( $f );
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is built from literals with placeholders; table name internal (Schema::ledger_table()).
-		$sql      = "SELECT id, user_id, points_delta, amount_delta, balance_after, type, source, source_ref, order_id, note, created_at FROM {$table}{$where} ORDER BY id DESC LIMIT %d";
-		$params[] = self::EXPORT_MAX;
-		$rows     = (array) $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
-		// phpcs:enable
+		// Same filters as the screen, so the download always matches what the operator sees.
+		$rows = LedgerStore::browse_rows( self::store_filters( self::current_filters() ), self::EXPORT_MAX, 0 );
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="moksafopoi-ledger-' . gmdate( 'Ymd-His' ) . '.csv"' );
 
-		$out = fopen( 'php://output', 'w' );
+		// 直接串流到回應（php://output），不是寫檔；WP_Filesystem 沒有輸出串流的 API。
+		$out = new \SplFileObject( 'php://output', 'w' );
 		// UTF-8 BOM so Excel opens 中文 correctly.
-		fwrite( $out, "\xEF\xBB\xBF" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Streaming a CSV download to php://output; WP_Filesystem has no API for the output stream.
-		fputcsv( $out, array( 'id', 'created_at_utc', 'user_id', 'login', 'email', 'type', 'source', 'source_ref', 'points_delta', 'amount_delta', 'balance_after', 'order_id', 'note' ) );
+		$out->fwrite( "\xEF\xBB\xBF" );
+		$out->fputcsv( array( 'id', 'created_at_utc', 'user_id', 'login', 'email', 'type', 'source', 'source_ref', 'points_delta', 'amount_delta', 'balance_after', 'order_id', 'note' ) );
 
 		foreach ( $rows as $row ) {
 			$user = get_userdata( (int) $row['user_id'] );
-			fputcsv(
-				$out,
+			$out->fputcsv(
 				array(
 					(int) $row['id'],
 					(string) $row['created_at'],
 					(int) $row['user_id'],
-					$user instanceof \WP_User ? $user->user_login : '',
-					$user instanceof \WP_User ? $user->user_email : '',
-					(string) $row['type'],
-					(string) $row['source'],
-					(string) $row['source_ref'],
+					self::csv_cell( $user instanceof \WP_User ? $user->user_login : '' ),
+					self::csv_cell( $user instanceof \WP_User ? $user->user_email : '' ),
+					self::csv_cell( (string) $row['type'] ),
+					self::csv_cell( (string) $row['source'] ),
+					self::csv_cell( (string) $row['source_ref'] ),
 					(int) $row['points_delta'],
 					(float) $row['amount_delta'],
 					(int) $row['balance_after'],
 					(int) $row['order_id'],
-					(string) $row['note'],
+					self::csv_cell( (string) $row['note'] ),
 				)
 			);
 		}
-		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the php://output stream used for the CSV download.
+		$out = null; // 釋放即關閉串流。
 		exit;
 	}
 
@@ -408,11 +386,8 @@ final class LedgerBrowser {
 		}
 		check_admin_referer( self::NONCE );
 
-		$row_id = isset( $_POST['row_id'] ) ? (int) $_POST['row_id'] : 0;
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); id bound via $wpdb->prepare().
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT id, user_id, points_delta, source_ref FROM {$table} WHERE id = %d", $row_id ), ARRAY_A );
+		$row_id = isset( $_POST['row_id'] ) ? absint( wp_unslash( $_POST['row_id'] ) ) : 0;
+		$row = LedgerStore::row_for_reversal( $row_id );
 
 		if ( ! is_array( $row ) || 0 === (int) $row['points_delta'] ) {
 			self::redirect_with( 'norow' );
@@ -449,15 +424,23 @@ final class LedgerBrowser {
 		self::redirect_with( $ok ? 'reversed' : 'already' );
 	}
 
+	/**
+	 * A text cell for the CSV export. A value starting with = + - @ or a tab / carriage return is
+	 * prefixed with an apostrophe so a spreadsheet shows it as text instead of running it as a formula
+	 * (member-written transfer notes end up here).
+	 */
+	private static function csv_cell( string $value ): string {
+		return ( '' !== $value && false !== strpos( "=+-@\t\r", $value[0] ) ) ? "'" . $value : $value;
+	}
+
 	/** Redirect back to the browser with a one-word notice flag. Never returns. */
 	private static function redirect_with( string $flag ): void {
-		wp_safe_redirect( add_query_arg( 'mfp_ledger_msg', $flag, self::page_url() ) );
+		wp_safe_redirect( RedirectNotice::url( array( 'mfp_ledger_msg' => $flag ), self::page_url() ) );
 		exit;
 	}
 
 	private static function maybe_notice(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag.
-		$flag = isset( $_GET['mfp_ledger_msg'] ) ? sanitize_key( wp_unslash( (string) $_GET['mfp_ledger_msg'] ) ) : '';
+		$flag = sanitize_key( (string) RedirectNotice::get( 'mfp_ledger_msg' ) );
 		if ( '' === $flag ) {
 			return;
 		}

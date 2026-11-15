@@ -4,6 +4,11 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Abilities;
 
+use Moksafopoi\Support\RewardStore;
+use Moksafopoi\Support\Rates;
+use Moksafopoi\Support\Multipliers;
+use Moksafopoi\Modules\Campaign\Campaigns;
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
 use Moksafopoi\Support\Schema;
 
@@ -62,13 +67,35 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'query' => array( 'type' => 'string', 'description' => __( 'Name, email or username fragment to search', 'moksa-points-for-woocommerce' ) ),
-						'limit' => array( 'type' => 'integer', 'description' => __( 'Max results (default 10)', 'moksa-points-for-woocommerce' ) ),
+						'query' => array(
+							'type' => 'string',
+							'description' => __( 'Name, email or username fragment to search', 'moksa-points-for-woocommerce' ),
+						),
+						'limit' => array(
+							'type' => 'integer',
+							'description' => __( 'Max results (default 10)', 'moksa-points-for-woocommerce' ),
+						),
 					),
-					'required'             => array(  ),
+					'required'             => array(),
 					'additionalProperties' => false,
 				),
-				'output_schema'       => array( 'type' => 'object', 'properties' => array( 'count' => array( 'type' => 'integer' ), 'customers' => array( 'type' => 'array', 'items' => array( 'type' => 'object', 'properties' => array( 'user_id' => array( 'type' => 'integer' ), 'name' => array( 'type' => 'string' ), 'email' => array( 'type' => 'string' ) ) ) ) ) ),
+				'output_schema'       => array(
+					'type' => 'object',
+					'properties' => array(
+						'count' => array( 'type' => 'integer' ),
+						'customers' => array(
+							'type' => 'array',
+							'items' => array(
+								'type' => 'object',
+								'properties' => array(
+									'user_id' => array( 'type' => 'integer' ),
+									'name' => array( 'type' => 'string' ),
+									'email' => array( 'type' => 'string' ),
+								),
+							),
+						),
+					),
+				),
 				'execute_callback'    => array( self::class, 'execute_find_customer' ),
 				'permission_callback' => array( self::class, 'can_read' ),
 				'meta'                => self::read_meta(),
@@ -84,10 +111,16 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => (object) array(),
-					'required'             => array(  ),
+					'required'             => array(),
 					'additionalProperties' => false,
 				),
-				'output_schema'       => array( 'type' => 'object', 'properties' => array( 'active' => array( 'type' => 'boolean' ), 'campaign' => array( 'type' => 'object' ) ) ),
+				'output_schema'       => array(
+					'type' => 'object',
+					'properties' => array(
+						'active' => array( 'type' => 'boolean' ),
+						'campaign' => array( 'type' => 'object' ),
+					),
+				),
 				'execute_callback'    => array( self::class, 'execute_active_campaign' ),
 				'permission_callback' => array( self::class, 'can_read' ),
 				'meta'                => self::read_meta(),
@@ -103,13 +136,36 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'limit' => array( 'type' => 'integer', 'description' => __( 'How many top customers (default 10, max 100)', 'moksa-points-for-woocommerce' ) ),
-						'period' => array( 'type' => 'string', 'description' => __( 'all / month (default all)', 'moksa-points-for-woocommerce' ) ),
+						'limit' => array(
+							'type' => 'integer',
+							'description' => __( 'How many top customers (default 10, max 100)', 'moksa-points-for-woocommerce' ),
+						),
+						'period' => array(
+							'type' => 'string',
+							'description' => __( 'all / month (default all)', 'moksa-points-for-woocommerce' ),
+						),
 					),
-					'required'             => array(  ),
+					'required'             => array(),
 					'additionalProperties' => false,
 				),
-				'output_schema'       => array( 'type' => 'object', 'properties' => array( 'count' => array( 'type' => 'integer' ), 'leaders' => array( 'type' => 'array', 'items' => array( 'type' => 'object', 'properties' => array( 'rank' => array( 'type' => 'integer' ), 'user_id' => array( 'type' => 'integer' ), 'name' => array( 'type' => 'string' ), 'points' => array( 'type' => 'integer' ) ) ) ) ) ),
+				'output_schema'       => array(
+					'type' => 'object',
+					'properties' => array(
+						'count' => array( 'type' => 'integer' ),
+						'leaders' => array(
+							'type' => 'array',
+							'items' => array(
+								'type' => 'object',
+								'properties' => array(
+									'rank' => array( 'type' => 'integer' ),
+									'user_id' => array( 'type' => 'integer' ),
+									'name' => array( 'type' => 'string' ),
+									'points' => array( 'type' => 'integer' ),
+								),
+							),
+						),
+					),
+				),
 				'execute_callback'    => array( self::class, 'execute_leaderboard_top' ),
 				'permission_callback' => array( self::class, 'can_read' ),
 				'meta'                => self::read_meta(),
@@ -143,7 +199,16 @@ final class Ability {
 						'expired_total'        => array( 'type' => 'integer' ),
 						'breakage_pct'         => array( 'type' => 'number' ),
 						'redemption_rate_pct'  => array( 'type' => 'number' ),
-						'observations'         => array( 'type' => 'array', 'items' => array( 'type' => 'object', 'properties' => array( 'key' => array( 'type' => 'string' ), 'text' => array( 'type' => 'string' ) ) ) ),
+						'observations'         => array(
+							'type' => 'array',
+							'items' => array(
+								'type' => 'object',
+								'properties' => array(
+									'key' => array( 'type' => 'string' ),
+									'text' => array( 'type' => 'string' ),
+								),
+							),
+						),
 					),
 				),
 				'execute_callback'    => array( self::class, 'execute_forecast_liability' ),
@@ -197,13 +262,27 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'user_id' => array( 'type' => 'integer', 'description' => __( 'Customer user_id', 'moksa-points-for-woocommerce' ) ),
-						'email' => array( 'type' => 'string', 'description' => __( 'Customer email (used when user_id is omitted)', 'moksa-points-for-woocommerce' ) ),
+						'user_id' => array(
+							'type' => 'integer',
+							'description' => __( 'Customer user_id', 'moksa-points-for-woocommerce' ),
+						),
+						'email' => array(
+							'type' => 'string',
+							'description' => __( 'Customer email (used when user_id is omitted)', 'moksa-points-for-woocommerce' ),
+						),
 					),
-					'required'             => array(  ),
+					'required'             => array(),
 					'additionalProperties' => false,
 				),
-				'output_schema'       => array( 'type' => 'object', 'properties' => array( 'user_id' => array( 'type' => 'integer' ), 'total_earned' => array( 'type' => 'integer' ), 'earned' => array( 'type' => 'array' ), 'next' => array( 'type' => 'object' ) ) ),
+				'output_schema'       => array(
+					'type' => 'object',
+					'properties' => array(
+						'user_id' => array( 'type' => 'integer' ),
+						'total_earned' => array( 'type' => 'integer' ),
+						'earned' => array( 'type' => 'array' ),
+						'next' => array( 'type' => 'object' ),
+					),
+				),
 				'execute_callback'    => array( self::class, 'execute_get_badges' ),
 				'permission_callback' => array( self::class, 'can_read' ),
 				'meta'                => self::read_meta(),
@@ -290,13 +369,25 @@ final class Ability {
 								'type'       => 'object',
 								'properties' => array(
 									'id'            => array( 'type' => 'integer' ),
-									'points_delta'  => array( 'type' => 'integer', 'description' => __( 'Signed points change (+earned / -spent).', 'moksa-points-for-woocommerce' ) ),
-									'amount_delta'  => array( 'type' => 'number', 'description' => __( 'Signed store-credit change.', 'moksa-points-for-woocommerce' ) ),
+									'points_delta'  => array(
+										'type' => 'integer',
+										'description' => __( 'Signed points change (+earned / -spent).', 'moksa-points-for-woocommerce' ),
+									),
+									'amount_delta'  => array(
+										'type' => 'number',
+										'description' => __( 'Signed store-credit change.', 'moksa-points-for-woocommerce' ),
+									),
 									'balance_after' => array( 'type' => 'integer' ),
-									'type'          => array( 'type' => 'string', 'description' => __( 'earn / redeem / expire / adjust / debit.', 'moksa-points-for-woocommerce' ) ),
+									'type'          => array(
+										'type' => 'string',
+										'description' => __( 'earn / redeem / expire / adjust / debit.', 'moksa-points-for-woocommerce' ),
+									),
 									'source'        => array( 'type' => 'string' ),
 									'note'          => array( 'type' => 'string' ),
-									'created_at'    => array( 'type' => 'string', 'description' => __( 'UTC time, Y-m-d H:i:s.', 'moksa-points-for-woocommerce' ) ),
+									'created_at'    => array(
+										'type' => 'string',
+										'description' => __( 'UTC time, Y-m-d H:i:s.', 'moksa-points-for-woocommerce' ),
+									),
 								),
 							),
 						),
@@ -337,11 +428,17 @@ final class Ability {
 									'id'         => array( 'type' => 'integer' ),
 									'label'      => array( 'type' => 'string' ),
 									'kind'       => array( 'type' => 'string' ),
-									'rate'       => array( 'type' => 'number', 'description' => __( 'Points per 1 currency unit for this rule.', 'moksa-points-for-woocommerce' ) ),
+									'rate'       => array(
+										'type' => 'number',
+										'description' => __( 'Points per 1 currency unit for this rule.', 'moksa-points-for-woocommerce' ),
+									),
 									'min_spend'  => array( 'type' => 'number' ),
 									'multiplier' => array( 'type' => 'number' ),
 									'priority'   => array( 'type' => 'integer' ),
-									'active'     => array( 'type' => 'integer', 'description' => __( '1 = enabled, 0 = disabled.', 'moksa-points-for-woocommerce' ) ),
+									'active'     => array(
+										'type' => 'integer',
+										'description' => __( '1 = enabled, 0 = disabled.', 'moksa-points-for-woocommerce' ),
+									),
 									'starts_at'  => array( 'type' => 'string' ),
 									'ends_at'    => array( 'type' => 'string' ),
 								),
@@ -383,10 +480,19 @@ final class Ability {
 								'properties' => array(
 									'id'          => array( 'type' => 'integer' ),
 									'label'       => array( 'type' => 'string' ),
-									'kind'        => array( 'type' => 'string', 'description' => __( 'coupon / cart_discount / product.', 'moksa-points-for-woocommerce' ) ),
+									'kind'        => array(
+										'type' => 'string',
+										'description' => __( 'coupon / cart_discount / product.', 'moksa-points-for-woocommerce' ),
+									),
 									'cost_points' => array( 'type' => 'integer' ),
-									'active'      => array( 'type' => 'integer', 'description' => __( '1 = listed, 0 = delisted.', 'moksa-points-for-woocommerce' ) ),
-									'stock'       => array( 'type' => 'integer', 'description' => __( 'Remaining stock (-1 = unlimited).', 'moksa-points-for-woocommerce' ) ),
+									'active'      => array(
+										'type' => 'integer',
+										'description' => __( '1 = listed, 0 = delisted.', 'moksa-points-for-woocommerce' ),
+									),
+									'stock'       => array(
+										'type' => 'integer',
+										'description' => __( 'Remaining stock (-1 = unlimited).', 'moksa-points-for-woocommerce' ),
+									),
 								),
 							),
 						),
@@ -453,9 +559,15 @@ final class Ability {
 							'items'       => array(
 								'type'       => 'object',
 								'properties' => array(
-									'key'   => array( 'type' => 'string', 'description' => __( 'Option key (pass to update-setting).', 'moksa-points-for-woocommerce' ) ),
+									'key'   => array(
+										'type' => 'string',
+										'description' => __( 'Option key (pass to update-setting).', 'moksa-points-for-woocommerce' ),
+									),
 									'label' => array( 'type' => 'string' ),
-									'type'  => array( 'type' => 'string', 'description' => __( 'Value type hint: string / number / boolean.', 'moksa-points-for-woocommerce' ) ),
+									'type'  => array(
+										'type' => 'string',
+										'description' => __( 'Value type hint: string / number / boolean.', 'moksa-points-for-woocommerce' ),
+									),
 									'value' => array( 'description' => __( 'Current value (type per the "type" field).', 'moksa-points-for-woocommerce' ) ),
 								),
 							),
@@ -554,10 +666,22 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'from_user_id' => array( 'type' => 'integer', 'description' => __( 'Sender user_id', 'moksa-points-for-woocommerce' ) ),
-						'to_user_id'   => array( 'type' => 'integer', 'description' => __( 'Recipient user_id', 'moksa-points-for-woocommerce' ) ),
-						'points'       => array( 'type' => 'integer', 'description' => __( 'Points to transfer (positive)', 'moksa-points-for-woocommerce' ) ),
-						'note'         => array( 'type' => 'string', 'description' => __( 'Optional note shown in both histories', 'moksa-points-for-woocommerce' ) ),
+						'from_user_id' => array(
+							'type' => 'integer',
+							'description' => __( 'Sender user_id', 'moksa-points-for-woocommerce' ),
+						),
+						'to_user_id'   => array(
+							'type' => 'integer',
+							'description' => __( 'Recipient user_id', 'moksa-points-for-woocommerce' ),
+						),
+						'points'       => array(
+							'type' => 'integer',
+							'description' => __( 'Points to transfer (positive)', 'moksa-points-for-woocommerce' ),
+						),
+						'note'         => array(
+							'type' => 'string',
+							'description' => __( 'Optional note shown in both histories', 'moksa-points-for-woocommerce' ),
+						),
 					),
 					'required'             => array( 'from_user_id', 'to_user_id', 'points' ),
 					'additionalProperties' => false,
@@ -578,10 +702,22 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'user_id' => array( 'type' => 'integer', 'description' => __( 'Customer user_id', 'moksa-points-for-woocommerce' ) ),
-						'amount'  => array( 'type' => 'number', 'description' => __( 'Store-credit change (positive adds, negative deducts)', 'moksa-points-for-woocommerce' ) ),
-						'note'    => array( 'type' => 'string', 'description' => __( 'Reason (shown in history)', 'moksa-points-for-woocommerce' ) ),
-						'bucket'  => array( 'type' => 'string', 'description' => __( 'Idempotency key (defaults to current time)', 'moksa-points-for-woocommerce' ) ),
+						'user_id' => array(
+							'type' => 'integer',
+							'description' => __( 'Customer user_id', 'moksa-points-for-woocommerce' ),
+						),
+						'amount'  => array(
+							'type' => 'number',
+							'description' => __( 'Store-credit change (positive adds, negative deducts)', 'moksa-points-for-woocommerce' ),
+						),
+						'note'    => array(
+							'type' => 'string',
+							'description' => __( 'Reason (shown in history)', 'moksa-points-for-woocommerce' ),
+						),
+						'bucket'  => array(
+							'type' => 'string',
+							'description' => __( 'Idempotency key (defaults to current time)', 'moksa-points-for-woocommerce' ),
+						),
 					),
 					'required'             => array( 'user_id', 'amount' ),
 					'additionalProperties' => false,
@@ -602,12 +738,30 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'id' => array( 'type' => 'integer', 'description' => __( 'Reward catalog id (required for update)', 'moksa-points-for-woocommerce' ) ),
-						'label' => array( 'type' => 'string', 'description' => __( 'Reward name shown to customers', 'moksa-points-for-woocommerce' ) ),
-						'kind' => array( 'type' => 'string', 'description' => __( 'coupon / cart_discount / product', 'moksa-points-for-woocommerce' ) ),
-						'cost_points' => array( 'type' => 'integer', 'description' => __( 'Points required to redeem', 'moksa-points-for-woocommerce' ) ),
-						'stock' => array( 'type' => 'integer', 'description' => __( 'Remaining stock (-1 = unlimited)', 'moksa-points-for-woocommerce' ) ),
-						'active' => array( 'type' => 'integer', 'description' => __( '1 = listed, 0 = delisted', 'moksa-points-for-woocommerce' ) ),
+						'id' => array(
+							'type' => 'integer',
+							'description' => __( 'Reward catalog id (required for update)', 'moksa-points-for-woocommerce' ),
+						),
+						'label' => array(
+							'type' => 'string',
+							'description' => __( 'Reward name shown to customers', 'moksa-points-for-woocommerce' ),
+						),
+						'kind' => array(
+							'type' => 'string',
+							'description' => __( 'coupon / cart_discount / product', 'moksa-points-for-woocommerce' ),
+						),
+						'cost_points' => array(
+							'type' => 'integer',
+							'description' => __( 'Points required to redeem', 'moksa-points-for-woocommerce' ),
+						),
+						'stock' => array(
+							'type' => 'integer',
+							'description' => __( 'Remaining stock (-1 = unlimited)', 'moksa-points-for-woocommerce' ),
+						),
+						'active' => array(
+							'type' => 'integer',
+							'description' => __( '1 = listed, 0 = delisted', 'moksa-points-for-woocommerce' ),
+						),
 					),
 					'required'             => array( 'label', 'kind', 'cost_points' ),
 					'additionalProperties' => false,
@@ -628,12 +782,30 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'id' => array( 'type' => 'integer', 'description' => __( 'Reward catalog id (required for update)', 'moksa-points-for-woocommerce' ) ),
-						'label' => array( 'type' => 'string', 'description' => __( 'Reward name shown to customers', 'moksa-points-for-woocommerce' ) ),
-						'kind' => array( 'type' => 'string', 'description' => __( 'coupon / cart_discount / product', 'moksa-points-for-woocommerce' ) ),
-						'cost_points' => array( 'type' => 'integer', 'description' => __( 'Points required to redeem', 'moksa-points-for-woocommerce' ) ),
-						'stock' => array( 'type' => 'integer', 'description' => __( 'Remaining stock (-1 = unlimited)', 'moksa-points-for-woocommerce' ) ),
-						'active' => array( 'type' => 'integer', 'description' => __( '1 = listed, 0 = delisted', 'moksa-points-for-woocommerce' ) ),
+						'id' => array(
+							'type' => 'integer',
+							'description' => __( 'Reward catalog id (required for update)', 'moksa-points-for-woocommerce' ),
+						),
+						'label' => array(
+							'type' => 'string',
+							'description' => __( 'Reward name shown to customers', 'moksa-points-for-woocommerce' ),
+						),
+						'kind' => array(
+							'type' => 'string',
+							'description' => __( 'coupon / cart_discount / product', 'moksa-points-for-woocommerce' ),
+						),
+						'cost_points' => array(
+							'type' => 'integer',
+							'description' => __( 'Points required to redeem', 'moksa-points-for-woocommerce' ),
+						),
+						'stock' => array(
+							'type' => 'integer',
+							'description' => __( 'Remaining stock (-1 = unlimited)', 'moksa-points-for-woocommerce' ),
+						),
+						'active' => array(
+							'type' => 'integer',
+							'description' => __( '1 = listed, 0 = delisted', 'moksa-points-for-woocommerce' ),
+						),
 					),
 					'required'             => array( 'id' ),
 					'additionalProperties' => false,
@@ -654,7 +826,10 @@ final class Ability {
 				'input_schema'        => array(
 					'type'                 => 'object',
 					'properties'           => array(
-						'order_id' => array( 'type' => 'integer', 'description' => __( 'Order id whose earned points should be reversed', 'moksa-points-for-woocommerce' ) ),
+						'order_id' => array(
+							'type' => 'integer',
+							'description' => __( 'Order id whose earned points should be reversed', 'moksa-points-for-woocommerce' ),
+						),
 					),
 					'required'             => array( 'order_id' ),
 					'additionalProperties' => false,
@@ -778,17 +953,54 @@ final class Ability {
 				'rules' => array(),
 			);
 		}
-		global $wpdb;
+		// The rules that actually drive earning live in settings: the base rate, the spend-threshold
+		// multiplier tiers and the campaigns. (The old rules table was never written to.)
 		$active_only = is_array( $input ) && ! empty( $input['active_only'] );
-		$table       = Schema::rules_table();
-		if ( $active_only ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rules table (Schema::rules_table()); no user input interpolated.
-			$rows = $wpdb->get_results( "SELECT id, label, kind, rate, min_spend, multiplier, priority, active, starts_at, ends_at FROM {$table} WHERE active = 1 ORDER BY priority ASC, id ASC", ARRAY_A );
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rules table (Schema::rules_table()); no user input interpolated.
-			$rows = $wpdb->get_results( "SELECT id, label, kind, rate, min_spend, multiplier, priority, active, starts_at, ends_at FROM {$table} ORDER BY priority ASC, id ASC", ARRAY_A );
+		$rows        = array(
+			array(
+				'id'         => 'base',
+				'label'      => __( 'Base earning rate', 'moksa-points-for-woocommerce' ),
+				'kind'       => 'rate',
+				'rate'       => Rates::earn_rate(),
+				'min_spend'  => 0,
+				'multiplier' => 1,
+				'priority'   => 10,
+				'active'     => 1,
+				'starts_at'  => null,
+				'ends_at'    => null,
+			),
+		);
+		foreach ( Multipliers::tiers() as $i => $tier ) {
+			$rows[] = array(
+				'id'         => 'tier_' . $i,
+				'label'      => __( 'Spend-threshold multiplier', 'moksa-points-for-woocommerce' ),
+				'kind'       => 'spend_tier',
+				'rate'       => Rates::earn_rate(),
+				'min_spend'  => (float) ( $tier['min'] ?? 0 ),
+				'multiplier' => (float) ( $tier['mult'] ?? 1 ),
+				'priority'   => 20,
+				'active'     => 1,
+				'starts_at'  => null,
+				'ends_at'    => null,
+			);
 		}
-		$rows = is_array( $rows ) ? $rows : array();
+		foreach ( Campaigns::all() as $campaign ) {
+			if ( $active_only && empty( $campaign['enabled'] ) ) {
+				continue;
+			}
+			$rows[] = array(
+				'id'         => 'campaign_' . $campaign['id'],
+				'label'      => (string) $campaign['name'],
+				'kind'       => 'campaign',
+				'rate'       => Rates::earn_rate(),
+				'min_spend'  => 0,
+				'multiplier' => (float) $campaign['points_mult'],
+				'priority'   => 30,
+				'active'     => empty( $campaign['enabled'] ) ? 0 : 1,
+				'starts_at'  => $campaign['start'] > 0 ? gmdate( 'Y-m-d H:i:s', (int) $campaign['start'] ) : null,
+				'ends_at'    => $campaign['end'] > 0 ? gmdate( 'Y-m-d H:i:s', (int) $campaign['end'] ) : null,
+			);
+		}
 		return array(
 			'count' => count( $rows ),
 			'rules' => $rows,
@@ -806,17 +1018,7 @@ final class Ability {
 				'rewards' => array(),
 			);
 		}
-		global $wpdb;
-		$active_only = is_array( $input ) && ! empty( $input['active_only'] );
-		$table       = Schema::rewards_table();
-		if ( $active_only ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (Schema::rewards_table()); no user input interpolated.
-			$rows = $wpdb->get_results( "SELECT id, label, kind, cost_points, active, stock FROM {$table} WHERE active = 1 ORDER BY cost_points ASC, id ASC", ARRAY_A );
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (Schema::rewards_table()); no user input interpolated.
-			$rows = $wpdb->get_results( "SELECT id, label, kind, cost_points, active, stock FROM {$table} ORDER BY cost_points ASC, id ASC", ARRAY_A );
-		}
-		$rows = is_array( $rows ) ? $rows : array();
+		$rows = RewardStore::for_ability( is_array( $input ) && ! empty( $input['active_only'] ) );
 		return array(
 			'count'   => count( $rows ),
 			'rewards' => $rows,
@@ -831,31 +1033,11 @@ final class Ability {
 		if ( ! self::can_view_reports() ) {
 			return array();
 		}
-		global $wpdb;
-		$table = Schema::ledger_table();
 		$input = is_array( $input ) ? $input : array();
 		$days  = isset( $input['days'] ) ? max( 0, (int) $input['days'] ) : 0;
+		$since = $days > 0 ? gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS ) : LedgerStore::MIN_DATETIME;
 
-		$where  = '';
-		$params = array();
-		if ( $days > 0 ) {
-			$where    = ' WHERE created_at >= %s';
-			$params[] = gmdate( 'Y-m-d H:i:s', time() - $days * DAY_IN_SECONDS );
-		}
-
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); the only interpolated piece is the static $where clause whose %s value is bound through $params via $wpdb->prepare().
-		$sql = "SELECT
-				COALESCE(SUM(CASE WHEN points_delta > 0 THEN points_delta ELSE 0 END),0) AS issued,
-				COALESCE(SUM(CASE WHEN type = 'redeem' AND points_delta < 0 THEN -points_delta ELSE 0 END),0) AS redeemed,
-				COALESCE(SUM(CASE WHEN type = 'expire' AND points_delta < 0 THEN -points_delta ELSE 0 END),0) AS expired,
-				COALESCE(SUM(points_delta),0) AS outstanding,
-				COALESCE(SUM(CASE WHEN amount_delta > 0 THEN amount_delta ELSE 0 END),0) AS credit_issued
-			FROM {$table}{$where}";
-
-		$row = array() === $params
-			? $wpdb->get_row( $sql, ARRAY_A )
-			: $wpdb->get_row( $wpdb->prepare( $sql, $params ), ARRAY_A );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$row = LedgerStore::report_totals( $since );
 
 		return array(
 			'issued_points'   => (int) ( $row['issued'] ?? 0 ),
@@ -904,54 +1086,104 @@ final class Ability {
 	 * @return array<string,mixed>
 	 */
 	public static function execute_find_customer( $input ): array {
-		if ( ! self::can_read() ) { return array( 'count' => 0, 'customers' => array() ); }
+		if ( ! self::can_read() ) {
+			return array(
+				'count' => 0,
+				'customers' => array(),
+			); }
 		$input = is_array( $input ) ? $input : array();
 		$q = isset( $input['query'] ) ? trim( sanitize_text_field( (string) $input['query'] ) ) : '';
 		$limit = isset( $input['limit'] ) ? max( 1, min( 50, (int) $input['limit'] ) ) : 10;
-		if ( '' === $q ) { return array( 'count' => 0, 'customers' => array() ); }
-		$users = get_users( array( 'search' => '*' . $q . '*', 'search_columns' => array( 'user_login', 'user_email', 'display_name', 'user_nicename' ), 'number' => $limit, 'fields' => array( 'ID', 'display_name', 'user_email' ) ) );
+		if ( '' === $q ) {
+			return array(
+				'count' => 0,
+				'customers' => array(),
+			); }
+		$users = get_users(
+			array(
+				'search' => '*' . $q . '*',
+				'search_columns' => array( 'user_login', 'user_email', 'display_name', 'user_nicename' ),
+				'number' => $limit,
+				'fields' => array( 'ID', 'display_name', 'user_email' ),
+			)
+		);
 		$rows = array();
-		foreach ( $users as $u ) { $rows[] = array( 'user_id' => (int) $u->ID, 'name' => (string) $u->display_name, 'email' => (string) $u->user_email ); }
-		return array( 'count' => count( $rows ), 'customers' => $rows );
+		foreach ( $users as $u ) {
+			$rows[] = array(
+				'user_id' => (int) $u->ID,
+				'name' => (string) $u->display_name,
+				'email' => (string) $u->user_email,
+			); }
+		return array(
+			'count' => count( $rows ),
+			'customers' => $rows,
+		);
 	}
 
 	/** @param mixed $input @return array<string,mixed> */
 	public static function execute_active_campaign( $input ): array {
-		if ( ! self::can_read() ) { return array( 'active' => false ); }
+		if ( ! self::can_read() ) {
+			return array( 'active' => false ); }
 		$c = Api::active_campaign();
-		return is_array( $c ) ? array( 'active' => true, 'campaign' => $c ) : array( 'active' => false );
+		return is_array( $c ) ? array(
+			'active' => true,
+			'campaign' => $c,
+		) : array( 'active' => false );
 	}
 
 	/** @param mixed $input @return array<string,mixed> */
 	public static function execute_leaderboard_top( $input ): array {
-		if ( ! self::can_read() ) { return array( 'count' => 0, 'leaders' => array() ); }
+		if ( ! self::can_read() ) {
+			return array(
+				'count' => 0,
+				'leaders' => array(),
+			); }
 		$input = is_array( $input ) ? $input : array();
 		$limit = isset( $input['limit'] ) ? max( 1, min( 100, (int) $input['limit'] ) ) : 10;
 		$period = ( isset( $input['period'] ) && 'month' === $input['period'] ) ? 'month' : 'all';
 		$cls = '\\Moksafopoi\\Modules\\Leaderboard\\Module';
-		if ( ! class_exists( $cls ) || ! method_exists( $cls, 'top_earners' ) ) { return array( 'count' => 0, 'leaders' => array() ); }
+		if ( ! class_exists( $cls ) || ! method_exists( $cls, 'top_earners' ) ) {
+			return array(
+				'count' => 0,
+				'leaders' => array(),
+			); }
 		$rows = (array) $cls::top_earners( $limit, $period );
 		$out = array();
 		$rank = 0;
 		foreach ( $rows as $r ) {
-			$rank++;
+			++$rank;
 			$uid = (int) ( $r['user_id'] ?? 0 );
-			$out[] = array( 'rank' => $rank, 'user_id' => $uid, 'name' => (string) ( $r['name'] ?? $r['display_name'] ?? '' ), 'points' => (int) ( $r['points'] ?? $r['total'] ?? 0 ) );
+			$out[] = array(
+				'rank' => $rank,
+				'user_id' => $uid,
+				'name' => (string) ( $r['name'] ?? $r['display_name'] ?? '' ),
+				'points' => (int) ( $r['points'] ?? $r['total'] ?? 0 ),
+			);
 		}
-		return array( 'count' => count( $out ), 'leaders' => $out );
+		return array(
+			'count' => count( $out ),
+			'leaders' => $out,
+		);
 	}
 
 	/** @param mixed $input @return array<string,mixed> */
 	public static function execute_get_badges( $input ): array {
-		if ( ! self::can_read() ) { return array( 'user_id' => 0 ); }
+		if ( ! self::can_read() ) {
+			return array( 'user_id' => 0 ); }
 		$input = is_array( $input ) ? $input : array();
 		$user_id = self::resolve_user( $input );
-		if ( $user_id <= 0 ) { return array( 'user_id' => 0 ); }
+		if ( $user_id <= 0 ) {
+			return array( 'user_id' => 0 ); }
 		$cls = '\\Moksafopoi\\Modules\\Badges\\Module';
 		$earned = ( class_exists( $cls ) && method_exists( $cls, 'earned_badges' ) ) ? (array) $cls::earned_badges( $user_id ) : array();
 		$next   = ( class_exists( $cls ) && method_exists( $cls, 'next_badge' ) ) ? $cls::next_badge( $user_id ) : null;
 		$total  = ( class_exists( $cls ) && method_exists( $cls, 'total_earned' ) ) ? (int) $cls::total_earned( $user_id ) : 0;
-		return array( 'user_id' => $user_id, 'total_earned' => $total, 'earned' => $earned, 'next' => is_array( $next ) ? $next : array() );
+		return array(
+			'user_id' => $user_id,
+			'total_earned' => $total,
+			'earned' => $earned,
+			'next' => is_array( $next ) ? $next : array(),
+		);
 	}
 
 	/**
@@ -1081,7 +1313,11 @@ final class Ability {
 			'adjust',
 			'manual_credit',
 			$bucket,
-			array( 'amount_delta' => $amount, 'note' => $note, 'created_by' => get_current_user_id() )
+			array(
+				'amount_delta' => $amount,
+				'note' => $note,
+				'created_by' => get_current_user_id(),
+			)
 		);
 		if ( ! $ok ) {
 			return array( 'summary' => __( 'This store-credit adjustment was already recorded (idempotent).', 'moksa-points-for-woocommerce' ) );
@@ -1102,27 +1338,32 @@ final class Ability {
 	 * @return array<string,mixed>
 	 */
 	public static function execute_create_reward( $input ): array {
-		if ( ! self::can_write() ) { return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		return self::save_reward( 0, is_array( $input ) ? $input : array() );
 	}
 
 	/** @param mixed $input @return array<string,mixed> */
 	public static function execute_update_reward( $input ): array {
-		if ( ! self::can_write() ) { return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$input = is_array( $input ) ? $input : array();
 		$id = isset( $input['id'] ) ? (int) $input['id'] : 0;
-		if ( $id <= 0 ) { return array( 'summary' => __( 'A valid reward id is required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( $id <= 0 ) {
+			return array( 'summary' => __( 'A valid reward id is required.', 'moksa-points-for-woocommerce' ) ); }
 		return self::save_reward( $id, $input );
 	}
 
 	/** Shared reward create/update via RewardAdmin\\Rewards::save. @param int $id @param array<string,mixed> $input @return array<string,mixed> */
 	private static function save_reward( int $id, array $input ): array {
 		$cls = '\\Moksafopoi\\Modules\\RewardAdmin\\Rewards';
-		if ( ! class_exists( $cls ) ) { return array( 'summary' => __( 'The redemption catalog module is not available.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! class_exists( $cls ) ) {
+			return array( 'summary' => __( 'The redemption catalog module is not available.', 'moksa-points-for-woocommerce' ) ); }
 		$existing = ( $id > 0 && method_exists( $cls, 'find' ) ) ? (array) $cls::find( $id ) : array();
 		$allowed_kinds = array( 'coupon', 'cart_discount', 'product' );
 		$kind = isset( $input['kind'] ) ? sanitize_key( (string) $input['kind'] ) : (string) ( $existing['kind'] ?? 'coupon' );
-		if ( ! in_array( $kind, $allowed_kinds, true ) ) { return array( 'summary' => __( 'Invalid reward kind (use coupon / cart_discount / product).', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! in_array( $kind, $allowed_kinds, true ) ) {
+			return array( 'summary' => __( 'Invalid reward kind (use coupon / cart_discount / product).', 'moksa-points-for-woocommerce' ) ); }
 		$data = array(
 			'label'       => isset( $input['label'] ) ? sanitize_text_field( (string) $input['label'] ) : (string) ( $existing['label'] ?? '' ),
 			'kind'        => $kind,
@@ -1131,25 +1372,31 @@ final class Ability {
 			'stock'       => isset( $input['stock'] ) ? (int) $input['stock'] : (int) ( $existing['stock'] ?? -1 ),
 			'active'      => isset( $input['active'] ) ? (int) ( ! empty( $input['active'] ) ) : (int) ( $existing['active'] ?? 1 ),
 		);
-		if ( '' === $data['label'] ) { return array( 'summary' => __( 'A reward label is required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( '' === $data['label'] ) {
+			return array( 'summary' => __( 'A reward label is required.', 'moksa-points-for-woocommerce' ) ); }
 		$new_id = (int) $cls::save( $id, $data );
 		return array(
 			'summary' => sprintf(
 				/* translators: 1: reward id, 2: label, 3: cost points. */
 				__( 'Saved reward #%1$d "%2$s" (cost %3$s point(s)).', 'moksa-points-for-woocommerce' ),
-				$new_id, $data['label'], number_format( $data['cost_points'] )
+				$new_id,
+				$data['label'],
+				number_format( $data['cost_points'] )
 			),
 		);
 	}
 
 	/** @param mixed $input @return array<string,mixed> */
 	public static function execute_reverse_earn( $input ): array {
-		if ( ! self::can_write() ) { return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return array( 'summary' => __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$input = is_array( $input ) ? $input : array();
 		$order_id = isset( $input['order_id'] ) ? (int) $input['order_id'] : 0;
-		if ( $order_id <= 0 ) { return array( 'summary' => __( 'A valid order_id is required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( $order_id <= 0 ) {
+			return array( 'summary' => __( 'A valid order_id is required.', 'moksa-points-for-woocommerce' ) ); }
 		$cls = '\\Moksafopoi\\Modules\\Refund\\Module';
-		if ( ! class_exists( $cls ) || ! method_exists( $cls, 'clawback' ) ) { return array( 'summary' => __( 'The refund / reversal module is not available.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! class_exists( $cls ) || ! method_exists( $cls, 'clawback' ) ) {
+			return array( 'summary' => __( 'The refund / reversal module is not available.', 'moksa-points-for-woocommerce' ) ); }
 		$cls::clawback( $order_id );
 		return array(
 			'summary' => sprintf(
@@ -1649,15 +1896,42 @@ final class Ability {
 	 * @return array<string,array{prepare:callable,apply:callable}>
 	 */
 	public static function ai_destructive_handlers( array $handlers ): array {
-		$handlers['points/adjust-points']  = array( 'prepare' => array( self::class, 'ai_prep_adjust' ), 'apply' => array( self::class, 'ai_apply_adjust' ) );
-		$handlers['points/redeem-points']  = array( 'prepare' => array( self::class, 'ai_prep_redeem' ), 'apply' => array( self::class, 'ai_apply_redeem' ) );
-		$handlers['points/expire-points']  = array( 'prepare' => array( self::class, 'ai_prep_expire' ), 'apply' => array( self::class, 'ai_apply_expire' ) );
-		$handlers['points/update-setting'] = array( 'prepare' => array( self::class, 'ai_prep_setting' ), 'apply' => array( self::class, 'ai_apply_setting' ) );
-		$handlers['points/transfer-points'] = array( 'prepare' => array( self::class, 'ai_prep_transfer' ), 'apply' => array( self::class, 'ai_apply_transfer' ) );
-		$handlers['points/adjust-credit'] = array( 'prepare' => array( self::class, 'ai_prep_credit' ), 'apply' => array( self::class, 'ai_apply_credit' ) );
-		$handlers['points/create-reward'] = array( 'prepare' => array( self::class, 'ai_prep_reward' ), 'apply' => array( self::class, 'ai_apply_create_reward' ) );
-		$handlers['points/update-reward'] = array( 'prepare' => array( self::class, 'ai_prep_reward' ), 'apply' => array( self::class, 'ai_apply_update_reward' ) );
-		$handlers['points/reverse-earn'] = array( 'prepare' => array( self::class, 'ai_prep_reverse' ), 'apply' => array( self::class, 'ai_apply_reverse' ) );
+		$handlers['points/adjust-points']  = array(
+			'prepare' => array( self::class, 'ai_prep_adjust' ),
+			'apply' => array( self::class, 'ai_apply_adjust' ),
+		);
+		$handlers['points/redeem-points']  = array(
+			'prepare' => array( self::class, 'ai_prep_redeem' ),
+			'apply' => array( self::class, 'ai_apply_redeem' ),
+		);
+		$handlers['points/expire-points']  = array(
+			'prepare' => array( self::class, 'ai_prep_expire' ),
+			'apply' => array( self::class, 'ai_apply_expire' ),
+		);
+		$handlers['points/update-setting'] = array(
+			'prepare' => array( self::class, 'ai_prep_setting' ),
+			'apply' => array( self::class, 'ai_apply_setting' ),
+		);
+		$handlers['points/transfer-points'] = array(
+			'prepare' => array( self::class, 'ai_prep_transfer' ),
+			'apply' => array( self::class, 'ai_apply_transfer' ),
+		);
+		$handlers['points/adjust-credit'] = array(
+			'prepare' => array( self::class, 'ai_prep_credit' ),
+			'apply' => array( self::class, 'ai_apply_credit' ),
+		);
+		$handlers['points/create-reward'] = array(
+			'prepare' => array( self::class, 'ai_prep_reward' ),
+			'apply' => array( self::class, 'ai_apply_create_reward' ),
+		);
+		$handlers['points/update-reward'] = array(
+			'prepare' => array( self::class, 'ai_prep_reward' ),
+			'apply' => array( self::class, 'ai_apply_update_reward' ),
+		);
+		$handlers['points/reverse-earn'] = array(
+			'prepare' => array( self::class, 'ai_prep_reverse' ),
+			'apply' => array( self::class, 'ai_apply_reverse' ),
+		);
 		return $handlers;
 	}
 
@@ -1785,16 +2059,21 @@ final class Ability {
 
 	/** @param array<string,mixed> $args @return array<string,mixed>|\WP_Error */
 	public static function ai_prep_transfer( array $args ) {
-		if ( ! self::can_write() ) { return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$from = isset( $args['from_user_id'] ) ? (int) $args['from_user_id'] : 0;
 		$to   = isset( $args['to_user_id'] ) ? (int) $args['to_user_id'] : 0;
 		$points = isset( $args['points'] ) ? (int) $args['points'] : 0;
-		if ( $from <= 0 || $to <= 0 || $from === $to || $points <= 0 ) { return new \WP_Error( 'moksafopoi_invalid', __( 'A valid sender, a different recipient, and a positive points value are required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( $from <= 0 || $to <= 0 || $from === $to || $points <= 0 ) {
+			return new \WP_Error( 'moksafopoi_invalid', __( 'A valid sender, a different recipient, and a positive points value are required.', 'moksa-points-for-woocommerce' ) ); }
 		return array(
 			'summary' => sprintf(
 				/* translators: 1: points, 2: sender id, 3: recipient id, 4: sender balance. */
 				__( 'Transfer %1$s point(s) from customer #%2$d (balance %4$s) to customer #%3$d.', 'moksa-points-for-woocommerce' ),
-				number_format( $points ), $from, $to, number_format( Api::get_points( $from ) )
+				number_format( $points ),
+				$from,
+				$to,
+				number_format( Api::get_points( $from ) )
 			),
 			'from_user_id' => $from,
 			'to_user_id'   => $to,
@@ -1804,20 +2083,27 @@ final class Ability {
 	}
 
 	/** @param array<string,mixed> $p @return string|\WP_Error */
-	public static function ai_apply_transfer( array $p ) { $r = self::execute_transfer_points( $p ); return (string) ( $r['summary'] ?? '' ); }
+	public static function ai_apply_transfer( array $p ) {
+		$r = self::execute_transfer_points( $p );
+		return (string) ( $r['summary'] ?? '' ); }
 
 	/** @param array<string,mixed> $args @return array<string,mixed>|\WP_Error */
 	public static function ai_prep_credit( array $args ) {
-		if ( ! self::can_write() ) { return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$user_id = self::resolve_user( $args );
 		$amount  = isset( $args['amount'] ) ? (float) $args['amount'] : 0.0;
-		if ( $user_id <= 0 || 0.0 === $amount ) { return new \WP_Error( 'moksafopoi_invalid', __( 'A valid user_id (or email) and a non-zero amount are required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( $user_id <= 0 || 0.0 === $amount ) {
+			return new \WP_Error( 'moksafopoi_invalid', __( 'A valid user_id (or email) and a non-zero amount are required.', 'moksa-points-for-woocommerce' ) ); }
 		$note = isset( $args['note'] ) ? sanitize_text_field( (string) $args['note'] ) : __( 'Manual store-credit adjustment', 'moksa-points-for-woocommerce' );
 		return array(
 			'summary' => sprintf(
 				/* translators: 1: signed amount, 2: user id, 3: current balance, 4: note. */
 				__( 'Adjust store credit for customer #%2$d by %1$s (current balance %3$s). Note: %4$s', 'moksa-points-for-woocommerce' ),
-				( $amount > 0 ? '+' : '' ) . number_format( $amount, 2 ), $user_id, number_format( Api::get_balance( $user_id ), 2 ), $note
+				( $amount > 0 ? '+' : '' ) . number_format( $amount, 2 ),
+				$user_id,
+				number_format( Api::get_balance( $user_id ), 2 ),
+				$note
 			),
 			'user_id' => $user_id,
 			'amount'  => $amount,
@@ -1827,11 +2113,14 @@ final class Ability {
 	}
 
 	/** @param array<string,mixed> $p @return string|\WP_Error */
-	public static function ai_apply_credit( array $p ) { $r = self::execute_adjust_credit( $p ); return (string) ( $r['summary'] ?? '' ); }
+	public static function ai_apply_credit( array $p ) {
+		$r = self::execute_adjust_credit( $p );
+		return (string) ( $r['summary'] ?? '' ); }
 
 	/** @param array<string,mixed> $args @return array<string,mixed>|\WP_Error */
 	public static function ai_prep_reward( array $args ) {
-		if ( ! self::can_write() ) { return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$id = isset( $args['id'] ) ? (int) $args['id'] : 0;
 		$label = isset( $args['label'] ) ? sanitize_text_field( (string) $args['label'] ) : '';
 		$cost = isset( $args['cost_points'] ) ? (int) $args['cost_points'] : null;
@@ -1855,23 +2144,34 @@ final class Ability {
 	}
 
 	/** @param array<string,mixed> $p @return string|\WP_Error */
-	public static function ai_apply_create_reward( array $p ) { $r = self::execute_create_reward( $p ); return (string) ( $r['summary'] ?? '' ); }
+	public static function ai_apply_create_reward( array $p ) {
+		$r = self::execute_create_reward( $p );
+		return (string) ( $r['summary'] ?? '' ); }
 
 	/** @param array<string,mixed> $p @return string|\WP_Error */
-	public static function ai_apply_update_reward( array $p ) { $r = self::execute_update_reward( $p ); return (string) ( $r['summary'] ?? '' ); }
+	public static function ai_apply_update_reward( array $p ) {
+		$r = self::execute_update_reward( $p );
+		return (string) ( $r['summary'] ?? '' ); }
 
 	/** @param array<string,mixed> $args @return array<string,mixed>|\WP_Error */
 	public static function ai_prep_reverse( array $args ) {
-		if ( ! self::can_write() ) { return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
+		if ( ! self::can_write() ) {
+			return new \WP_Error( 'moksafopoi_forbidden', __( 'You do not have permission to do this.', 'moksa-points-for-woocommerce' ) ); }
 		$order_id = isset( $args['order_id'] ) ? (int) $args['order_id'] : 0;
-		if ( $order_id <= 0 ) { return new \WP_Error( 'moksafopoi_invalid', __( 'A valid order_id is required.', 'moksa-points-for-woocommerce' ) ); }
+		if ( $order_id <= 0 ) {
+			return new \WP_Error( 'moksafopoi_invalid', __( 'A valid order_id is required.', 'moksa-points-for-woocommerce' ) ); }
 		/* translators: %d: order id. */
 		$summary = sprintf( __( 'Reverse the points earned on order #%d.', 'moksa-points-for-woocommerce' ), $order_id );
-		return array( 'summary' => $summary, 'order_id' => $order_id );
+		return array(
+			'summary' => $summary,
+			'order_id' => $order_id,
+		);
 	}
 
 	/** @param array<string,mixed> $p @return string|\WP_Error */
-	public static function ai_apply_reverse( array $p ) { $r = self::execute_reverse_earn( $p ); return (string) ( $r['summary'] ?? '' ); }
+	public static function ai_apply_reverse( array $p ) {
+		$r = self::execute_reverse_earn( $p );
+		return (string) ( $r['summary'] ?? '' ); }
 
 	/**
 	 * `points/forecast-liability` — the accountant's view of the programme, straight off the ledger.

@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\PointsAdmin;
 
+use Moksafopoi\Support\RedirectNotice;
+
 use Moksafopoi\Api;
 use Moksafopoi\Modules\AbstractModule;
 use Moksafopoi\Support\BulkPoints;
@@ -155,13 +157,11 @@ final class Module extends AbstractModule {
 	}
 
 	private static function maybe_notice(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only display flag.
-		$done = isset( $_GET['moksafopoi_bulk'] ) ? sanitize_key( wp_unslash( (string) $_GET['moksafopoi_bulk'] ) ) : '';
+		$done = sanitize_key( (string) RedirectNotice::get( 'moksafopoi_bulk' ) );
 		if ( '' === $done ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only display flag.
-		$n = isset( $_GET['n'] ) ? max( 0, (int) $_GET['n'] ) : 0;
+		$n = absint( (string) RedirectNotice::get( 'n' ) );
 		if ( 'batch' === $done ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html(
 				sprintf(
@@ -196,7 +196,7 @@ final class Module extends AbstractModule {
 		$uids  = BulkPoints::resolve_targets( $mode, $role, $list );
 
 		if ( 0 === $delta || empty( $uids ) ) {
-			wp_safe_redirect( add_query_arg( 'moksafopoi_bulk', 'none', self::page_url() ) );
+			wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_bulk' => 'none' ), self::page_url() ) );
 			exit;
 		}
 
@@ -204,7 +204,7 @@ final class Module extends AbstractModule {
 		$applied = BulkPoints::dispatch( $uids, $delta, $note, BulkPoints::new_batch_id() );
 
 		wp_safe_redirect(
-			add_query_arg(
+			RedirectNotice::url(
 				array(
 					'moksafopoi_bulk' => 'batch',
 					'n'                => $applied,
@@ -230,13 +230,13 @@ final class Module extends AbstractModule {
 		$delta = ( 'revoke' === $direction ? -1 : 1 ) * $amount;
 
 		if ( 0 === $delta || empty( $uids ) ) {
-			wp_safe_redirect( add_query_arg( 'moksafopoi_bulk', 'none', self::page_url() ) );
+			wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_bulk' => 'none' ), self::page_url() ) );
 			exit;
 		}
 
 		BulkPoints::apply_one( (int) $uids[0], $delta, '' !== $note ? $note : __( 'Support manual add / deduct', 'moksa-points-for-woocommerce' ), BulkPoints::new_batch_id() );
 
-		wp_safe_redirect( add_query_arg( 'moksafopoi_bulk', 'single', self::page_url() ) );
+		wp_safe_redirect( RedirectNotice::url( array( 'moksafopoi_bulk' => 'single' ), self::page_url() ) );
 		exit;
 	}
 

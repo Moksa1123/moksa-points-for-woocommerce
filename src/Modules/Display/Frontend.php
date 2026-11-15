@@ -94,9 +94,10 @@ final class Frontend {
 	 * product that never earns / rounds to nothing, so the grid stays clean.
 	 */
 	public static function render_loop(): void {
-		global $product;
+		// 讀 WooCommerce 迴圈的全域 $product（只讀不寫），沒有就照目前文章查。
+		$product = $GLOBALS['product'] ?? null;
 		if ( ! $product instanceof \WC_Product ) {
-			$product = wc_get_product( get_the_ID() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $product is WooCommerce's core loop global (must keep this exact name); canonical wc_get_product() fallback, not a plugin global.
+			$product = wc_get_product( get_the_ID() );
 		}
 		if ( ! $product instanceof \WC_Product ) {
 			return;
@@ -117,7 +118,7 @@ final class Frontend {
 			return;
 		}
 
-		echo '<p class="moksafopoi-disp moksafopoi-disp--loop"' . DisplayMessage::style_attr( 'loop' ) . '>' . DisplayMessage::icon( 'loop' ) . $html . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- style_attr() is esc_attr()'d; render() returns wp_kses_post()'d HTML with each value esc_html()'d.
+		echo wp_kses_post( '<p class="moksafopoi-disp moksafopoi-disp--loop"' . DisplayMessage::style_attr( 'loop' ) . '>' . DisplayMessage::icon( 'loop' ) . $html . '</p>' );
 	}
 
 	/**
@@ -142,13 +143,13 @@ final class Frontend {
 			return;
 		}
 
-		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- style_attr() returns an esc_attr()'d style="" attribute; icon() and render() return wp_kses_post()'d HTML with each value esc_html()'d.
 		echo '<tr class="moksafopoi-disp-cart-row order-total"><th>' . esc_html__( 'Estimated earning', 'moksa-points-for-woocommerce' )
 			. '</th><td data-title="' . esc_attr__( 'Estimated earning', 'moksa-points-for-woocommerce' ) . '">'
-			. '<span class="moksafopoi-disp moksafopoi-disp--cart"' . DisplayMessage::style_attr( 'cart' ) . '>'
-			. DisplayMessage::icon( 'cart' ) . $html
-			. '</span></td></tr>';
-		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+			. wp_kses_post(
+				'<span class="moksafopoi-disp moksafopoi-disp--cart"' . DisplayMessage::style_attr( 'cart' ) . '>'
+				. DisplayMessage::icon( 'cart' ) . $html . '</span>'
+			)
+			. '</td></tr>';
 	}
 
 	/**
@@ -173,7 +174,7 @@ final class Frontend {
 			return;
 		}
 
-		echo '<p class="moksafopoi-disp moksafopoi-disp--account"' . DisplayMessage::style_attr( 'account' ) . '>' . DisplayMessage::icon( 'account' ) . $html . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- style_attr() is esc_attr()'d; render() returns wp_kses_post()'d HTML with each value esc_html()'d.
+		echo wp_kses_post( '<p class="moksafopoi-disp moksafopoi-disp--account"' . DisplayMessage::style_attr( 'account' ) . '>' . DisplayMessage::icon( 'account' ) . $html . '</p>' );
 	}
 
 	/**

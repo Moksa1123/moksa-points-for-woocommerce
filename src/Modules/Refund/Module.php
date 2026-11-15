@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Refund;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
 use Moksafopoi\Modules\AbstractModule;
 use Moksafopoi\Modules\Ledger\Ledger;
@@ -117,7 +118,10 @@ final class Module extends AbstractModule {
 			array(
 				'order_id' => $order_id,
 				'note'     => __( 'Claw back points earned on purchase', 'moksa-points-for-woocommerce' ),
-				'meta'     => array( 'earned' => $earned, 'fraction' => $fraction ),
+				'meta'     => array(
+					'earned' => $earned,
+					'fraction' => $fraction,
+				),
 			)
 		);
 
@@ -133,17 +137,6 @@ final class Module extends AbstractModule {
 	 * Reversal / adjust / store-credit rows are excluded by the type filter.
 	 */
 	private static function earned_points( int $order_id, int $user_id ): int {
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$sum = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COALESCE(SUM(points_delta),0) FROM {$table} WHERE order_id = %d AND user_id = %d AND type = 'earn' AND points_delta > 0",
-				$order_id,
-				$user_id
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return max( 0, (int) $sum );
+		return max( 0, LedgerStore::earned_for_order_user( $order_id, $user_id ) );
 	}
 }

@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\MyAccount;
 
+use Moksafopoi\Support\RewardStore;
 use Moksafopoi\Api;
 use Moksafopoi\Support\Schema;
 
@@ -135,18 +136,7 @@ final class Mall {
 	 * @return array<int,array<string,mixed>>
 	 */
 	private static function active_rewards( int $limit ): array {
-		global $wpdb;
-		$table = Schema::rewards_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); interpolated part is static SQL, LIMIT bound via $wpdb->prepare(), no other user input.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT id, label, kind, cost_points, stock FROM {$table} WHERE active = 1 AND ( stock = -1 OR stock > 0 ) ORDER BY cost_points ASC, id DESC LIMIT %d",
-				$limit
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		return is_array( $rows ) ? $rows : array();
+		return RewardStore::in_stock_for_mall( $limit );
 	}
 
 	/** One-shot redeem result notice (set by Endpoint::handle_redeem, per-user transient). */
@@ -167,7 +157,6 @@ final class Mall {
 
 	/** The current request URL (used so the redeem handler can return the member to this page). */
 	private static function current_url(): string {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: building a same-page return URL; validated with wp_safe_redirect on use.
 		$request = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		return $request !== '' ? home_url( $request ) : home_url( '/' );
 	}

@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\ExpiryReminder;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\EmailTemplate;
 use Moksafopoi\Support\Label;
@@ -43,32 +44,12 @@ final class Reminder {
 			return;
 		}
 
-		global $wpdb;
-		$table  = Schema::ledger_table();
 		$now    = gmdate( 'Y-m-d H:i:s' );
 		$cutoff = gmdate( 'Y-m-d H:i:s', time() + $days * DAY_IN_SECONDS );
 
 		// Per user: the soonest in-window expiry, and the sum of points expiring within the window.
 		// Only earn rows (points_delta > 0) carry an expires_at; we bound it to (now, cutoff].
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT user_id, MIN(expires_at) AS next_expiry, COALESCE(SUM(points_delta),0) AS expiring
-					FROM {$table}
-					WHERE expires_at IS NOT NULL AND expires_at > %s AND expires_at <= %s AND points_delta > 0
-					GROUP BY user_id
-					LIMIT %d",
-				$now,
-				$cutoff,
-				self::MAX_PER_RUN
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		if ( ! is_array( $rows ) ) {
-			return;
-		}
+		$rows = LedgerStore::expiring_by_user( $now, $cutoff, self::MAX_PER_RUN );
 
 		foreach ( $rows as $row ) {
 			$user_id = isset( $row['user_id'] ) ? (int) $row['user_id'] : 0;

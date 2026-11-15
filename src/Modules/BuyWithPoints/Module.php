@@ -61,7 +61,10 @@ final class Module extends AbstractModule {
 				'description' => __( 'Once set, members can redeem the whole item on the product page for this many points (creates an NT$0 order). Leave empty / 0 = points-only purchase not available. Requires the "Buy products with points only" module to be enabled.', 'moksa-points-for-woocommerce' ),
 				'desc_tip'    => true,
 				'type'        => 'number',
-				'custom_attributes' => array( 'min' => '0', 'step' => '1' ),
+				'custom_attributes' => array(
+					'min' => '0',
+					'step' => '1',
+				),
 			)
 		);
 	}
@@ -71,8 +74,11 @@ final class Module extends AbstractModule {
 		if ( $post_id <= 0 || ! current_user_can( 'edit_product', $post_id ) ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- woocommerce_process_product_meta verifies the product nonce before this hook; value cast to int.
-		$raw = isset( $_POST[ Service::META_KEY ] ) ? (int) wp_unslash( $_POST[ Service::META_KEY ] ) : 0;
+		// WooCommerce 存商品前已驗過自己的 nonce；這裡再驗一次，驗不過就不寫（fail closed）。
+		if ( ! isset( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' ) ) {
+			return;
+		}
+		$raw = isset( $_POST[ Service::META_KEY ] ) ? intval( sanitize_text_field( wp_unslash( $_POST[ Service::META_KEY ] ) ) ) : 0;
 		$raw = max( 0, $raw );
 		if ( $raw > 0 ) {
 			update_post_meta( $post_id, Service::META_KEY, $raw );
@@ -94,7 +100,8 @@ final class Module extends AbstractModule {
 
 		echo '<div class="moksafopoi-buy-with-points" style="margin:10px 0">';
 
-		if ( is_array( $flash = get_transient( self::FLASH . $user_id ) ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+		$flash = get_transient( self::FLASH . $user_id );
+		if ( is_array( $flash ) ) {
 			delete_transient( self::FLASH . $user_id );
 			$ok   = ! empty( $flash['ok'] );
 			echo '<p style="padding:8px 12px;border-radius:4px;background:' . esc_attr( $ok ? '#e6f4ea' : '#fce8e6' ) . '">'
@@ -139,13 +146,20 @@ final class Module extends AbstractModule {
 		}
 		check_admin_referer( self::NONCE );
 		$user_id    = get_current_user_id();
-		$product_id = isset( $_POST['product_id'] ) ? (int) wp_unslash( $_POST['product_id'] ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cast to int.
+		$product_id = isset( $_POST['product_id'] ) ? intval( sanitize_text_field( wp_unslash( $_POST['product_id'] ) ) ) : 0;
 
 		$result   = Service::purchase( $user_id, $product_id );
 		$fallback = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 
 		if ( $result instanceof WP_Error ) {
-			set_transient( self::FLASH . $user_id, array( 'ok' => false, 'message' => $result->get_error_message() ), MINUTE_IN_SECONDS );
+			set_transient(
+				self::FLASH . $user_id,
+				array(
+					'ok' => false,
+					'message' => $result->get_error_message(),
+				),
+				MINUTE_IN_SECONDS
+			);
 			wp_safe_redirect( $fallback );
 			exit;
 		}

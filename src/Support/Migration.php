@@ -28,19 +28,11 @@ final class Migration {
 	}
 
 	public static function run(): int {
-		global $wpdb;
 		$imported = 0;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one-time migration scan of a legacy meta key.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT user_id, meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value <> '' AND meta_value <> '0'",
-				self::LEGACY_KEY
-			),
-			ARRAY_A
-		);
+		$rows = LedgerStore::legacy_store_credit_rows( self::LEGACY_KEY );
 
-		foreach ( (array) $rows as $row ) {
+		foreach ( $rows as $row ) {
 			$user_id = (int) ( $row['user_id'] ?? 0 );
 			$balance = (float) ( $row['meta_value'] ?? 0 );
 			if ( $user_id <= 0 || $balance <= 0 ) {

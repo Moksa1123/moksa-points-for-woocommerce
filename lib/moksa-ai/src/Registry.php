@@ -35,7 +35,7 @@ final class Registry {
 			}
 			// 只暴露「真的註冊在 Abilities API 裡」的能力。外掛常常寫死一份名單，
 			// 但實際註冊那些能力的模組可能是關的 —— 把不存在的工具名交給模型，
-			// 它不會報錯，而是照著工具名編一個答案出來。
+			// 它不會報錯，而是照著工具名編一個答案出來.
 			if ( $can_check && ! wp_get_ability( $name ) ) {
 				continue;
 			}

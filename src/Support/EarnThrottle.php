@@ -39,36 +39,13 @@ final class EarnThrottle {
 	 * Positive-point grants of $source booked for $user within the current $period window.
 	 */
 	public static function count( int $user_id, string $source, string $period = 'day' ): int {
-		global $wpdb;
 		if ( $user_id <= 0 || '' === $source ) {
 			return 0;
 		}
-		$table = \Moksafopoi\Support\Schema::ledger_table();
 		$since = self::period_start( $period );
 
-		if ( null === $since ) {
-			// 'all' — lifetime count, no time bound.
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-			return (int) $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = %s AND points_delta > 0",
-					$user_id,
-					$source
-				)
-			);
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		}
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		return (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = %s AND points_delta > 0 AND created_at >= %s",
-				$user_id,
-				$source,
-				$since
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// 'all' — lifetime count, no time bound.
+		return LedgerStore::count_positive_since( $user_id, $source, null !== $since ? $since : LedgerStore::MIN_DATETIME );
 	}
 
 	/**

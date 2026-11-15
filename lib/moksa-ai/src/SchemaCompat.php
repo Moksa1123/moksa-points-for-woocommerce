@@ -24,12 +24,27 @@ defined( 'ABSPATH' ) || exit;
 
 final class SchemaCompat {
 
-	/** 已經回報過的 ability，避免同一個 request 洗版。 @var array<string,true> */
+	/**
+	 * 已經回報過的 ability，避免同一個 request 洗版.
+	 *
+	 * @var array<string,true>
+	 */
 	private static array $reported = array();
+
+	/**
+	 * 這個 request 裡被塌過型別、還沒決定要不要回報的 ability（名稱 => 處數）.
+	 *
+	 * @var array<string,int>
+	 */
+	private static array $pending = array();
 
 	public static function init(): void {
 		// 20 = 比外掛自己可能掛的 filter 晚，收到的是最終形狀。
 		add_filter( 'wp_register_ability_args', array( self::class, 'compat_args' ), 20, 2 );
+		// 提示只給開發者看，所以只在 WP_DEBUG 下才排；正式站不多花任何成本.
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			add_action( 'wp_loaded', array( self::class, 'flush_reports' ), 99 );
+		}
 	}
 
 	/**
@@ -47,11 +62,30 @@ final class SchemaCompat {
 				$args[ $key ] = self::collapse( $args[ $key ], $hits );
 			}
 		}
-		if ( $hits > 0 && ! isset( self::$reported[ (string) $name ] ) ) {
-			self::$reported[ (string) $name ] = true;
-			self::report( (string) $name, $hits );
+		// 型別一律照塌（不分外掛：Gemini 會把整包工具一起退），但提示晚點才決定要不要發.
+		if ( $hits > 0 ) {
+			self::$pending[ (string) $name ] = $hits;
 		}
 		return $args;
+	}
+
+	/**
+	 * 只對「真的交給 Moksa AI 當工具」的 ability 發提示.
+	 *
+	 * 別人的 ability（例如 woocommerce/*）型別一樣會被塌，但不是我們能改的，對它們發 notice
+	 * 只是洗版。不能在註冊當下判斷：組工具清單的 filter 會去讀 Abilities API，註冊途中讀
+	 * 會出錯；而且 Abilities API 是延遲註冊的 —— 這裡先讀清單，順便讓註冊跑完、pending 填滿.
+	 */
+	public static function flush_reports(): void {
+		$ours = Registry::abilities();
+		foreach ( self::$pending as $name => $hits ) {
+			if ( isset( self::$reported[ $name ] ) || ! in_array( $name, $ours, true ) ) {
+				continue;
+			}
+			self::$reported[ $name ] = true;
+			self::report( $name, $hits );
+		}
+		self::$pending = array();
 	}
 
 	/**
@@ -108,18 +142,22 @@ final class SchemaCompat {
 
 	/**
 	 * 讓寫壞的外掛作者看得到。只在 WP_DEBUG 下出聲，正式站不吵。
+	 * 用 WP 6.4 起的 wp_trigger_error()：它本身只在 WP_DEBUG 開啟時觸發，
+	 * 不必用 error_log() 再靠 PHPCS 忽略註解消警告。舊版 WP 沒有這個函式就不出聲。
 	 */
 	private static function report( string $name, int $hits ): void {
-		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG || ! function_exists( 'wp_trigger_error' ) ) {
 			return;
 		}
-		error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- WP_DEBUG 下的開發者提示。
+		wp_trigger_error(
+			__METHOD__,
 			sprintf(
 				'Moksa AI: ability "%s" 的 schema 有 %d 處用了陣列型的 "type"（例如 ["number","null"]）。'
 				. 'Gemini 不接受，已自動塌成單一型別。請改成單一 type，或另外提供給 AI 用的 schema。',
 				$name,
 				$hits
-			)
+			),
+			E_USER_NOTICE
 		);
 	}
 }

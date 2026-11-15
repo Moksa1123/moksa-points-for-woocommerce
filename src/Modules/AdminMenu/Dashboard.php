@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\AdminMenu;
 
+use Moksafopoi\Support\RewardStore;
+use Moksafopoi\Support\LedgerStore;
+use Moksafopoi\Support\Input;
 use Moksafopoi\Support\Schema;
 
 defined( 'ABSPATH' ) || exit;
@@ -92,7 +95,7 @@ final class Dashboard {
 	 */
 	private static function render_walkthrough(): void {
 		// Dismiss handling (nonce'd, cap already gated by render()).
-		if ( isset( $_GET['mfp_walkthrough'] ) && 'dismiss' === $_GET['mfp_walkthrough'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified next line.
+		if ( 'dismiss' === Input::get( 'mfp_walkthrough' )
 			&& check_admin_referer( 'moksafopoi_walkthrough' ) ) {
 			update_option( 'moksafopoi_walkthrough_dismissed', 'yes', false );
 		}
@@ -172,7 +175,7 @@ final class Dashboard {
 					number_format_i18n( $max )
 				)
 			) . '</span></div>';
-		echo self::svg_lines( array( array( '#1a7f37', $earned ), array( '#b32d2e', $redeemed ) ), $max ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from integers only.
+		echo wp_kses( self::svg_lines( array( array( '#1a7f37', $earned ), array( '#b32d2e', $redeemed ) ), $max ), self::SVG_TAGS );
 		echo '</div></div>';
 
 		echo '<div class="mowp-panels">';
@@ -227,34 +230,11 @@ final class Dashboard {
 			return $cached;
 		}
 
-		global $wpdb;
-		$table = Schema::ledger_table();
 		$since = gmdate( 'Y-m-d 00:00:00', time() - 29 * DAY_IN_SECONDS );
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); values bound via $wpdb->prepare(); result cached below.
-		$daily = (array) $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT DATE(created_at) AS d,
-					SUM(CASE WHEN points_delta > 0 THEN points_delta ELSE 0 END) AS earned,
-					SUM(CASE WHEN points_delta < 0 THEN -points_delta ELSE 0 END) AS redeemed
-				FROM {$table} WHERE created_at >= %s GROUP BY DATE(created_at)",
-				$since
-			),
-			ARRAY_A
-		);
-		$sources = (array) $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT source, SUM(points_delta) AS total FROM {$table}
-				WHERE points_delta > 0 AND created_at >= %s GROUP BY source ORDER BY total DESC LIMIT 8",
-				$since
-			),
-			ARRAY_A
-		);
-		$top = (array) $wpdb->get_results(
-			"SELECT user_id, SUM(points_delta) AS balance FROM {$table} GROUP BY user_id HAVING balance > 0 ORDER BY balance DESC LIMIT 10",
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$daily   = LedgerStore::daily_since( $since );
+		$sources = LedgerStore::top_sources_since( $since );
+		$top     = LedgerStore::top_balances();
 
 		$by_day = array();
 		foreach ( $daily as $row ) {
@@ -298,6 +278,31 @@ final class Dashboard {
 	 *
 	 * @param array<int,array{0:string,1:array<int,int>}> $lines
 	 */
+	/** Tags and attributes svg_lines() emits; the chart is passed through wp_kses with this list. */
+	private const SVG_TAGS = array(
+		'svg'      => array(
+			'viewbox'             => true,
+			'width'               => true,
+			'height'              => true,
+			'preserveaspectratio' => true,
+			'role'                => true,
+		),
+		'line'     => array(
+			'x1'           => true,
+			'y1'           => true,
+			'x2'           => true,
+			'y2'           => true,
+			'stroke'       => true,
+			'stroke-width' => true,
+		),
+		'polyline' => array(
+			'fill'         => true,
+			'stroke'       => true,
+			'stroke-width' => true,
+			'points'       => true,
+		),
+	);
+
 	private static function svg_lines( array $lines, int $max ): string {
 		$w    = 680;
 		$h    = 120;
@@ -328,37 +333,24 @@ final class Dashboard {
 	 *   null aggregate yields 0 and never fatals.
 	 */
 	private static function ledger_sum( string $which ): int {
-		global $wpdb;
-
-		$table = Schema::ledger_table();
-
 		switch ( $which ) {
 			case 'positive':
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); value bound via $wpdb->prepare().
-				$value = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(points_delta) FROM `{$table}` WHERE points_delta > %d", 0 ) );
-				return $value === null ? 0 : (int) $value;
+				$value = LedgerStore::sum_positive();
+				return null === $value ? 0 : (int) $value;
 
 			case 'negative':
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); value bound via $wpdb->prepare().
-				$value = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(points_delta) FROM `{$table}` WHERE points_delta < %d", 0 ) );
-				return $value === null ? 0 : (int) ( -1 * (int) $value );
+				$value = LedgerStore::sum_negative();
+				return null === $value ? 0 : (int) ( -1 * (int) $value );
 
 			default: // 'all' — net circulating.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); static aggregate, no user input.
-				$value = $wpdb->get_var( "SELECT SUM(points_delta) FROM `{$table}`" );
-				return $value === null ? 0 : (int) $value;
+				$value = LedgerStore::sum_all();
+				return null === $value ? 0 : (int) $value;
 		}
 	}
 
 	/** Count the active (active=1) rewards in the catalog. Fault-tolerant: 0 on any failure. */
 	private static function active_rewards_count(): int {
-		global $wpdb;
-
-		$table = Schema::rewards_table();
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (Schema::rewards_table()); value bound via $wpdb->prepare().
-		$value = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` WHERE active = %d", 1 ) );
-		return $value === null ? 0 : (int) $value;
+		return RewardStore::count_active();
 	}
 
 	/** Enqueue the shared mowp design-system CSS inline on the core admin 'common' handle (no raw <style>). */

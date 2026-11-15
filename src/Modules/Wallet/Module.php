@@ -272,7 +272,7 @@ final class Module extends AbstractModule {
 		if ( $user_id <= 0 || ! WC()->session ) {
 			wp_send_json_error( array( 'message' => __( 'Please log in first.', 'moksa-points-for-woocommerce' ) ), 403 );
 		}
-		$requested = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0.0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cast to float.
+		$requested = isset( $_POST['amount'] ) ? (float) sanitize_text_field( wp_unslash( $_POST['amount'] ) ) : 0.0;
 		$amount    = self::clamp_amount( $requested, Api::get_balance( $user_id ) );
 		if ( $amount <= 0 ) {
 			wp_send_json_error( array( 'message' => __( 'Insufficient store credit or invalid amount.', 'moksa-points-for-woocommerce' ) ) );

@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Transfer;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Api;
 use Moksafopoi\Modules\Ledger\Ledger;
 use Moksafopoi\Support\EarnThrottle;
@@ -65,25 +66,14 @@ final class Service {
 
 	/** Count the sender's transfers booked today (outgoing legs), sharing EarnThrottle's day boundary. */
 	public static function sent_today( int $user_id ): int {
-		global $wpdb;
 		if ( $user_id <= 0 ) {
 			return 0;
 		}
-		$table = Schema::ledger_table();
 		$since = EarnThrottle::period_start( 'day' );
 		if ( null === $since ) {
 			return 0;
 		}
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		return (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = %s AND created_at >= %s",
-				$user_id,
-				'transfer_out',
-				$since
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		return LedgerStore::count_source_since( $user_id, 'transfer_out', $since );
 	}
 
 	/**
@@ -139,7 +129,11 @@ final class Service {
 					'debit',
 					'transfer_out',
 					$ref,
-					array( 'note' => $note, 'created_by' => $created_by, 'meta' => array( 'to' => $to ) )
+					array(
+						'note' => $note,
+						'created_by' => $created_by,
+						'meta' => array( 'to' => $to ),
+					)
 				);
 				if ( ! $out ) {
 					return new WP_Error( 'moksafopoi_transfer_failed', __( 'Transfer failed; please try again later.', 'moksa-points-for-woocommerce' ) );
@@ -151,17 +145,26 @@ final class Service {
 					'earn',
 					'transfer_in',
 					$ref,
-					array( 'note' => $note, 'created_by' => $created_by, 'meta' => array( 'from' => $from ) )
+					array(
+						'note' => $note,
+						'created_by' => $created_by,
+						'meta' => array( 'from' => $from ),
+					)
 				);
 				if ( ! $in ) {
 					// Compensate the sender so points can never vanish if the credit leg fails.
 					Ledger::record_once(
 						$from,
 						$points,
-						'earn',
+						// adjust, not earn: a refund must never be clamped by the earn cap or refused by the
+						// earn-exclusion list (that made the sender's points vanish).
+						'adjust',
 						'transfer_reversal',
 						$ref,
-						array( 'note' => __( 'Auto-refund on failed transfer', 'moksa-points-for-woocommerce' ), 'created_by' => $created_by )
+						array(
+							'note' => __( 'Auto-refund on failed transfer', 'moksa-points-for-woocommerce' ),
+							'created_by' => $created_by,
+						)
 					);
 					return new WP_Error( 'moksafopoi_transfer_failed', __( 'Transfer failed; your points have been refunded.', 'moksa-points-for-woocommerce' ) );
 				}

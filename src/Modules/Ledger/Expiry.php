@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Moksafopoi\Modules\Ledger;
 
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Support\Schema;
 
 defined( 'ABSPATH' ) || exit;
@@ -21,22 +22,13 @@ final class Expiry {
 			return; // Expiry disabled.
 		}
 
-		global $wpdb;
-		$table = Schema::ledger_table();
-		$now   = gmdate( 'Y-m-d H:i:s' );
+		$now = gmdate( 'Y-m-d H:i:s' );
 
 		// Users who hold earn rows that have passed their expires_at and still have a positive balance.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-		$user_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT DISTINCT user_id FROM {$table} WHERE expires_at IS NOT NULL AND expires_at > '1971-01-01 00:00:00' AND expires_at <= %s AND points_delta > 0",
-				$now
-			)
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$user_ids = LedgerStore::users_with_expired_earns( $now );
 
 		$day = gmdate( 'Y-m-d' );
-		foreach ( array_map( 'intval', (array) $user_ids ) as $user_id ) {
+		foreach ( array_map( 'intval', $user_ids ) as $user_id ) {
 			if ( Ledger::points( $user_id ) <= 0 ) {
 				continue;
 			}
@@ -47,21 +39,16 @@ final class Expiry {
 			// now passed is exactly the still-unspent expired portion. This never re-burns points that were
 			// already spent or already expired (the old flat "sum of expired earn rows" over-burned when a
 			// later non-expiring lot propped the balance up to the ceiling).
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, user values bound via $wpdb->prepare().
-			$rows = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT points_delta, expires_at FROM {$table} WHERE user_id = %d ORDER BY created_at ASC, id ASC",
-					$user_id
-				),
-				ARRAY_A
-			);
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			$rows = LedgerStore::rows_chronological( $user_id );
 
 			$lots = array();
-			foreach ( (array) $rows as $r ) {
+			foreach ( $rows as $r ) {
 				$delta = (int) $r['points_delta'];
 				if ( $delta > 0 ) {
-					$lots[] = array( 'remaining' => $delta, 'expires_at' => $r['expires_at'] );
+					$lots[] = array(
+						'remaining' => $delta,
+						'expires_at' => $r['expires_at'],
+					);
 				} elseif ( $delta < 0 ) {
 					$need = -$delta;
 					foreach ( $lots as $k => $lot ) {

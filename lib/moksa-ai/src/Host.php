@@ -36,15 +36,15 @@ final class Host {
 	}
 
 	public static function enqueue(): void {
-		// 外掛更新等 iframe 頁也會跑 admin_enqueue_scripts，不擋會在框內多一顆按鈕。
+		// 外掛更新等 iframe 頁也會跑 admin_enqueue_scripts，不擋會在框內多一顆按鈕.
 		if ( defined( 'IFRAME_REQUEST' ) && IFRAME_REQUEST ) {
 			return;
 		}
-		// 判斷延到這裡才做：各外掛註冊 abilities 的時機不一致，在 boot 當下判斷是賭 hook 順序。
+		// 判斷延到這裡才做：各外掛註冊 abilities 的時機不一致，在 boot 當下判斷是賭 hook 順序.
 		if ( ! Registry::has_agent() || ! current_user_can( Registry::capability() ) ) {
 			return;
 		}
-		// 樣式由 chat.js 自己注入（它是自足元件），所以只需要 dashicons + 這支 JS。
+		// 樣式由 chat.js 自己注入（它是自足元件），所以只需要 dashicons + 這支 JS.
 		$js  = plugins_url( 'assets/chat.js', self::$dir . '/moksa-ai.php' );
 		$ver = (string) ( file_exists( self::$dir . '/assets/chat.js' ) ? filemtime( self::$dir . '/assets/chat.js' ) : '1' );
 
@@ -177,7 +177,10 @@ final class Host {
 			return rest_ensure_response( array( 'error' => Registry::string( 'noPermission' ) ) );
 		}
 
-		delete_transient( $key );
+		// 刪除成功才算拿到這個 token：兩個請求同時確認時只有一個會執行（先讀後刪會兩個都執行）.
+		if ( ! delete_transient( $key ) ) {
+			return rest_ensure_response( array( 'error' => Registry::string( 'confirmStale' ) ) );
+		}
 
 		$ability  = (string) ( $data['ability'] ?? '' );
 		$handlers = Registry::destructive_handlers();

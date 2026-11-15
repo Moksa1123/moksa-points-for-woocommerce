@@ -23,21 +23,7 @@ final class AdminOrderInfo {
 		if ( ! $order instanceof \WC_Order || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
-		global $wpdb;
-		$table = Schema::ledger_table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (name from Schema::ledger_table()); interpolated part is static SQL, order id bound via $wpdb->prepare().
-		$row = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT
-					COALESCE(SUM(CASE WHEN points_delta > 0 THEN points_delta ELSE 0 END),0) AS earned,
-					COALESCE(SUM(CASE WHEN points_delta < 0 THEN -points_delta ELSE 0 END),0) AS spent,
-					COALESCE(SUM(amount_delta),0) AS credit
-				FROM {$table} WHERE order_id = %d",
-				$order->get_id()
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$row = LedgerStore::order_summary( $order->get_id() );
 		$earned = (int) ( $row['earned'] ?? 0 );
 		$spent  = (int) ( $row['spent'] ?? 0 );
 		$credit = (float) ( $row['credit'] ?? 0 );
