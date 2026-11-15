@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 
 == Changelog ==
 
+= 1.0.3 =
+* Security fix: when the same customer sent several point spends at the same moment (checkout redemption, store credit, reward redemption, transfer, buy with points), each request could read a stale cached balance inside the per-customer lock and all of them could pass the balance check, driving the balance negative. The cached balance is now reloaded from the database once the lock is held.
+
 = 1.0.2 =
 * Fix: the block-editor script for the six points blocks was missing from the 1.0.1 package. It is included again.
 * Fix: on the WordPress plugin-update screen the AI assistant button appeared a second time inside the update progress frame. It is no longer loaded inside admin iframes.
@@ -119,6 +122,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Security fix: prevents concurrent point spends from overdrawing a customer's balance. Update recommended.
 
 = 1.0.2 =
 Restores the missing block-editor script for the points blocks, plus small fixes to the AI assistant button and a wider settings layout.

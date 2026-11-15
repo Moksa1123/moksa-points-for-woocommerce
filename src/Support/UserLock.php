@@ -42,6 +42,12 @@ final class UserLock {
 			return new WP_Error( 'moksafopoi_lock_busy', __( 'The system is busy, please try again later.', 'moksa-points-for-woocommerce' ) );
 		}
 
+		// The cached balance lives in user meta. This request may have loaded that meta BEFORE it got the
+		// lock (and a persistent object cache keeps it too), so a balance read inside the lock could still
+		// see the value from before the previous holder's spend — every concurrent spender would then pass
+		// the balance check. Drop the user's meta cache so reads inside the lock come from the database.
+		wp_cache_delete( $user_id, 'user_meta' );
+
 		try {
 			return $fn();
 		} finally {
