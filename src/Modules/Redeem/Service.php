@@ -67,6 +67,13 @@ final class Service {
 					return new \WP_Error( 'moksafopoi_reward_limit', __( 'You have reached the redemption limit for this reward.', 'moksa-points-for-woocommerce' ) );
 				}
 
+				// Reserve one unit BEFORE spending. The per-user lock above does not stop two different
+				// members from taking the last unit at the same time; the atomic decrement does. Handed back
+				// if anything below fails. Unlimited rewards (-1) are not decremented.
+				if ( ! self::reserve_stock( $reward ) ) {
+					return new \WP_Error( 'moksafopoi_reward_out', __( 'This redemption item is sold out.', 'moksa-points-for-woocommerce' ) );
+				}
+
 				$ref = 'reward:' . (int) $reward['id'] . ':' . wp_generate_uuid4();
 
 				// Deduct first (idempotent on the unique ref); refund if fulfilment fails.
@@ -86,6 +93,7 @@ final class Service {
 					)
 				);
 				if ( ! $deducted ) {
+					self::give_back_stock( $reward );
 					return new \WP_Error( 'moksafopoi_deduct_failed', __( 'Failed to deduct points, please try again later.', 'moksa-points-for-woocommerce' ) );
 				}
 
@@ -99,10 +107,10 @@ final class Service {
 						$ref,
 						array( 'note' => __( 'Redemption failed, points have been refunded.', 'moksa-points-for-woocommerce' ) )
 					);
+					self::give_back_stock( $reward );
 					return $result;
 				}
 
-				self::decrement_stock( (int) $reward['id'] );
 				do_action( 'moksafopoi_points_redeemed', $user_id, $cost, $kind, array( 'reward_id' => (int) $reward['id'], 'result' => $result ) );
 
 				return array_merge(
@@ -123,7 +131,16 @@ final class Service {
 	 */
 	private static function fulfil( string $kind, array $payload, int $user_id ) {
 		if ( 'coupon' === $kind ) {
-			if ( ! class_exists( '\\MoksaWeb\\Moforcoupon\\Support\\PersonalCoupon' ) ) {
+			// Moksa Coupons' issuing API (integration contract E10). The wp.org plugin's namespace is
+			// Moksafocou; the pre-release name is still accepted.
+			$issuer = '';
+			foreach ( array( '\\Moksafocou\\Support\\PersonalCoupon', '\\MoksaWeb\\Moforcoupon\\Support\\PersonalCoupon' ) as $candidate ) {
+				if ( class_exists( $candidate ) && is_callable( array( $candidate, 'issue' ) ) ) {
+					$issuer = $candidate;
+					break;
+				}
+			}
+			if ( '' === $issuer ) {
 				return new \WP_Error( 'moksafopoi_no_coupon_plugin', __( 'The coupon plugin is not active, so coupons cannot be redeemed right now.', 'moksa-points-for-woocommerce' ) );
 			}
 			$template    = (string) ( $payload['template'] ?? '' );
@@ -133,7 +150,8 @@ final class Service {
 			}
 			$user  = get_userdata( $user_id );
 			$email = $user ? (string) $user->user_email : '';
-			$new   = \MoksaWeb\Moforcoupon\Support\PersonalCoupon::issue(
+			$new   = call_user_func(
+				array( $issuer, 'issue' ),
 				$template_id,
 				(string) ( $payload['prefix'] ?? 'PTS' ),
 				$user_id,
@@ -308,8 +326,10 @@ final class Service {
 		global $wpdb;
 		$table = Schema::ledger_table();
 		$like  = 'reward:' . $reward_id . ':%';
+		// A redemption whose fulfilment failed was refunded under the same ref (source redeem_refund); it does not count.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal ledger table (Schema::ledger_table()); the user id + LIKE value are bound via $wpdb->prepare().
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND type = 'redeem' AND source_ref LIKE %s", $user_id, $like ) );
+		$count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ( SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND type = 'redeem' AND source_ref LIKE %s ) - ( SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND source = 'redeem_refund' AND source_ref LIKE %s )", $user_id, $like, $user_id, $like ) );
+		return max( 0, $count );
 	}
 
 	private static function get_reward( int $id ): ?array {
@@ -323,10 +343,34 @@ final class Service {
 		return is_array( $row ) ? $row : null;
 	}
 
-	private static function decrement_stock( int $id ): void {
+	/**
+	 * Take one unit of a capped reward with a single atomic UPDATE (0 rows = sold out). Unlimited rewards
+	 * (-1) always succeed and are not touched.
+	 *
+	 * @param array<string,mixed> $reward
+	 */
+	private static function reserve_stock( array $reward ): bool {
+		if ( -1 === (int) $reward['stock'] ) {
+			return true;
+		}
 		global $wpdb;
 		$table = Schema::rewards_table();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare(). -1 = unlimited, never decrements below 0.
-		$wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock - 1 WHERE id = %d AND stock > 0", $id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare(). Never decrements below 0.
+		return 1 === (int) $wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock - 1 WHERE id = %d AND stock > 0", (int) $reward['id'] ) );
+	}
+
+	/**
+	 * Hand a reserved unit back after a failed redemption (never touches unlimited -1 rewards).
+	 *
+	 * @param array<string,mixed> $reward
+	 */
+	private static function give_back_stock( array $reward ): void {
+		if ( -1 === (int) $reward['stock'] ) {
+			return;
+		}
+		global $wpdb;
+		$table = Schema::rewards_table();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- internal rewards table (name from Schema::rewards_table()); id bound via $wpdb->prepare().
+		$wpdb->query( $wpdb->prepare( "UPDATE {$table} SET stock = stock + 1 WHERE id = %d AND stock >= 0", (int) $reward['id'] ) );
 	}
 }

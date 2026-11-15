@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,11 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 
 == Changelog ==
 
+= 1.0.4 =
+* Fix: when several customers redeemed the last units of a limited reward at the same moment, all of them could succeed (the stock check ran outside any lock and stock was taken only after the reward was issued). One unit is now reserved atomically before points are spent, and handed back if the redemption fails.
+* Fix: a redemption that failed and was refunded no longer counts toward the per-customer redemption limit.
+* Fix: rewards of type "coupon" now work with Moksa Coupons for WooCommerce from WordPress.org (the plugin looked for the coupon plugin under its pre-release name and reported it as inactive).
+
 = 1.0.3 =
 * Security fix: when the same customer sent several point spends at the same moment (checkout redemption, store credit, reward redemption, transfer, buy with points), each request could read a stale cached balance inside the per-customer lock and all of them could pass the balance check, driving the balance negative. The cached balance is now reloaded from the database once the lock is held.
 
@@ -122,6 +127,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+Fixes overselling of limited rewards under concurrent redemptions, refunded redemptions counting toward per-customer limits, and coupon rewards with the WordPress.org coupon plugin. Update recommended.
 
 = 1.0.3 =
 Security fix: prevents concurrent point spends from overdrawing a customer's balance. Update recommended.
