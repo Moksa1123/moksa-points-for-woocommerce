@@ -24,7 +24,8 @@ $GLOBALS['moksa_ai_pool'][] = array(
 	// 1.3.7:schema 提示改用 wp_trigger_error()，拿掉 PHPCS 忽略註解；註解結尾改半形句點.
 	// 1.3.8:SchemaCompat 屬性補 @var 註解（只動註解）.
 	// 1.3.9:SchemaCompat 只對交給 Moksa AI 的 ability 發提示（不再對 woocommerce/* 等別人的 ability 發 notice）；型別照常一律收斂.
-	'version' => '1.3.9',
+	// 1.3.10:SchemaCompat 只收斂 Moksa 自家命名空間 ability 的 input_schema，output_schema 與別人的 ability 一律不動（Novamira execute-ability 多型別 output 被改成 string 的事件）；新增 filter moksa_ai_schema_compat_namespaces、moksa_ai_schema_compat_applies.
+	'version' => '1.3.10',
 	'dir'     => __DIR__,
 );
 

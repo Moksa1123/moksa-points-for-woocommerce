@@ -9,9 +9,9 @@
  * 就全部不能用，對話窗連一次工具都呼叫不到。2026-08-10 實際發生過（優惠券外掛的
  * create/update/bulk-generate 帶了 30 個 `["number","null"]`，連查訂單都跟著掛）。
  *
- * 所以這裡掛 `wp_register_ability_args` —— 那是每個 ability 註冊時的必經之路，不分外掛。
- * 只做一件事：把清單型的 `type` 塌成單一型別。不碰 enum、required、description，
- * 也不動任何非 `type` 的鍵，避免把別人的 schema 改出別的問題。
+ * 所以這裡掛 `wp_register_ability_args`。只做一件事：把清單型的 `type` 塌成單一型別。
+ * 不碰 enum、required、description，也不動任何非 `type` 的鍵。1.3.10 起只動 Moksa 自家
+ * 命名空間的 input_schema；別人的 ability 與所有 output_schema 原封不動。
  *
  * @package Moksa\AI
  */
@@ -53,16 +53,15 @@ final class SchemaCompat {
 	 * @return array<string,mixed>
 	 */
 	public static function compat_args( $args, $name ): array {
-		if ( ! is_array( $args ) ) {
+		if ( ! is_array( $args ) || ! self::applies( (string) $name, $args ) ) {
 			return $args;
 		}
 		$hits = 0;
-		foreach ( array( 'input_schema', 'output_schema' ) as $key ) {
-			if ( isset( $args[ $key ] ) && is_array( $args[ $key ] ) ) {
-				$args[ $key ] = self::collapse( $args[ $key ], $hits );
-			}
+		// 只收斂 input_schema：核心交給模型的只有它（using_abilities() 只送 get_input_schema()）。
+		// output_schema 是 WP 執行時驗證回傳用的，改了就跟實際回傳對不上（1.3.10，Novamira 事件）.
+		if ( isset( $args['input_schema'] ) && is_array( $args['input_schema'] ) ) {
+			$args['input_schema'] = self::collapse( $args['input_schema'], $hits );
 		}
-		// 型別一律照塌（不分外掛：Gemini 會把整包工具一起退），但提示晚點才決定要不要發.
 		if ( $hits > 0 ) {
 			self::$pending[ (string) $name ] = $hits;
 		}
@@ -70,10 +69,46 @@ final class SchemaCompat {
 	}
 
 	/**
+	 * 只處理 Moksa 外掛自己的 ability（依名稱的命名空間）。
+	 *
+	 * 別人的 ability 不會交給 Moksa AI，改它們的宣告只會讓 WP 的驗證跟實際回傳對不上
+	 * （Novamira execute-ability 的多型別 output 被改成 string，FluentCRM 回物件就失敗）。
+	 * 註冊途中不能讀 Registry（會觸發 Abilities API 的延遲註冊），所以用命名空間判斷。
+	 *
+	 * @param string              $name Ability 名稱。
+	 * @param array<string,mixed> $args 註冊參數。
+	 */
+	private static function applies( string $name, array $args ): bool {
+		/**
+		 * 要收斂 input_schema 的 ability 命名空間（各外掛實際註冊的名稱，11-18 掃過）.
+		 * 把別的外掛的 ability 加進 Moksa AI 工具清單時，也要把它的命名空間加進來，
+		 * 否則它的聯集型別會讓 Gemini 把整包工具退回。寫 'points' 或 'points/' 都可以.
+		 *
+		 * @param string[] $namespaces 命名空間清單。
+		 */
+		$namespaces = (array) apply_filters(
+			'moksa_ai_schema_compat_namespaces',
+			array( 'moksa-for-woocommerce', 'moksafocou', 'moksafoboo', 'points', 'member', 'affiliate', 'groupbuy' )
+		);
+		$namespaces = array_map( static fn( $n ): string => rtrim( (string) $n, '/' ), $namespaces );
+
+		$ns      = strstr( $name, '/', true );
+		$applies = false !== $ns && '' !== $ns && in_array( $ns, $namespaces, true );
+		/**
+		 * 個別決定某個 ability 要不要收斂 input_schema（加入或排除）.
+		 *
+		 * @param bool                $applies 是否收斂。
+		 * @param string              $name    Ability 名稱。
+		 * @param array<string,mixed> $args    註冊參數。
+		 */
+		return (bool) apply_filters( 'moksa_ai_schema_compat_applies', $applies, $name, $args );
+	}
+
+	/**
 	 * 只對「真的交給 Moksa AI 當工具」的 ability 發提示.
 	 *
-	 * 別人的 ability（例如 woocommerce/*）型別一樣會被塌，但不是我們能改的，對它們發 notice
-	 * 只是洗版。不能在註冊當下判斷：組工具清單的 filter 會去讀 Abilities API，註冊途中讀
+	 * 自家命名空間下沒交給 Moksa AI 的 ability 也會被收斂 input，但對它們發 notice 只是洗版
+	 * （別人的 ability 1.3.10 起完全不動）。不能在註冊當下判斷：組工具清單的 filter 會去讀 Abilities API，註冊途中讀
 	 * 會出錯；而且 Abilities API 是延遲註冊的 —— 這裡先讀清單，順便讓註冊跑完、pending 填滿.
 	 */
 	public static function flush_reports(): void {

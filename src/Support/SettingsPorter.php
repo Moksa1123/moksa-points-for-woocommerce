@@ -23,11 +23,28 @@ final class SettingsPorter {
 	public const FORMAT = 'moksafopoi-settings';
 
 	/**
+	 * Add this plugin's secret options to the keys the kit keeps out of export / import.
+	 *
+	 * @param array<int,string> $keys   Keys excluded so far.
+	 * @param string            $format Porter format tag of the plugin being exported / imported.
+	 * @return array<int,string>
+	 */
+	public static function exclude_secrets( $keys, $format = '' ): array {
+		$keys = (array) $keys;
+		return self::FORMAT === (string) $format ? array_merge( $keys, SecretMap::options() ) : $keys;
+	}
+
+	/**
 	 * Everything the kit needs to serve THIS plugin.
 	 *
 	 * @return array<string,mixed>
 	 */
 	private static function context(): array {
+		// Secrets never leave the site in an export, and an import never writes them (moksa-kit 1.0.3).
+		// Passed through the kit's filter rather than the context list, scoped to this plugin's format.
+		if ( false === has_filter( 'moksa_kit_porter_excluded_keys', array( self::class, 'exclude_secrets' ) ) ) {
+			add_filter( 'moksa_kit_porter_excluded_keys', array( self::class, 'exclude_secrets' ), 10, 2 );
+		}
 		return array(
 			'format'   => self::FORMAT,
 			'plugin'   => 'moksa-points-for-woocommerce',

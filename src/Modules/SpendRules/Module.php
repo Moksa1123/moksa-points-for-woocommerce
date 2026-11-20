@@ -84,9 +84,37 @@ final class Module extends AbstractModule {
 		// We also accumulate $earn_base (the un-multiplied rate-base + override points) purely to
 		// decide the spend-tier (滿額加倍) bonus below — the bonus is judged on the raw earn base,
 		// before any multiplier inflates it.
+		if ( ! \Moksafopoi\Support\ExternalOrders::earns( $order ) ) {
+			return; // An external-source order whose points the other system handles.
+		}
+
+		// An order that already carries its points (an ERP / POS order, or one from a previous points
+		// plugin) earns exactly that and is not recalculated.
+		$preset = self::preset_points( $order );
+		if ( null !== $preset ) {
+			// Order meta can be typed by anyone who may edit orders, so the per-order cap still applies.
+			$points = $preset['points'];
+			$max    = (int) get_option( 'moksafopoi_earn_max_per_order', 0 );
+			if ( $max > 0 && $points > $max ) {
+				$points = $max;
+			}
+			self::book(
+				$order,
+				$user_id,
+				$points,
+				array(
+					'from_meta' => $preset['key'],
+					'preset'    => $preset['points'],
+					'capped_at' => $max,
+				)
+			);
+			return;
+		}
+
 		$line_points = 0.0;
 		$earn_base   = 0.0;
 		$gross_base  = 0.0;
+		$net_factor  = self::net_of_fees_factor( $order );
 
 		foreach ( $order->get_items() as $item ) {
 			if ( ! $item instanceof \WC_Order_Item_Product ) {
@@ -106,7 +134,9 @@ final class Module extends AbstractModule {
 				continue; // Sale items excluded by the global switch.
 			}
 
-			$line_total = (float) $item->get_total(); // After line-level coupon discounts.
+			// After line-level coupon discounts, then this line's share of any order-level negative fee
+			// (points / store-credit redemption), so points follow what the customer actually paid.
+			$line_total  = (float) $item->get_total() * $net_factor;
 			$gross_base += $line_total;
 
 			$cat_mult = CategoryPoints::product_multiplier( $product_id );
@@ -161,9 +191,37 @@ final class Module extends AbstractModule {
 			$points = $max;
 		}
 
+		self::book(
+			$order,
+			$user_id,
+			$points,
+			array(
+				'earn_base'    => $earn_base,
+				'gross_base'   => $gross_base,
+				'line_points'  => $line_points,
+				'rate'         => $rate,
+				'tier_mult'    => $tier_mult,
+				'role_mult'    => $role_mult,
+				'bonus_mult'   => $bonus_mult,
+				'multiplier'   => $multiplier,
+				'capped_at'    => $max,
+				'include_ship' => $include_ship,
+				'include_tax'  => $include_tax,
+				'net_factor'   => $net_factor,
+			)
+		);
+	}
+
+	/**
+	 * Book the order's earn once (ledger ref `spend_rule:{order_id}`) and stamp the order.
+	 *
+	 * @param array<string,mixed> $meta Stored on the ledger row to explain the figure.
+	 */
+	private static function book( \WC_Order $order, int $user_id, int $points, array $meta ): void {
 		if ( $points <= 0 ) {
 			return;
 		}
+		$order_id = (int) $order->get_id();
 
 		$written = Ledger::record_once(
 			$user_id,
@@ -172,21 +230,9 @@ final class Module extends AbstractModule {
 			'spend_rule',
 			(string) $order_id,
 			array(
-				'order_id' => $order_id,
-				'note'     => __( 'Earn points on purchase', 'moksa-points-for-woocommerce' ),
-				'meta'     => array(
-					'earn_base'    => $earn_base,
-					'gross_base'   => $gross_base,
-					'line_points'  => $line_points,
-					'rate'         => $rate,
-					'tier_mult'    => $tier_mult,
-					'role_mult'    => $role_mult,
-					'bonus_mult'   => $bonus_mult,
-					'multiplier'   => $multiplier,
-					'capped_at'    => $max,
-					'include_ship' => $include_ship,
-					'include_tax'  => $include_tax,
-				),
+				'order_id'   => $order_id,
+				'note'       => __( 'Earn points on purchase', 'moksa-points-for-woocommerce' ),
+				'meta'       => $meta,
 				'expires_at' => self::expiry_date(),
 			)
 		);
@@ -206,6 +252,76 @@ final class Module extends AbstractModule {
 			$order->update_meta_data( '_moksafopoi_earned_points', (string) $points );
 			$order->save();
 		}
+	}
+
+	/**
+	 * Order meta keys that already hold an order's points, in priority order (setting
+	 * `moksafopoi_earn_preset_meta_keys`, comma or newline separated; empty by default).
+	 *
+	 * @return array<int,string>
+	 */
+	public static function preset_meta_keys(): array {
+		$raw  = (string) get_option( 'moksafopoi_earn_preset_meta_keys', '' );
+		$keys = array();
+		foreach ( preg_split( '/[\s,]+/', $raw ) ?: array() as $key ) {
+			$key = (string) preg_replace( '/[^A-Za-z0-9_\-]/', '', $key ); // Meta keys are case-sensitive.
+			if ( '' !== $key && ! \Moksafopoi\Support\ExternalOrders::customer_controlled( $key ) ) {
+				$keys[] = $key;
+			}
+		}
+		return array_values( array_unique( $keys ) );
+	}
+
+	/**
+	 * Points an order already carries in one of the configured meta keys, or null to calculate.
+	 * A present but non-numeric or negative value is ignored (the order is calculated as usual).
+	 *
+	 * @return array{key:string,points:int}|null
+	 */
+	public static function preset_points( \WC_Order $order ): ?array {
+		foreach ( self::preset_meta_keys() as $key ) {
+			$value = $order->get_meta( $key, true );
+			if ( is_scalar( $value ) && '' !== (string) $value && is_numeric( $value ) && (float) $value >= 0 ) {
+				return array(
+					'key'    => $key,
+					// Same sanity ceiling as the balance importer: a stray huge number must not mint a fortune.
+					'points' => (int) min( \Moksafopoi\Support\BalanceImporter::MAX_POINTS, floor( (float) $value ) ),
+				);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Share of the goods total the customer actually paid once order-level negative fees are taken off.
+	 *
+	 * Points and store-credit redemption are booked as negative fee lines, not coupons, so the line
+	 * totals do not include them. Without this a 1000 order paid 800 + 200 in points earned on 1000.
+	 * The fee is spread over every product line in proportion (excluded products included, so an
+	 * excluded item absorbs its own share). On by default; `moksafopoi_earn_net_of_fees = no` restores
+	 * the old behaviour.
+	 */
+	public static function net_of_fees_factor( \WC_Order $order ): float {
+		if ( 'no' === get_option( 'moksafopoi_earn_net_of_fees', 'yes' ) ) {
+			return 1.0;
+		}
+		$goods = 0.0;
+		foreach ( $order->get_items() as $item ) {
+			if ( $item instanceof \WC_Order_Item_Product ) {
+				$goods += (float) $item->get_total();
+			}
+		}
+		$off = 0.0;
+		foreach ( $order->get_fees() as $fee ) {
+			$total = (float) $fee->get_total();
+			if ( $total < 0 ) {
+				$off += -$total;
+			}
+		}
+		if ( $goods <= 0 || $off <= 0 ) {
+			return 1.0;
+		}
+		return max( 0.0, 1 - $off / $goods );
 	}
 
 	/**

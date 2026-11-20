@@ -41,6 +41,7 @@ final class ModuleRegistry {
 		'linenotify'  => Modules\LineNotify\Module::class,
 		'blocks'      => Modules\Blocks\Module::class,
 		'restapi'     => Modules\RestApi\Module::class,
+		'storeapi'    => Modules\StoreApi\Module::class,
 		'leaderboard' => Modules\Leaderboard\Module::class,
 		'rewardhub'   => Modules\RewardHub\Module::class,
 		'badges'      => Modules\Badges\Module::class,

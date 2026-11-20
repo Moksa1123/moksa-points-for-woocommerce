@@ -9,6 +9,7 @@ use Moksafopoi\Plugin;
 use Moksafopoi\Support\BalanceImporter;
 use Moksafopoi\Support\GatewayPoints;
 use Moksafopoi\Support\Multipliers;
+use Moksafopoi\Support\SecretMap;
 use Moksafopoi\Support\SettingsAudit;
 use Moksafopoi\Support\Rates;
 use Moksafopoi\Support\RedirectNotice;
@@ -478,9 +479,25 @@ final class SettingsScreen {
 						)
 					),
 					self::toggle( 'moksafopoi_earn_exclude_sale', __( 'No points on sale items', 'moksa-points-for-woocommerce' ), __( 'When checked, products currently on sale are excluded from the earning base.', 'moksa-points-for-woocommerce' ) ),
+					self::toggle_on( 'moksafopoi_earn_net_of_fees', __( 'Earn on the amount actually paid', 'moksa-points-for-woocommerce' ), __( 'When checked, points or store credit used at checkout are taken off the earning base, so a customer does not earn points on the part paid with points.', 'moksa-points-for-woocommerce' ) ),
+					self::text( 'moksafopoi_earn_preset_meta_keys', __( 'Use points already stored on the order', 'moksa-points-for-woocommerce' ), __( 'Order meta keys (comma separated) that already hold the points an order earns, e.g. orders created by an ERP or POS, or by a previous points plugin. When an order has one of these keys, it earns exactly that value and is not recalculated. Leave empty to always calculate.', 'moksa-points-for-woocommerce' ), '', 'ywpar_points_from_cart' ),
 					self::toggle( 'moksafopoi_earn_include_shipping', __( 'Earning base includes shipping', 'moksa-points-for-woocommerce' ), __( 'When checked, shipping is also included in the earning base (excluded by default; only the product amount counts).', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_earn_include_tax', __( 'Earning base includes tax', 'moksa-points-for-woocommerce' ), __( 'When checked, tax is also included in the earning base (excluded by default; only the product amount counts).', 'moksa-points-for-woocommerce' ) ),
 					self::number( 'moksafopoi_earn_max_per_order', __( 'Per-order earning cap', 'moksa-points-for-woocommerce' ), __( 'Maximum points awarded per order (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
+					self::plain_textarea( 'moksafopoi_external_order_match', __( 'External-source orders', 'moksa-points-for-woocommerce' ), __( 'Orders that mirror a sale made in another system (POS, ERP, marketplace), one rule per line: meta_key=value, meta_key (any value), or created_via:value. Use only meta your other system writes — never meta a customer can set (order attribution, billing or shipping fields are ignored). A cancellation still takes back earned points. Leave empty if you have none.', 'moksa-points-for-woocommerce' ), '', "source=pos\ncreated_via:pos" ),
+					self::toggle_on( 'moksafopoi_external_order_earn', __( 'External-source orders earn points', 'moksa-points-for-woocommerce' ), __( 'Uncheck if the other system awards points for these sales itself.', 'moksa-points-for-woocommerce' ) ),
+					self::select(
+						'moksafopoi_external_order_clawback',
+						__( 'External-source orders: claw back earned points on', 'moksa-points-for-woocommerce' ),
+						__( 'Which refunds take back the points such an order earned. "Real refunds only" skips the automatic full refund WooCommerce adds when someone just changes the order status to Refunded.', 'moksa-points-for-woocommerce' ),
+						'explicit',
+						array(
+							'explicit' => __( 'Real refunds only (refund box or API), not a status change', 'moksa-points-for-woocommerce' ),
+							'all'      => __( 'Every refund, including a status change to Refunded', 'moksa-points-for-woocommerce' ),
+							'none'     => __( 'Never', 'moksa-points-for-woocommerce' ),
+						)
+					),
+					self::toggle( 'moksafopoi_external_order_restore', __( 'External-source orders: give back spent points on refund', 'moksa-points-for-woocommerce' ), __( 'Off by default: the other system usually returns the points a customer spent there.', 'moksa-points-for-woocommerce' ) ),
 				),
 			),
 			array(
@@ -517,6 +534,7 @@ final class SettingsScreen {
 				'desc'   => __( 'The calculation granularity for checkout points redemption: how many points redeem 1 unit of currency, minimum / step / cap.', 'moksa-points-for-woocommerce' ),
 				'fields' => array(
 					self::number( 'moksafopoi_redeem_rate', __( 'Points per NT$1 redeemed', 'moksa-points-for-woocommerce' ), __( 'How many points are needed to redeem 1 unit of currency (default 100 points = NT$1).', 'moksa-points-for-woocommerce' ), 100, '1', '1' ),
+					self::text( 'moksafopoi_redeem_fee_label', __( 'Name of the points discount line', 'moksa-points-for-woocommerce' ), __( 'Shown on the cart, order and invoice. Leave empty for the default ("Points redemption", translated). Set a fixed name if reports or an ERP match on it; {points} is replaced by the number of points used.', 'moksa-points-for-woocommerce' ), '', __( 'Points redemption', 'moksa-points-for-woocommerce' ) ),
 					self::number( 'moksafopoi_redeem_min_points', __( 'Minimum redeemable points', 'moksa-points-for-woocommerce' ), __( 'Below this number of points, redemption cannot be used (default 100).', 'moksa-points-for-woocommerce' ), 100, '0', '1' ),
 					self::number( 'moksafopoi_redeem_step', __( 'Redemption increment (points)', 'moksa-points-for-woocommerce' ), __( 'How many points each redemption applies per unit (default 100).', 'moksa-points-for-woocommerce' ), 100, '1', '1' ),
 					self::number( 'moksafopoi_redeem_max_percent', __( 'Maximum cart discount %', 'moksa-points-for-woocommerce' ), __( 'Maximum percentage of the redeemable subtotal that points can offset (default 100).', 'moksa-points-for-woocommerce' ), 100, '0', '1' ),
@@ -628,6 +646,7 @@ final class SettingsScreen {
 					),
 					self::number( 'moksafopoi_cashback_min_spend', __( 'Cashback threshold (NT$)', 'moksa-points-for-woocommerce' ), __( 'Cashback applies only when the order base reaches this amount (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
 					self::number( 'moksafopoi_cashback_max', __( 'Cashback cap per order (NT$)', 'moksa-points-for-woocommerce' ), __( 'The maximum store credit returned for a single order (0 = no limit).', 'moksa-points-for-woocommerce' ), 0, '0', '1' ),
+					self::text( 'moksafopoi_wallet_fee_label', __( 'Name of the store credit discount line', 'moksa-points-for-woocommerce' ), __( 'Shown on the cart, order and invoice. Leave empty for the default ("Store credit redemption", translated). Set a fixed name if reports or an ERP match on it; {amount} is replaced by the amount used.', 'moksa-points-for-woocommerce' ), '', __( 'Store credit redemption', 'moksa-points-for-woocommerce' ) ),
 					self::number( 'moksafopoi_wallet_max_percent', __( 'Store credit max cart offset %', 'moksa-points-for-woocommerce' ), __( 'The maximum percentage of the redeemable subtotal that store credit can offset at checkout (default 100).', 'moksa-points-for-woocommerce' ), 100, '0', '1' ),
 				),
 			),
@@ -663,7 +682,7 @@ final class SettingsScreen {
 				'desc'   => __( 'Push points messages over the LINE Messaging API (LINE Notify was shut down in 2025 and is not used). Members link their LINE account in the membership plugin; anyone who has not linked is simply skipped. Messages are queued, so LINE can never slow down checkout.', 'moksa-points-for-woocommerce' ),
 				'fields' => array(
 					self::toggle( 'moksafopoi_linenotify_enabled', __( 'LINE notifications', 'moksa-points-for-woocommerce' ), __( 'Enable the LINE sender. Nothing is sent until a channel access token and at least one event are set.', 'moksa-points-for-woocommerce' ) ),
-					self::text( 'moksafopoi_line_token', __( 'Channel access token', 'moksa-points-for-woocommerce' ), __( 'The long-lived channel access token of your LINE Messaging API channel.', 'moksa-points-for-woocommerce' ) ),
+					self::secret( 'moksafopoi_line_token', __( 'Channel access token', 'moksa-points-for-woocommerce' ), __( 'The long-lived channel access token of your LINE Messaging API channel.', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_line_meta_key', __( 'User-meta key holding the LINE ID', 'moksa-points-for-woocommerce' ), __( 'Where a member\'s LINE userId is stored. Leave blank for the membership plugin default (_moformember_line_user_id).', 'moksa-points-for-woocommerce' ), '', '_moformember_line_user_id' ),
 					self::toggle( 'moksafopoi_line_on_earned', __( 'Send: points earned', 'moksa-points-for-woocommerce' ), __( 'Message the member when points are credited.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_line_on_redeemed', __( 'Send: points redeemed', 'moksa-points-for-woocommerce' ), __( 'Message the member when points are spent.', 'moksa-points-for-woocommerce' ) ),
@@ -677,7 +696,7 @@ final class SettingsScreen {
 				'fields' => array(
 					self::toggle( 'moksafopoi_webhooks_enabled', __( 'Outbound webhooks', 'moksa-points-for-woocommerce' ), __( 'Enable the webhook sender. Nothing is sent until an endpoint URL and at least one event are set below.', 'moksa-points-for-woocommerce' ) ),
 					self::text( 'moksafopoi_webhook_url', __( 'Endpoint URL', 'moksa-points-for-woocommerce' ), __( 'The https:// URL each event is POSTed to as JSON.', 'moksa-points-for-woocommerce' ), '', 'https://hooks.example.com/moksa-points' ),
-					self::text( 'moksafopoi_webhook_secret', __( 'Signing secret', 'moksa-points-for-woocommerce' ), __( 'Optional. When set, each delivery carries X-Moksafopoi-Signature: sha256=HMAC(body, secret) so the receiver can verify it came from this site.', 'moksa-points-for-woocommerce' ) ),
+					self::secret( 'moksafopoi_webhook_secret', __( 'Signing secret', 'moksa-points-for-woocommerce' ), __( 'Optional. When set, each delivery carries X-Moksafopoi-Signature: sha256=HMAC(body, secret) so the receiver can verify it came from this site.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_webhook_include_email', __( 'Include the member e-mail', 'moksa-points-for-woocommerce' ), __( 'Off by default: the payload identifies members by user ID only. Turn on when your ESP needs the e-mail address to match a contact.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_webhook_points_earned', __( 'Send: points earned', 'moksa-points-for-woocommerce' ), __( 'POST an event whenever points are credited.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_webhook_points_redeemed', __( 'Send: points redeemed', 'moksa-points-for-woocommerce' ), __( 'POST an event whenever points are spent.', 'moksa-points-for-woocommerce' ) ),
@@ -691,6 +710,7 @@ final class SettingsScreen {
 				'desc'   => __( 'Open points features to AI tools. Ability registration is on by default and every ability is capability-checked, so an assistant can never do more than you could by hand. The external MCP server is off until you switch it on.', 'moksa-points-for-woocommerce' ),
 				'fields' => array(
 					self::toggle( 'moksafopoi_restapi_enabled', __( 'Customer REST API', 'moksa-points-for-woocommerce' ), __( 'Read-only endpoints for a headless storefront or app: points/v1/me and points/v1/me/history. They always serve the logged-in customer only — there is no user_id parameter, so one member can never read another.', 'moksa-points-for-woocommerce' ) ),
+					self::toggle( 'moksafopoi_storeapi_enabled', __( 'Store system API (ERP / POS)', 'moksa-points-for-woocommerce' ), __( 'Server-to-server endpoints: read any member\'s balance (points/v1/users/{id}, and a moksa_points field in the WooCommerce customer API) and add or deduct points with POST points/v1/users/{id}/adjust. Every call needs a reference (case-sensitive), and the same reference is never booked twice; a deduction larger than the balance is refused. Requires a shop manager account with an Application Password; a WooCommerce API key can read the moksa_points field only. Off by default.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_abilities_enabled', __( 'Points AI abilities (Abilities)', 'moksa-points-for-woocommerce' ), __( 'Register points features as WordPress AI abilities (Abilities) for use by AI assistants.', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_mcp_enabled', __( 'MCP module', 'moksa-points-for-woocommerce' ), __( 'Load the MCP server module (still requires the "External MCP server" toggle below to actually open access).', 'moksa-points-for-woocommerce' ) ),
 					self::toggle( 'moksafopoi_mcp_server_enabled', __( 'External MCP server', 'moksa-points-for-woocommerce' ), __( 'Open points abilities to external AI tools (MCP). Off by default.', 'moksa-points-for-woocommerce' ) ),
@@ -736,6 +756,9 @@ final class SettingsScreen {
 		$type = (string) ( $field['type'] ?? 'toggle' );
 
 		switch ( $type ) {
+			case 'secret':
+				return array( 'ok' => false ); // Secrets are never imported.
+
 			case 'text':
 				$val = sanitize_text_field( is_scalar( $raw ) ? (string) $raw : '' );
 				if ( '' === $val ) {
@@ -747,7 +770,9 @@ final class SettingsScreen {
 				);
 
 			case 'textarea':
-				$val     = wp_kses_post( is_scalar( $raw ) ? (string) $raw : '' );
+				$val     = ! empty( $field['plain'] )
+					? sanitize_textarea_field( is_scalar( $raw ) ? (string) $raw : '' )
+					: wp_kses_post( is_scalar( $raw ) ? (string) $raw : '' );
 				$default = (string) ( $field['default'] ?? '' );
 				if ( '' === trim( $val ) && '' !== $default ) {
 					$val = $default;
@@ -1103,6 +1128,18 @@ final class SettingsScreen {
 				$type = (string) ( $field['type'] ?? 'toggle' );
 
 				switch ( $type ) {
+					case 'secret':
+						// Empty = keep the stored secret; the clear box removes it.
+						if ( isset( $_POST[ $id . '__clear' ] ) ) {
+							update_option( $id, '', false );
+							break;
+						}
+						$raw = isset( $_POST[ $id ] ) ? trim( sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) ) : '';
+						if ( '' !== $raw ) {
+							update_option( $id, $raw, false );
+						}
+						break;
+
 					case 'text':
 						$raw   = isset( $_POST[ $id ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
 						$value = '' === $raw ? (string) ( $field['default'] ?? '' ) : $raw;
@@ -1113,7 +1150,12 @@ final class SettingsScreen {
 						// Message templates (顯示客製化): keep newlines + basic markup, strip anything unsafe.
 						// An empty submit restores the field default (so a blank box re-seeds the canned copy),
 						// EXCEPT when the default is itself blank (an opt-in field that may legitimately be empty).
-						$raw     = isset( $_POST[ $id ] ) ? wp_kses_post( wp_unslash( (string) $_POST[ $id ] ) ) : '';
+						// A plain-text list (one rule per line) is stored as typed: no HTML, no entity encoding.
+						if ( ! empty( $field['plain'] ) ) {
+							$raw = isset( $_POST[ $id ] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST[ $id ] ) ) : '';
+						} else {
+							$raw = isset( $_POST[ $id ] ) ? wp_kses_post( wp_unslash( (string) $_POST[ $id ] ) ) : '';
+						}
 						$default = (string) ( $field['default'] ?? '' );
 						$value   = ( '' === trim( $raw ) && '' !== $default ) ? $default : $raw;
 						update_option( $id, $value );
@@ -1349,13 +1391,19 @@ final class SettingsScreen {
 		}
 
 		// Simple value fields → one consistent mowp field row.
-		if ( in_array( $type, array( 'text', 'textarea', 'number', 'select', 'color' ), true ) ) {
+		if ( in_array( $type, array( 'text', 'textarea', 'number', 'select', 'color', 'secret' ), true ) ) {
 			echo '<div class="mowp-field mowp-field--' . esc_attr( $type ) . '">';
 			echo '<label class="mowp-field__label" for="' . esc_attr( $id ) . '">' . esc_html( $title ) . '</label>';
 			if ( '' !== $desc ) {
 				echo '<span class="mowp-field__desc">' . esc_html( $desc ) . '</span>';
 			}
-			if ( 'text' === $type ) {
+			if ( 'secret' === $type ) {
+				$is_set = '' !== trim( (string) get_option( $id, '' ) );
+				echo '<input type="password" id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" value="" autocomplete="new-password" placeholder="' . esc_attr( $is_set ? __( 'Set — leave empty to keep it', 'moksa-points-for-woocommerce' ) : __( 'Not set', 'moksa-points-for-woocommerce' ) ) . '">';
+				if ( $is_set ) {
+					echo ' <label><input type="checkbox" name="' . esc_attr( $id . '__clear' ) . '" value="1"> ' . esc_html__( 'Clear', 'moksa-points-for-woocommerce' ) . '</label>';
+				}
+			} elseif ( 'text' === $type ) {
 				echo '<input type="text" id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" value="' . esc_attr( (string) get_option( $id, (string) ( $field['default'] ?? '' ) ) ) . '" placeholder="' . esc_attr( (string) ( $field['placeholder'] ?? '' ) ) . '">';
 			} elseif ( 'textarea' === $type ) {
 				echo '<textarea id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" rows="3" placeholder="' . esc_attr( (string) ( $field['placeholder'] ?? '' ) ) . '">' . esc_textarea( (string) get_option( $id, (string) ( $field['default'] ?? '' ) ) ) . '</textarea>';
@@ -2242,6 +2290,22 @@ final class SettingsScreen {
 	 *
 	 * @return array<string,mixed>
 	 */
+	/**
+	 * A secret (token / signing key): rendered as an empty password box that only says whether a value is
+	 * set; an empty submit keeps the stored value, a "clear" checkbox removes it. The value never goes
+	 * into the page HTML. The id must be listed in Support\SecretMap.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private static function secret( string $id, string $title, string $desc ): array {
+		return array(
+			'id'    => $id,
+			'title' => $title,
+			'desc'  => $desc,
+			'type'  => 'secret',
+		);
+	}
+
 	private static function text( string $id, string $title, string $desc, string $default = '', string $placeholder = '' ): array {
 		return array(
 			'id'          => $id,
@@ -2259,6 +2323,11 @@ final class SettingsScreen {
 	 *
 	 * @return array<string,mixed>
 	 */
+	/** A textarea for a plain-text list (rules, keys): saved without HTML or entity encoding. */
+	private static function plain_textarea( string $id, string $title, string $desc, string $default = '', string $placeholder = '' ): array {
+		return array( 'plain' => true ) + self::textarea( $id, $title, $desc, $default, $placeholder );
+	}
+
 	private static function textarea( string $id, string $title, string $desc, string $default = '', string $placeholder = '' ): array {
 		return array(
 			'id'          => $id,

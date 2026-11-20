@@ -35,16 +35,16 @@ final class Activation {
 		$defaults = (array) apply_filters( 'moksafopoi_default_modules', self::DEFAULTS );
 		foreach ( $defaults as $key ) {
 			if ( is_string( $key ) && '' !== $key ) {
-				add_option( 'moksafopoi_' . $key . '_enabled', 'yes' );
+				FreshOption::add( 'moksafopoi_' . $key . '_enabled', 'yes', true );
 			}
 		}
 
 		// Seed the achievement-badge ladder (銅 / 銀 / 金). add_option never overwrites an
-		// operator's edited ladder on a re-activation.
-		add_option( \Moksafopoi\Modules\Badges\Module::OPTION, \Moksafopoi\Modules\Badges\Module::default_ladder_json() );
+		// operator's edited ladder on a re-activation (FreshOption: not even with a stale cache).
+		FreshOption::add( \Moksafopoi\Modules\Badges\Module::OPTION, \Moksafopoi\Modules\Badges\Module::default_ladder_json(), true );
 
 		// Public leaderboard masks member names by default (privacy-first).
-		add_option( 'moksafopoi_leaderboard_mask_names', 'yes' );
+		FreshOption::add( 'moksafopoi_leaderboard_mask_names', 'yes', true );
 
 		update_option( self::SENTINEL, 'yes', false );
 	}

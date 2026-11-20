@@ -410,7 +410,7 @@ final class LedgerBrowser {
 			$target = -$magnitude;
 		}
 
-		$ok = Api::adjust(
+		$res = Api::adjust_detailed(
 			$uid,
 			$target,
 			sprintf(
@@ -421,7 +421,13 @@ final class LedgerBrowser {
 			'reversal_' . (int) $row['id']
 		);
 
-		self::redirect_with( $ok ? 'reversed' : 'already' );
+		$flags = array(
+			'applied'      => 'reversed',
+			'insufficient' => 'insufficient',
+			'busy'         => 'busy',
+			'error'        => 'busy',
+		);
+		self::redirect_with( $flags[ $res['status'] ] ?? 'already' );
 	}
 
 	/**
@@ -448,6 +454,7 @@ final class LedgerBrowser {
 			'reversed'     => array( 'success', __( 'Reversal record written.', 'moksa-points-for-woocommerce' ) ),
 			'already'      => array( 'warning', __( 'This record was already reversed; no duplicate was written.', 'moksa-points-for-woocommerce' ) ),
 			'insufficient' => array( 'error', __( 'The member\'s current balance is not enough to reverse this issuance (the points may have already been used).', 'moksa-points-for-woocommerce' ) ),
+			'busy'         => array( 'error', __( 'The reversal could not be saved right now; nothing was changed. Please try again.', 'moksa-points-for-woocommerce' ) ),
 			'norow'        => array( 'error', __( 'No reversible record found.', 'moksa-points-for-woocommerce' ) ),
 			'isreversal'   => array( 'error', __( 'A reversal record itself cannot be reversed again.', 'moksa-points-for-woocommerce' ) ),
 		);

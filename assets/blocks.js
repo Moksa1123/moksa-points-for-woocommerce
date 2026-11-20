@@ -18,6 +18,13 @@
 	var useBlockProps = blockEditor && blockEditor.useBlockProps ? blockEditor.useBlockProps : null;
 	var labels = window.moksafopoiBlocks || {};
 
+	// Star icon as an SVG element: WordPress 7.2 replaces Dashicons, so a dashicon name may not draw.
+	var icon = createElement(
+		'svg',
+		{ xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 20 20', width: 20, height: 20 },
+		createElement( 'path', { d: 'M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9z' } )
+	);
+
 	Object.keys( labels ).forEach( function ( name ) {
 		var spec = labels[ name ] || {};
 
@@ -26,7 +33,7 @@
 			title: spec.title || name,
 			description: spec.description || '',
 			category: 'widgets',
-			icon: 'star-filled',
+			icon: icon,
 			supports: { html: false },
 
 			edit: function () {

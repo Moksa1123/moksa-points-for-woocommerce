@@ -87,12 +87,28 @@ final class UserLock {
 		// the balance check. Drop the user's meta cache so reads inside the lock come from the database.
 		wp_cache_delete( $user_id, 'user_meta' );
 
+		// create_lock() stores the acquisition time as the lock value. Remember it, so the release below
+		// only deletes the lock if it is still ours: if this request ran past LOCK_TTL and another request
+		// took the lock over, deleting it would let a third request in alongside that one.
+		$stamp = self::stamp( $name );
+
 		try {
 			return $fn();
 		} finally {
 			unset( self::$held[ $user_id ] );
-			\WP_Upgrader::release_lock( $name );
+			// An empty stamp means we could not read our own value back (e.g. a lagging read replica);
+			// release as before rather than leave the member locked out for LOCK_TTL.
+			if ( '' === $stamp || self::stamp( $name ) === $stamp ) {
+				\WP_Upgrader::release_lock( $name );
+			}
 		}
+	}
+
+	/** Current value of the lock option, read from the database (another request may have changed it). */
+	private static function stamp( string $name ): string {
+		$option = $name . '.lock';
+		FreshOption::forget( $option );
+		return (string) get_option( $option, '' );
 	}
 
 	/**

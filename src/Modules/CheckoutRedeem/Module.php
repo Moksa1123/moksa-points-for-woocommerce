@@ -7,6 +7,7 @@ namespace Moksafopoi\Modules\CheckoutRedeem;
 use Moksafopoi\Api;
 use Moksafopoi\Modules\AbstractModule;
 use Moksafopoi\Modules\Ledger\Ledger;
+use Moksafopoi\Support\LedgerStore;
 use Moksafopoi\Support\ProductPoints;
 use Moksafopoi\Support\UserLock;
 
@@ -28,6 +29,8 @@ final class Module extends AbstractModule {
 	private const PENDING_META = '_moksafopoi_redeem_pending';
 	private const ORDER_META  = '_moksafopoi_redeem_points';
 	private const LEDGER_META = '_moksafopoi_redeem_ledger_ref';
+	/** Cumulative points given back so far (partial refunds). */
+	private const RESTORED_META = '_moksafopoi_redeem_restored';
 	public const NONCE        = 'moksafopoi_checkout_redeem';
 
 	public function slug(): string {
@@ -81,6 +84,8 @@ final class Module extends AbstractModule {
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( self::class, 'commit' ), 20, 1 );
 		add_action( 'woocommerce_order_status_cancelled', array( self::class, 'refund' ) );
 		add_action( 'woocommerce_order_status_refunded', array( self::class, 'refund' ) );
+		// A partial refund gives back the same share of the points spent on the order.
+		add_action( 'woocommerce_order_refunded', array( self::class, 'on_refunded' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue' ) );
 	}
@@ -280,7 +285,16 @@ final class Module extends AbstractModule {
 		if ( $discount <= 0 ) {
 			return;
 		}
-		$cart->add_fee( __( 'Points redemption', 'moksa-points-for-woocommerce' ), -$discount );
+		// A fixed id: WooCommerce derives the id from the name otherwise, and a second line with the same
+		// name (a custom label equal to another fee's) would be dropped while the points are still spent.
+		$cart->fees_api()->add_fee(
+			array(
+				'id'      => 'moksafopoi-points-redemption',
+				'name'    => self::fee_label( $points ),
+				'amount'  => -$discount,
+				'taxable' => false,
+			)
+		);
 	}
 
 	/* ------------------------------------------------------------------ UI */
@@ -526,30 +540,99 @@ final class Module extends AbstractModule {
 		);
 	}
 
-	/** Refund the committed points once when the order is cancelled/refunded (idempotent). */
+	/**
+	 * Name of the discount line on the cart, order and invoice. A shop can fix it in settings so reports
+	 * or an ERP that match on the line name keep working whatever the site language or translation.
+	 * `{points}` in the setting is replaced by the number of points used (plain digits, no separators,
+	 * so a parser can read it back).
+	 */
+	public static function fee_label( int $points = 0 ): string {
+		$label = trim( (string) get_option( 'moksafopoi_redeem_fee_label', '' ) );
+		if ( '' === $label ) {
+			return __( 'Points redemption', 'moksa-points-for-woocommerce' );
+		}
+		return str_replace( '{points}', (string) max( 0, $points ), $label );
+	}
+
+	/** Give back all the points spent on the order when it is cancelled / fully refunded (idempotent). */
 	public static function refund( int $order_id ): void {
+		self::restore( (int) $order_id, 1.0 );
+	}
+
+	/**
+	 * Refund (partial or full): give back the points spent on the order in proportion to the cumulative
+	 * refunded amount.
+	 *
+	 * @param int $order_id
+	 * @param int $refund_id
+	 */
+	public static function on_refunded( $order_id, $refund_id = 0 ): void {
+		$order = wc_get_order( (int) $order_id );
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+		self::restore( (int) $order_id, \Moksafopoi\Support\RefundShare::fraction( $order ) );
+	}
+
+	/**
+	 * Restore spent points up to `fraction` of what the order spent, cumulatively: each call books only
+	 * the newly-owed part, under a ref that advances with the cumulative target, so replays book nothing.
+	 */
+	private static function restore( int $order_id, float $fraction ): void {
 		$order = wc_get_order( $order_id );
 		if ( ! $order instanceof \WC_Order ) {
 			return;
 		}
-		$points = (int) $order->get_meta( self::ORDER_META );
-		if ( $points <= 0 ) {
-			return;
-		}
+		$points  = (int) $order->get_meta( self::ORDER_META );
 		$user_id = (int) $order->get_customer_id();
-		if ( $user_id <= 0 ) {
+		if ( $points <= 0 || $user_id <= 0 || ! \Moksafopoi\Support\ExternalOrders::restores_spent( $order ) ) {
 			return;
 		}
-		Ledger::record_once(
-			$user_id,
-			$points,
-			'adjust',
-			'checkout_redeem_refund',
-			'checkout_refund:' . $order_id,
-			array(
-				'order_id' => $order_id,
-				'note'     => __( 'Checkout points redemption reversal', 'moksa-points-for-woocommerce' ),
-			)
-		);
+		// Orders refunded before 1.0.6 got everything back under the old single ref.
+		if ( LedgerStore::count_ref( $user_id, 'checkout_redeem_refund', 'checkout_refund:' . $order_id ) > 0 ) {
+			return;
+		}
+
+		$fraction = max( 0.0, min( 1.0, $fraction ) );
+		$target   = (int) round( $points * $fraction );
+
+		// Read what was already given back from the ledger, under the member's lock, so two refunds of
+		// the same order processed at once cannot both see "nothing given back yet".
+		$work = static function () use ( $order, $order_id, $user_id, $points, $fraction, $target ): void {
+				// The ledger is the record; the order meta is a floor in case old rows were ever removed.
+				$already = max(
+					LedgerStore::sum_for_order_source( $user_id, $order_id, 'checkout_redeem_refund' ),
+					(int) $order->get_meta( self::RESTORED_META )
+				);
+				$delta   = min( $target, $points ) - $already;
+			if ( $delta <= 0 ) {
+				return;
+			}
+				$written = Ledger::record_once(
+					$user_id,
+					$delta,
+					'adjust',
+					'checkout_redeem_refund',
+					'checkout_refund:' . $order_id . ':' . $target,
+					array(
+						'order_id' => $order_id,
+						'note'     => __( 'Checkout points redemption reversal', 'moksa-points-for-woocommerce' ),
+						'meta'     => array(
+							'spent'    => $points,
+							'fraction' => $fraction,
+						),
+					)
+				);
+			if ( $written ) {
+				$order->update_meta_data( self::RESTORED_META, (string) ( $already + $delta ) );
+				$order->save();
+			}
+		};
+
+		// If the lock is busy, still give the points back (as before 1.0.6) rather than skip the refund;
+		// the ref advancing with the cumulative target keeps a replay from booking twice.
+		if ( UserLock::with( $user_id, $work ) instanceof \WP_Error ) {
+			$work();
+		}
 	}
 }

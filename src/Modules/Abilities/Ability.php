@@ -1204,8 +1204,27 @@ final class Ability {
 			return array( 'summary' => __( 'A valid user_id and a non-zero points value are required.', 'moksa-points-for-woocommerce' ) );
 		}
 
-		$ok = Api::adjust( $user_id, $points, $note, $bucket );
-		if ( ! $ok ) {
+		$res = Api::adjust_detailed( $user_id, $points, $note, $bucket );
+		if ( 'insufficient' === $res['status'] ) {
+			return array(
+				'summary' => sprintf(
+					/* translators: 1: points to deduct, 2: current balance. */
+					__( 'Not deducted: the customer has only %2$s point(s), fewer than the %1$s requested.', 'moksa-points-for-woocommerce' ),
+					number_format( -$points ),
+					number_format( $res['balance'] )
+				),
+			);
+		}
+		if ( 'busy' === $res['status'] || 'error' === $res['status'] ) {
+			return array( 'summary' => __( 'The system is busy, please try again later.', 'moksa-points-for-woocommerce' ) );
+		}
+		if ( 'invalid' === $res['status'] ) {
+			return array( 'summary' => __( 'A valid user_id, a non-zero points value and a bucket of at most 64 characters are required.', 'moksa-points-for-woocommerce' ) );
+		}
+		if ( 'conflict' === $res['status'] ) {
+			return array( 'summary' => __( 'This bucket was already used for a different amount; nothing was changed.', 'moksa-points-for-woocommerce' ) );
+		}
+		if ( 'applied' !== $res['status'] ) {
 			return array( 'summary' => __( 'This adjustment was already recorded (idempotent); it was not posted again.', 'moksa-points-for-woocommerce' ) );
 		}
 		return array(

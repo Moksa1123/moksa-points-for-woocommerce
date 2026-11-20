@@ -28,7 +28,8 @@ $GLOBALS['moksa_kit_pool'][] = array(
 	// 1.0.0:SettingsUi(設計系統 CSS/JS)、SettingsAudit(設定變更環形記錄)、SettingsPorter(設定匯出 / 匯入)三項從五支外掛抽出.
 	// 1.0.1:後台版面 .mowp-shell 從 1000px 放寬到 1500px，欄位說明限 820px（09-04 副本改動回補母版）.
 	// 1.0.2:參數 $class／$new 改名 $class_name／$new_value（保留字）；各外掛都用位置參數呼叫，行為不變.
-	'version' => '1.0.2',
+	// 1.0.3:SettingsPorter 加排除鍵（ctx 'exclude' 與 filter moksa_kit_porter_excluded_keys），匯出不帶、匯入不寫金鑰；只加不改.
+	'version' => '1.0.3',
 	'dir'     => __DIR__,
 );
 

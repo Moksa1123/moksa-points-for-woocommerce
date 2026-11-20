@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 8.2
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,13 +88,28 @@ No. Every ledger entry is written once, keyed by a stable reference, so a retrie
 
 = What happens to points on a refund or cancellation? =
 
-Refunds and cancellations proportionally reverse the points and store credit the order originally granted.
+Refunds and cancellations proportionally reverse the points and store credit the order originally granted, and give back the same share of the points spent on it at checkout.
+
+= Did older versions award too many points on orders paid partly with points? =
+
+Yes, up to 1.0.5. When a customer used points or store credit at checkout, the purchase points were calculated on the amount before that discount. 1.0.6 fixes this for new orders and does not change past balances automatically, because customers may already have spent those points. To review past orders, look for orders with a "Points redemption" or "Store credit redemption" line: the extra points on each are roughly that line's amount times your earning rate. You can correct individual balances with the bulk or single-member adjustment in the admin.
 
 = Does it work without the AI features? =
 
 Yes. All points, wallet and reward features work on a standard WooCommerce store with no AI configuration. Abilities are registered out of the box (each one capability-checked) so an agent *can* read the programme, but nothing reaches an AI service until you configure a provider in WordPress's AI Client, and the external MCP server is off entirely.
 
 == Changelog ==
+
+= 1.0.6 =
+* Fix: points earned on a purchase now follow the amount actually paid. Up to 1.0.5, points or store credit used at checkout were not taken off the earning base, so an order of 1000 paid 800 + 200 in points earned on 1000. Past orders are not changed; see the FAQ to find them. A new setting, on by default, controls this.
+* Fix: a manual or API deduction larger than the member's balance is now refused instead of taking the balance below zero. The check runs under the member's lock.
+* Fix: on a partial refund, the points spent at checkout are given back in the same proportion (before, only a full refund or cancellation gave them back).
+* New: Store system API module (off by default) for an ERP or POS: read any member's balance and history, and add or deduct points with a reference that is never booked twice (a repeat returns the first result; the same reference with a different amount, or a deduction larger than the balance, returns 409). References are case-sensitive: "INV-1" and "inv-1" are two different references. The balance also appears as a `moksa_points` field in the WooCommerce customer API.
+* New: orders can carry their own points in an order meta key you name (for orders created by an ERP, POS or a previous points plugin); such orders earn exactly that value.
+* New: external-source orders (matched by order meta or created_via) can be set to earn or not, to claw back earned points only on real refunds (not when the status is just changed to Refunded), and to leave spent points alone.
+* New: the names of the points and store-credit discount lines can be fixed in settings, with {points} / {amount} placeholders.
+* Fix: the member history API now returns the order id of each entry.
+* Hardening: a lock is only released by the request that holds it; first-time defaults are never written over an existing setting, even with a stale object cache; a reward is looked up by its own id only.
 
 = 1.0.5 =
 * Storage: the redemption catalog moves from its own database table to a private post type. Existing rewards are copied automatically on update, row by row, and verified field by field; per-customer redemption limits and redeem-once codes carry on unchanged. The old table is kept, so downgrading still works, and if it changes afterwards the admin is asked whether to import it again.
@@ -138,6 +153,9 @@ Yes. All points, wallet and reward features work on a standard WooCommerce store
 * Fully internationalised; translations are served from translate.wordpress.org.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+Purchase points now follow the amount actually paid (points or store credit used at checkout are no longer counted), and deductions can no longer take a balance below zero. Past orders are not changed; see the FAQ.
 
 = 1.0.5 =
 Moves the redemption catalog to a post type (copied and verified automatically on update) and fixes ledger compaction, transfer refunds and the CSV export. Back up before updating, as with any update that moves data.

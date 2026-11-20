@@ -22,6 +22,16 @@ final class Menu {
 
 	private const CAP = 'manage_woocommerce';
 
+	/**
+	 * Menu icon as an inline SVG (a star). WordPress 7.2 replaces Dashicons in the admin menu with its own
+	 * SVG set, so a "dashicons-*" name may no longer draw; a data-URI SVG is recoloured by core's
+	 * svg-painter on every version.
+	 */
+	private static function icon(): string {
+		// <svg viewBox="0 0 20 20"><path fill="black" d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9z"/></svg>
+		return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHBhdGggZmlsbD0iYmxhY2siIGQ9Ik0xMCAxLjVsMi42IDUuMyA1LjkuOS00LjMgNC4xIDEgNS44TDEwIDE0LjlsLTUuMiAyLjcgMS01LjhMMS41IDcuN2w1LjktLjl6Ii8+PC9zdmc+';
+	}
+
 	public static function register(): void {
 		add_menu_page(
 			__( 'Moksa Points', 'moksa-points-for-woocommerce' ),
@@ -29,7 +39,7 @@ final class Menu {
 			self::CAP,
 			self::TOPLEVEL,
 			array( Dashboard::class, 'render' ),
-			'dashicons-star-filled',
+			self::icon(),
 			55.7
 		);
 

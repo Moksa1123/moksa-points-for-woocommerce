@@ -52,6 +52,8 @@ final class RewardStore {
 				'show_in_nav_menus'   => false,
 				'show_in_rest'        => false,
 				'has_archive'         => false,
+				// WordPress 7.2 /random: never pick a reward (already implied by public=false, stated explicitly).
+				'randomable'          => false,
 				'rewrite'             => false,
 				'query_var'           => false,
 				'can_export'          => true,
@@ -73,8 +75,7 @@ final class RewardStore {
 	}
 
 	/**
-	 * One reward by post ID. A legacy id (from before the catalog moved to a CPT — old links, an AI
-	 * agent that cached an id) is also accepted and mapped to its migrated post.
+	 * One reward by post ID.
 	 *
 	 * @return array<string,mixed>|null
 	 */
@@ -82,16 +83,11 @@ final class RewardStore {
 		if ( $id <= 0 ) {
 			return null;
 		}
-		$rows = self::load();
-		if ( isset( $rows[ $id ] ) ) {
-			return $rows[ $id ];
-		}
-		foreach ( $rows as $row ) {
-			if ( (int) $row['legacy_id'] === $id ) {
-				return $row;
-			}
-		}
-		return null;
+		// By post ID only. Every form and API that passes a reward id takes it from the current list, so
+		// an old-table id can only come from a stale link — and it may equal the post ID of a DIFFERENT
+		// reward, so falling back to the legacy id would redeem the wrong one. A stale id now simply
+		// finds nothing. Migration uses find_by_legacy_id() explicitly.
+		return self::find_own( $id );
 	}
 
 	/** The migrated post for an old-table id, or null. */

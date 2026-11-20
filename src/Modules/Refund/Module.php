@@ -56,10 +56,14 @@ final class Module extends AbstractModule {
 		// woocommerce_order_status_refunded hook, which never fired on a PARTIAL refund (F3).
 		add_action( 'woocommerce_order_status_cancelled', array( self::class, 'clawback' ) );
 		add_action( 'woocommerce_order_refunded', array( self::class, 'on_refunded' ), 10, 2 );
+		\Moksafopoi\Support\ExternalOrders::init();
 	}
 
 	/** Cancellation: claw back the full earned points (no refund object exists). */
 	public static function clawback( $order_id ): void {
+		if ( ! \Moksafopoi\Support\ExternalOrders::claws_back( (int) $order_id ) ) {
+			return;
+		}
 		self::reverse_earned( (int) $order_id, 1.0 );
 	}
 
@@ -71,7 +75,7 @@ final class Module extends AbstractModule {
 	 */
 	public static function on_refunded( $order_id, $refund_id = 0 ): void {
 		$order = wc_get_order( (int) $order_id );
-		if ( ! $order instanceof \WC_Order ) {
+		if ( ! $order instanceof \WC_Order || ! \Moksafopoi\Support\ExternalOrders::claws_back( $order ) ) {
 			return;
 		}
 		$total    = (float) $order->get_total();

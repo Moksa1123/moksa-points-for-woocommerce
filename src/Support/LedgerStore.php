@@ -99,7 +99,7 @@ final class LedgerStore {
 				FROM %i
 				WHERE user_id = %d AND created_at < %s
 					AND ( expires_at IS NULL OR expires_at < %s OR expires_at < '1971-01-01 00:00:00' )
-					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund')",
+					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund', 'checkout_redeem_refund')",
 				self::table(),
 				$user_id,
 				$cutoff,
@@ -126,7 +126,7 @@ final class LedgerStore {
 				"DELETE FROM %i
 				WHERE user_id = %d AND created_at < %s AND id <= %d
 					AND ( expires_at IS NULL OR expires_at < %s OR expires_at < '1971-01-01 00:00:00' )
-					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund')",
+					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund', 'checkout_redeem_refund')",
 				self::table(),
 				$user_id,
 				$cutoff,
@@ -166,7 +166,7 @@ final class LedgerStore {
 		global $wpdb;
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT id, points_delta, amount_delta, balance_after, type, source, note, created_at FROM %i WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d',
+				'SELECT id, points_delta, amount_delta, balance_after, type, source, source_ref, order_id, note, created_at FROM %i WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d',
 				self::table(),
 				$user_id,
 				$limit,
@@ -289,6 +289,48 @@ final class LedgerStore {
 				$user_id,
 				$source,
 				$source_ref
+			)
+		);
+	}
+
+	/**
+	 * The first row booked for a member under one source + source_ref, or null. Lets an idempotent
+	 * caller answer a retry with what the first call did.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	public static function row_for_ref( int $user_id, string $source, string $source_ref ): ?array {
+		global $wpdb;
+		// The column's collation ignores case, but references are case-sensitive (the idempotency key
+		// is a hash of the exact text), so "INV-1" and "inv-1" are different: match exactly in PHP.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, points_delta, amount_delta, type, order_id, created_at, source_ref FROM %i WHERE user_id = %d AND source = %s AND source_ref = %s ORDER BY id ASC LIMIT 20',
+				self::table(),
+				$user_id,
+				$source,
+				$source_ref
+			),
+			ARRAY_A
+		);
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			if ( (string) $row['source_ref'] === $source_ref ) {
+				return $row;
+			}
+		}
+		return null;
+	}
+
+	/** Net points booked for a member on one order from one source. */
+	public static function sum_for_order_source( int $user_id, int $order_id, string $source ): int {
+		global $wpdb;
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COALESCE(SUM(points_delta),0) FROM %i WHERE user_id = %d AND order_id = %d AND source = %s',
+				self::table(),
+				$user_id,
+				$order_id,
+				$source
 			)
 		);
 	}
@@ -594,7 +636,7 @@ final class LedgerStore {
 				FROM %i
 				WHERE created_at < %s
 					AND ( expires_at IS NULL OR expires_at < %s OR expires_at < '1971-01-01 00:00:00' )
-					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund')
+					AND type <> 'opening' AND type <> 'redeem' AND source NOT IN ('redeem_code', 'redeem_refund', 'checkout_redeem_refund')
 				GROUP BY user_id
 				HAVING rows_count > 1
 				LIMIT %d",

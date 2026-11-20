@@ -33,14 +33,18 @@ final class SettingsPorter {
 	 * Build the export envelope: the format tag, plugin + version, an ISO timestamp, and the current
 	 * value of every known option key.
 	 *
-	 * @param array{format:string,plugin:string,version:string,keys:array<int,string>} $ctx
+	 * Keys listed as excluded (secrets such as API keys) are left out, so an export file never
+	 * carries them in plain text.
+	 *
+	 * @param array{format:string,plugin:string,version:string,keys:array<int,string>,exclude?:array<int,string>} $ctx
 	 * @return array<string,mixed>
 	 */
 	public static function export_payload( array $ctx ): array {
 		$settings = array();
+		$excluded = self::excluded_keys( $ctx );
 		foreach ( (array) ( $ctx['keys'] ?? array() ) as $key ) {
 			$key = (string) $key;
-			if ( '' !== $key ) {
+			if ( '' !== $key && ! isset( $excluded[ $key ] ) ) {
 				$settings[ $key ] = get_option( $key, null );
 			}
 		}
@@ -74,7 +78,7 @@ final class SettingsPorter {
 	 * writing only known + re-sanitised values and reporting each real change.
 	 *
 	 * @param mixed                                                                                  $payload Decoded JSON (array expected).
-	 * @param array{format:string,keys:array<int,string>,sanitize:callable,audit?:callable|null}      $ctx
+	 * @param array{format:string,keys:array<int,string>,sanitize:callable,audit?:callable|null,exclude?:array<int,string>} $ctx
 	 *        sanitize( string $key, mixed $raw ): array{ok:bool,value:mixed}
 	 *        audit( string $key, mixed $old, mixed $new ): void   (optional)
 	 * @return array{ok:bool,applied:int,skipped:int,error_code:string,changed:array<int,string>}
@@ -106,16 +110,17 @@ final class SettingsPorter {
 		}
 		$audit = ( isset( $ctx['audit'] ) && is_callable( $ctx['audit'] ) ) ? $ctx['audit'] : null;
 
-		$known   = array_fill_keys( array_map( 'strval', (array) ( $ctx['keys'] ?? array() ) ), true );
-		$applied = 0;
-		$skipped = 0;
-		$changed = array();
+		$known    = array_fill_keys( array_map( 'strval', (array) ( $ctx['keys'] ?? array() ) ), true );
+		$excluded = self::excluded_keys( $ctx );
+		$applied  = 0;
+		$skipped  = 0;
+		$changed  = array();
 
 		foreach ( $settings as $key => $raw ) {
 			$key = (string) $key;
-			if ( ! isset( $known[ $key ] ) ) {
+			if ( ! isset( $known[ $key ] ) || isset( $excluded[ $key ] ) ) {
 				++$skipped;
-				continue; // unknown key — never write.
+				continue; // unknown or excluded (secret) key — never write.
 			}
 			$result = (array) call_user_func( $sanitize, $key, $raw );
 			if ( true !== ( $result['ok'] ?? false ) ) {
@@ -141,6 +146,26 @@ final class SettingsPorter {
 			'changed'    => $changed,
 			'error_code' => '',
 		);
+	}
+
+	/**
+	 * Keys an export must leave out and an import must never write: the caller's 'exclude' list plus
+	 * the 'moksa_kit_porter_excluded_keys' filter (for example the option names a plugin keeps as
+	 * secrets). Added in kit 1.0.3; older callers that pass no list are unaffected.
+	 *
+	 * @param array<string,mixed> $ctx Porter context.
+	 * @return array<string,true>
+	 */
+	private static function excluded_keys( array $ctx ): array {
+		$list = array_map( 'strval', (array) ( $ctx['exclude'] ?? array() ) );
+		/**
+		 * Filter the option keys kept out of settings export / import.
+		 *
+		 * @param array<int,string> $list   Excluded keys.
+		 * @param string            $format The porter format tag of the plugin being exported.
+		 */
+		$list = (array) apply_filters( 'moksa_kit_porter_excluded_keys', $list, (string) ( $ctx['format'] ?? '' ) );
+		return array_fill_keys( array_filter( array_map( 'strval', $list ), 'strlen' ), true );
 	}
 
 	/**

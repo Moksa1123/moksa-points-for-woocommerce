@@ -24,7 +24,9 @@ defined( 'ABSPATH' ) || exit;
  *     cutoff younger than {@see MIN_AGE_DAYS} is accepted, whatever the caller asks for.
  *   • **Rows that are still doing a job are never compacted.** A row with a future expiry date is
  *     live FIFO inventory; folding it into an opening balance would silently make those points
- *     immortal.
+ *     immortal. Rows other code reads back by reference are kept too: redemptions (per-member limits,
+ *     redeem-once codes) and checkout-redemption refunds (how much of an order's spent points was
+ *     already given back).
  *   • **Dry run first.** {@see run()} defaults to reporting what it would do and writing nothing.
  *
  * The compacted row is `type=opening, source=retention` so it is obvious in any export what it is.

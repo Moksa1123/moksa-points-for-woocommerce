@@ -159,7 +159,27 @@ final class Module extends AbstractModule {
 		if ( $amount <= 0 ) {
 			return;
 		}
-		$cart->add_fee( __( 'Store credit redemption', 'moksa-points-for-woocommerce' ), -$amount );
+		// Fixed id, so a custom label equal to another fee's name cannot make WooCommerce drop this line.
+		$cart->fees_api()->add_fee(
+			array(
+				'id'      => 'moksafopoi-store-credit-redemption',
+				'name'    => self::fee_label( $amount ),
+				'amount'  => -$amount,
+				'taxable' => false,
+			)
+		);
+	}
+
+	/**
+	 * Name of the store-credit discount line; fixed in settings, else the translated default.
+	 * `{amount}` in the setting is replaced by the amount used (plain number, no currency symbol).
+	 */
+	public static function fee_label( float $amount = 0.0 ): string {
+		$label = trim( (string) get_option( 'moksafopoi_wallet_fee_label', '' ) );
+		if ( '' === $label ) {
+			return __( 'Store credit redemption', 'moksa-points-for-woocommerce' );
+		}
+		return str_replace( '{amount}', wc_format_decimal( max( 0.0, $amount ), wc_get_price_decimals(), true ), $label );
 	}
 
 	/* ------------------------------------------------------------------ UI */

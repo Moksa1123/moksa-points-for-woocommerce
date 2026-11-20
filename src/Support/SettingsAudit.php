@@ -27,6 +27,11 @@ final class SettingsAudit {
 	 * @param string $source One of 'ui' | 'import' | 'ability' (free-form, sanitised to a key).
 	 */
 	public static function record( string $key, $old, $new, string $source = 'ui' ): void {
+		// Never write a secret into the audit log: record only whether it was set.
+		if ( SecretMap::is_secret( $key ) ) {
+			$old = ( null === $old || '' === (string) $old ) ? '(not set)' : '(set)';
+			$new = ( null === $new || '' === (string) $new ) ? '(not set)' : '(set)';
+		}
 		\Moksa\Kit\SettingsAudit::record( self::OPTION, $key, $old, $new, $source );
 	}
 

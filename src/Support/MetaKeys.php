@@ -43,6 +43,7 @@ final class MetaKeys {
 		'_moksafopoi_redeem_points',
 		'_moksafopoi_redeem_pending',
 		'_moksafopoi_redeem_ledger_ref',
+		'_moksafopoi_redeem_restored',
 		'_moksafopoi_wallet_amount',
 		'_moksafopoi_wallet_pending',
 		'_moksafopoi_wallet_ledger_ref',
